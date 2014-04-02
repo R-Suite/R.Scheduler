@@ -1,0 +1,62 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler", "R.Scheduler\R.Scheduler.csproj", "{59E14D25-72BD-4E1F-A224-B8A6F5179B90}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.JobRunners", "R.Scheduler.JobRunners\R.Scheduler.JobRunners.csproj", "{EE8B4DC9-A116-4CF0-A5FC-064A709EBE90}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.Contracts", "R.Scheduler.Contracts\R.Scheduler.Contracts.csproj", "{C2F4994F-DB81-4779-8490-89250561F0D7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6E854787-A37D-422A-A0F3-C8707723EB4C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.UnitTests", "R.Scheduler.UnitTests\R.Scheduler.UnitTests.csproj", "{78E4C134-1021-48AA-9F04-B52EA878BA32}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.IntegrationTests", "R.Scheduler.IntegrationTests\R.Scheduler.IntegrationTests.csproj", "{79CD8C58-F573-428C-AE6B-6A953FB3E2DC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Fakes", "Fakes", "{ACF74C8F-7012-44A7-A924-4F87D805F93F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.FakeJobPlugin", "R.Scheduler.FakeJobPlugin\R.Scheduler.FakeJobPlugin.csproj", "{3805AD73-D4CF-4762-81D5-C745FDFB97FA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{59E14D25-72BD-4E1F-A224-B8A6F5179B90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59E14D25-72BD-4E1F-A224-B8A6F5179B90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59E14D25-72BD-4E1F-A224-B8A6F5179B90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59E14D25-72BD-4E1F-A224-B8A6F5179B90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE8B4DC9-A116-4CF0-A5FC-064A709EBE90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE8B4DC9-A116-4CF0-A5FC-064A709EBE90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE8B4DC9-A116-4CF0-A5FC-064A709EBE90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE8B4DC9-A116-4CF0-A5FC-064A709EBE90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2F4994F-DB81-4779-8490-89250561F0D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2F4994F-DB81-4779-8490-89250561F0D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2F4994F-DB81-4779-8490-89250561F0D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2F4994F-DB81-4779-8490-89250561F0D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78E4C134-1021-48AA-9F04-B52EA878BA32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78E4C134-1021-48AA-9F04-B52EA878BA32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78E4C134-1021-48AA-9F04-B52EA878BA32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78E4C134-1021-48AA-9F04-B52EA878BA32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79CD8C58-F573-428C-AE6B-6A953FB3E2DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79CD8C58-F573-428C-AE6B-6A953FB3E2DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79CD8C58-F573-428C-AE6B-6A953FB3E2DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79CD8C58-F573-428C-AE6B-6A953FB3E2DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3805AD73-D4CF-4762-81D5-C745FDFB97FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3805AD73-D4CF-4762-81D5-C745FDFB97FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3805AD73-D4CF-4762-81D5-C745FDFB97FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3805AD73-D4CF-4762-81D5-C745FDFB97FA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{78E4C134-1021-48AA-9F04-B52EA878BA32} = {6E854787-A37D-422A-A0F3-C8707723EB4C}
+		{79CD8C58-F573-428C-AE6B-6A953FB3E2DC} = {6E854787-A37D-422A-A0F3-C8707723EB4C}
+		{ACF74C8F-7012-44A7-A924-4F87D805F93F} = {6E854787-A37D-422A-A0F3-C8707723EB4C}
+		{3805AD73-D4CF-4762-81D5-C745FDFB97FA} = {ACF74C8F-7012-44A7-A924-4F87D805F93F}
+	EndGlobalSection
+EndGlobal

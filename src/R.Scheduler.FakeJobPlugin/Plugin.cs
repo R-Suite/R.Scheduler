@@ -1,10 +1,15 @@
-﻿using R.Scheduler.Contracts.Interfaces;
+﻿using R.Scheduler.Core;
 
 namespace R.Scheduler.FakeJobPlugin
 {
-    public class Plugin : IJobPlugin
+    public class Plugin : BasePlugin
     {
-        public void Execute()
+        public override string Name
+        {
+            get { return "TestPlugin"; }
+        }
+
+        public override void Execute()
         {
         }
     }

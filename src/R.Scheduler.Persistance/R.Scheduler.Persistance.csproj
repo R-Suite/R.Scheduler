@@ -4,16 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{59E14D25-72BD-4E1F-A224-B8A6F5179B90}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{E1ABAC5B-6990-4EAE-AF61-FD9E08C64A18}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>R.Scheduler</RootNamespace>
-    <AssemblyName>R.Scheduler</AssemblyName>
+    <RootNamespace>R.Scheduler.Persistance</RootNamespace>
+    <AssemblyName>R.Scheduler.Persistance</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -32,15 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Common.Logging">
-      <HintPath>..\packages\Common.Logging.2.1.2\lib\net40\Common.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="Quartz">
-      <HintPath>..\packages\Quartz.2.2.3\lib\net40\Quartz.dll</HintPath>
-    </Reference>
-    <Reference Include="R.MessageBus.Interfaces">
-      <HintPath>..\packages\R.MessageBus.Interfaces.0.0.0.4\lib\net40\R.MessageBus.Interfaces.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -50,27 +39,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Handlers\RegisterPluginCommandHandler.cs" />
-    <Compile Include="Handlers\ScheduleOneTimeJobCommandHandler.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scheduler.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-    <None Include="job_scheduling_data_2_0.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="packages.config" />
+    <Folder Include="Postgre\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\R.Scheduler.Contracts\R.Scheduler.Contracts.csproj">
       <Project>{C2F4994F-DB81-4779-8490-89250561F0D7}</Project>
       <Name>R.Scheduler.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\R.Scheduler.JobRunners\R.Scheduler.JobRunners.csproj">
-      <Project>{ee8b4dc9-a116-4cf0-a5fc-064a709ebe90}</Project>
-      <Name>R.Scheduler.JobRunners</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

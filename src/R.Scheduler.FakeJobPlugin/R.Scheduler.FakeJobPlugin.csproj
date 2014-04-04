@@ -47,6 +47,10 @@
       <Project>{C2F4994F-DB81-4779-8490-89250561F0D7}</Project>
       <Name>R.Scheduler.Contracts</Name>
     </ProjectReference>
+    <ProjectReference Include="..\R.Scheduler.Core\R.Scheduler.Core.csproj">
+      <Project>{734FCD07-D2E8-4150-98E9-834B6DCF22DF}</Project>
+      <Name>R.Scheduler.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

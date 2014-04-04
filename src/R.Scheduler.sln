@@ -19,6 +19,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Fakes", "Fakes", "{ACF74C8F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.FakeJobPlugin", "R.Scheduler.FakeJobPlugin\R.Scheduler.FakeJobPlugin.csproj", "{3805AD73-D4CF-4762-81D5-C745FDFB97FA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.Core", "R.Scheduler.Core\R.Scheduler.Core.csproj", "{734FCD07-D2E8-4150-98E9-834B6DCF22DF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.Persistance", "R.Scheduler.Persistance\R.Scheduler.Persistance.csproj", "{E1ABAC5B-6990-4EAE-AF61-FD9E08C64A18}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +53,14 @@ Global
 		{3805AD73-D4CF-4762-81D5-C745FDFB97FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3805AD73-D4CF-4762-81D5-C745FDFB97FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3805AD73-D4CF-4762-81D5-C745FDFB97FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{734FCD07-D2E8-4150-98E9-834B6DCF22DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{734FCD07-D2E8-4150-98E9-834B6DCF22DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{734FCD07-D2E8-4150-98E9-834B6DCF22DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{734FCD07-D2E8-4150-98E9-834B6DCF22DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1ABAC5B-6990-4EAE-AF61-FD9E08C64A18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1ABAC5B-6990-4EAE-AF61-FD9E08C64A18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1ABAC5B-6990-4EAE-AF61-FD9E08C64A18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1ABAC5B-6990-4EAE-AF61-FD9E08C64A18}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

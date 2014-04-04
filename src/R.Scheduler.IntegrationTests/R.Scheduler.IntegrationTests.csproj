@@ -68,6 +68,10 @@
       <Project>{C2F4994F-DB81-4779-8490-89250561F0D7}</Project>
       <Name>R.Scheduler.Contracts</Name>
     </ProjectReference>
+    <ProjectReference Include="..\R.Scheduler.Core\R.Scheduler.Core.csproj">
+      <Project>{734fcd07-d2e8-4150-98e9-834b6dcf22df}</Project>
+      <Name>R.Scheduler.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\R.Scheduler.JobRunners\R.Scheduler.JobRunners.csproj">
       <Project>{EE8B4DC9-A116-4CF0-A5FC-064A709EBE90}</Project>
       <Name>R.Scheduler.JobRunners</Name>

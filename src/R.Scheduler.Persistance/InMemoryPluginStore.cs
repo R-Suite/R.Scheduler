@@ -1,9 +1,9 @@
 ﻿using System;
 using R.Scheduler.Contracts.Interfaces;
 
-namespace R.Scheduler.Persistance.Postgre
+namespace R.Scheduler.Persistance
 {
-    public class PluginStore : IPluginStore
+    public class InMemoryPluginStore : IPluginStore
     {
         public Plugin GetRegisteredPlugin(string pluginName)
         {

@@ -39,7 +39,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Postgre\PluginStore.cs" />
+    <Compile Include="InMemoryPluginStore.cs" />
+    <Compile Include="PostgrePluginStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

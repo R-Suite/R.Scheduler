@@ -8,16 +8,16 @@ namespace R.Scheduler.Handlers
 {
     public class ScheduleOneTimeJobCommandHandler : IMessageHandler<ScheduleOneTimeJobCommand>
     {
-        readonly IPluginStore _pluginRepository;
+        readonly IPluginStore _pluginStore;
 
-        public ScheduleOneTimeJobCommandHandler(IPluginStore pluginRepository)
+        public ScheduleOneTimeJobCommandHandler(IPluginStore pluginStore)
         {
-            _pluginRepository = pluginRepository;
+            _pluginStore = pluginStore;
         }
 
         public void Execute(ScheduleOneTimeJobCommand command)
         {
-            var registeredPlugin = _pluginRepository.GetRegisteredPlugin(command.PluginName);
+            var registeredPlugin = _pluginStore.GetRegisteredPlugin(command.PluginName);
 
             IJobDetail jobDetail = JobBuilder.Create<PluginRunner>()
                 .WithIdentity(command.JobName, command.GroupName)

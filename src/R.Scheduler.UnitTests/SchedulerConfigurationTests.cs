@@ -1,36 +1,21 @@
 ﻿using System;
 using R.Scheduler.Contracts.Interfaces;
-using StructureMap;
 using Xunit;
 
 namespace R.Scheduler.UnitTests
 {
-    public class FakePluginStore : IPluginStore
-    {
-        public Plugin GetRegisteredPlugin(string pluginName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void RegisterPlugin(Plugin plugin)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
     public class SchedulerConfigurationTests
     {
+        //note: methods are static, the Scheduler class is not really testable
+
         [Fact]
-        public void SetPluginStoreShouldOverrideDefaultIPluginStoreInstance()
+        public void ShouldThrowWhenPluginStoreIsSetAfterSchedulerIsStarted()
         {
             // Arrange
             Scheduler.Instance();
 
-            // Act
-            Scheduler.SetPluginStore<FakePluginStore>();
-
-            // Assert
-            Assert.Equal(typeof(FakePluginStore),  ObjectFactory.GetInstance<IPluginStore>().GetType());
+            // Act / Assert
+            Assert.Throws<Exception>(() => Scheduler.SetPluginStore(PluginStoreType.InMemory));
         }
     }
 }

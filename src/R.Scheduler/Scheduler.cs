@@ -2,6 +2,7 @@
 using Quartz;
 using Quartz.Impl;
 using R.Scheduler.Contracts.Interfaces;
+using R.Scheduler.Persistance;
 using StructureMap;
 
 namespace R.Scheduler
@@ -16,6 +17,10 @@ namespace R.Scheduler
             ObjectFactory.Initialize(x=>x.AddRegistry<SmRegistry>());
         }
 
+        /// <summary>
+        /// Gets instance of Quartz Scheduler
+        /// </summary>
+        /// <returns></returns>
         public static IScheduler Instance()
         {
             if (null == _instance)
@@ -34,12 +39,28 @@ namespace R.Scheduler
         }
 
         /// <summary>
-        /// Sets implementation of IPluginStore
+        /// Sets implementation of IPluginStore in IoC Container. 
+        /// (Must be called before Scheduler.Instance())
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        public static void SetPluginStore<T>() where T : class, IPluginStore
+        /// <exception cref="Exception"></exception>
+        public static void SetPluginStore(PluginStoreType pluginStoreType)
         {
-            ObjectFactory.Configure(x => x.For<IPluginStore>().Use<T>());
+            if (null != _instance)
+            {
+                throw new Exception("PluginStore cannot be set after the scheduler has been initialized.");
+            }
+
+            switch (pluginStoreType)
+            {
+                case PluginStoreType.InMemory:
+                    ObjectFactory.Configure(x => x.For<IPluginStore>().Use<InMemoryPluginStore>());
+                    break;
+                case PluginStoreType.Postgre:
+                    ObjectFactory.Configure(x => x.For<IPluginStore>().Use<PostgrePluginStore>());
+                    break;
+                default:
+                    throw new Exception(string.Format("Unsupported pluginStoreType {0}", pluginStoreType));
+            }
         }
     }
 }

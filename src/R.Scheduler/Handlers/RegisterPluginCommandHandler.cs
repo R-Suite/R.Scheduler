@@ -6,9 +6,9 @@ namespace R.Scheduler.Handlers
 {
     public class RegisterPluginCommandHandler : IMessageHandler<RegisterPluginCommand>
     {
-        readonly IPluginRepository _pluginRepository;
+        readonly IPluginStore _pluginRepository;
 
-        public RegisterPluginCommandHandler(IPluginRepository pluginRepository)
+        public RegisterPluginCommandHandler(IPluginStore pluginRepository)
         {
             _pluginRepository = pluginRepository;
         }
@@ -17,7 +17,7 @@ namespace R.Scheduler.Handlers
         {
             //todo: verify valid plugin
 
-            _pluginRepository.RegisterPlugin(new RegisteredPlugin
+            _pluginRepository.RegisterPlugin(new Plugin
             {
                 AssemblyPath = command.AssemblyPath,
                 Name = command.PluginName,

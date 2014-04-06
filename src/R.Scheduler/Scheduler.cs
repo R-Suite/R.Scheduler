@@ -1,6 +1,8 @@
 ﻿using System;
 using Quartz;
 using Quartz.Impl;
+using R.Scheduler.Contracts.Interfaces;
+using StructureMap;
 
 namespace R.Scheduler
 {
@@ -8,6 +10,13 @@ namespace R.Scheduler
     {
         private static IScheduler _instance;
         private static readonly object SyncRoot = new Object();
+
+        public static IConfiguration Configuration { get; set; }
+
+        static Scheduler()
+        {
+            ObjectFactory.Initialize(x=>x.AddRegistry<SmRegistry>());
+        }
 
         public static IScheduler Instance()
         {
@@ -20,11 +29,19 @@ namespace R.Scheduler
                         ISchedulerFactory schedFact = new StdSchedulerFactory();
                         _instance = schedFact.GetScheduler();
                     }
-
                 }
             }
 
             return _instance;
+        }
+
+        /// <summary>
+        /// Sets implementation of IPluginStore
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public static void SetPluginStore<T>() where T : class, IPluginStore
+        {
+            ObjectFactory.Configure(x => x.For<IPluginStore>().Use<T>());
         }
     }
 }

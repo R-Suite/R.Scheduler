@@ -43,8 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interfaces\IConfiguration.cs" />
     <Compile Include="Interfaces\IJobPlugin.cs" />
-    <Compile Include="Interfaces\IPluginRepository.cs" />
+    <Compile Include="Interfaces\IPluginStore.cs" />
     <Compile Include="Interfaces\RegisteredPlugin.cs" />
     <Compile Include="Messages\JobExecutedMessage.cs" />
     <Compile Include="Messages\RegisterPluginCommand.cs" />

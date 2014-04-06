@@ -8,9 +8,9 @@ namespace R.Scheduler.Handlers
 {
     public class ScheduleOneTimeJobCommandHandler : IMessageHandler<ScheduleOneTimeJobCommand>
     {
-        readonly IPluginRepository _pluginRepository;
+        readonly IPluginStore _pluginRepository;
 
-        public ScheduleOneTimeJobCommandHandler(IPluginRepository pluginRepository)
+        public ScheduleOneTimeJobCommandHandler(IPluginStore pluginRepository)
         {
             _pluginRepository = pluginRepository;
         }

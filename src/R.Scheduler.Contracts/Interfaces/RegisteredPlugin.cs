@@ -1,6 +1,6 @@
 ﻿namespace R.Scheduler.Contracts.Interfaces
 {
-    public class RegisteredPlugin
+    public class Plugin
     {
         public string Name { get; set; }
         public string AssemblyPath { get; set; }

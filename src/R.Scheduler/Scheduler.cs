@@ -11,8 +11,6 @@ namespace R.Scheduler
         private static IScheduler _instance;
         private static readonly object SyncRoot = new Object();
 
-        public static IConfiguration Configuration { get; set; }
-
         static Scheduler()
         {
             ObjectFactory.Initialize(x=>x.AddRegistry<SmRegistry>());

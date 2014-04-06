@@ -56,7 +56,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration.cs" />
     <Compile Include="Handlers\RegisterPluginCommandHandler.cs" />
     <Compile Include="Handlers\ScheduleOneTimeJobCommandHandler.cs" />
     <Compile Include="Program.cs" />

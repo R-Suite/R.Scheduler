@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{59E14D25-72BD-4E1F-A224-B8A6F5179B90}</ProjectGuid>
+    <ProjectGuid>{4FBF650F-1C9F-4559-AF65-B19FA69611A0}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>R.Scheduler</RootNamespace>
-    <AssemblyName>R.Scheduler</AssemblyName>
+    <RootNamespace>R.Scheduler.TestClient</RootNamespace>
+    <AssemblyName>R.Scheduler.TestClient</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -32,67 +32,43 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Common.Logging">
-      <HintPath>..\packages\Common.Logging.2.1.2\lib\net40\Common.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="MongoDB.Bson, Version=1.8.3.9, Culture=neutral, PublicKeyToken=f686731cfb9cc103, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="MongoDB.Bson">
       <HintPath>..\packages\mongocsharpdriver.1.8.3\lib\net35\MongoDB.Bson.dll</HintPath>
     </Reference>
-    <Reference Include="MongoDB.Driver, Version=1.8.3.9, Culture=neutral, PublicKeyToken=f686731cfb9cc103, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="MongoDB.Driver">
       <HintPath>..\packages\mongocsharpdriver.1.8.3\lib\net35\MongoDB.Driver.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Security">
-      <HintPath>..\packages\Npgsql.2.1.3\lib\net45\Mono.Security.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.6.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Npgsql">
-      <HintPath>..\packages\Npgsql.2.1.3\lib\net45\Npgsql.dll</HintPath>
-    </Reference>
-    <Reference Include="Quartz">
-      <HintPath>..\packages\Quartz.2.2.3\lib\net40\Quartz.dll</HintPath>
-    </Reference>
-    <Reference Include="R.MessageBus, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="R.MessageBus">
       <HintPath>..\packages\R.MessageBus.0.0.0.9\lib\net40\R.MessageBus.dll</HintPath>
     </Reference>
-    <Reference Include="R.MessageBus.Client.RabbitMQ, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="R.MessageBus.Client.RabbitMQ">
       <HintPath>..\packages\R.MessageBus.Client.RabbitMQ.0.0.0.6\lib\net40\R.MessageBus.Client.RabbitMQ.dll</HintPath>
     </Reference>
-    <Reference Include="R.MessageBus.Container, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="R.MessageBus.Container">
       <HintPath>..\packages\R.MessageBus.0.0.0.9\lib\net40\R.MessageBus.Container.dll</HintPath>
     </Reference>
     <Reference Include="R.MessageBus.Core">
       <HintPath>..\packages\R.MessageBus.0.0.0.9\lib\net40\R.MessageBus.Core.dll</HintPath>
     </Reference>
-    <Reference Include="R.MessageBus.Interfaces, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="R.MessageBus.Interfaces">
       <HintPath>..\packages\R.MessageBus.Interfaces.0.0.0.6\lib\net40\R.MessageBus.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="R.MessageBus.Persistance, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="R.MessageBus.Persistance">
       <HintPath>..\packages\R.MessageBus.0.0.0.9\lib\net40\R.MessageBus.Persistance.dll</HintPath>
     </Reference>
-    <Reference Include="R.MessageBus.Settings, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="R.MessageBus.Settings">
       <HintPath>..\packages\R.MessageBus.0.0.0.9\lib\net40\R.MessageBus.Settings.dll</HintPath>
     </Reference>
-    <Reference Include="RabbitMQ.Client, Version=3.2.4.0, Culture=neutral, PublicKeyToken=89e7d7c5feba84ce, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="RabbitMQ.Client">
       <HintPath>..\packages\RabbitMQ.Client.3.2.4\lib\net30\RabbitMQ.Client.dll</HintPath>
     </Reference>
-    <Reference Include="StructureMap, Version=2.6.4.0, Culture=neutral, PublicKeyToken=e60ad81abae3c223, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="StructureMap">
       <HintPath>..\packages\structuremap.2.6.4.1\lib\net40\StructureMap.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -104,32 +80,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Handlers\RegisterPluginHandler.cs" />
-    <Compile Include="Handlers\SchedulePluginWithSimpleTriggerHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scheduler.cs" />
-    <Compile Include="SmRegistry.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="job_scheduling_data_2_0.xsd">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\R.Scheduler.Contracts\R.Scheduler.Contracts.csproj">
-      <Project>{C2F4994F-DB81-4779-8490-89250561F0D7}</Project>
+      <Project>{c2f4994f-db81-4779-8490-89250561f0d7}</Project>
       <Name>R.Scheduler.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\R.Scheduler.JobRunners\R.Scheduler.JobRunners.csproj">
-      <Project>{ee8b4dc9-a116-4cf0-a5fc-064a709ebe90}</Project>
-      <Name>R.Scheduler.JobRunners</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\R.Scheduler.Persistance\R.Scheduler.Persistance.csproj">
-      <Project>{E1ABAC5B-6990-4EAE-AF61-FD9E08C64A18}</Project>
-      <Name>R.Scheduler.Persistance</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

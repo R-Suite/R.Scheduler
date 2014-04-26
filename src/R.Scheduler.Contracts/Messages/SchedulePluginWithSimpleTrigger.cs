@@ -3,16 +3,6 @@ using R.MessageBus.Interfaces;
 
 namespace R.Scheduler.Contracts.Messages
 {
-    public enum RepeatIntervalType
-    {
-        Seconds,
-        Minutes,
-        Hours,
-        Days,
-        Weeks,
-        Months
-    }
-
     public class SchedulePluginWithSimpleTrigger : Message
     {
         public SchedulePluginWithSimpleTrigger(Guid correlationId)
@@ -21,10 +11,9 @@ namespace R.Scheduler.Contracts.Messages
         }
 
         public string PluginName { get; set; }
-        public DateTime RunDateTime { get; set; }
-        public int NumberOfRepeats { get; set; }
-        public int RepeatInterval { get; set; }
-        public RepeatIntervalType RepeatIntervalType { get; set; }
+        public DateTime StartDateTime { get; set; }
+        public int RepeatCount { get; set; }
+        public TimeSpan RepeatInterval { get; set; }
 
         public string JobName { get; set; }
         public string TriggerName { get; set; }

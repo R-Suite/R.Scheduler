@@ -2,9 +2,13 @@
 using System.Collections.Specialized;
 using Quartz;
 using Quartz.Impl;
+using R.MessageBus;
+using R.MessageBus.Interfaces;
+using R.Scheduler.Contracts;
 using R.Scheduler.Contracts.Interfaces;
 using R.Scheduler.Persistance;
 using StructureMap;
+using IConfiguration = R.Scheduler.Contracts.Interfaces.IConfiguration;
 
 namespace R.Scheduler
 {
@@ -13,9 +17,23 @@ namespace R.Scheduler
         private static IScheduler _instance;
         private static readonly object SyncRoot = new Object();
 
+        public static IConfiguration Configuration { get; set; }
+
         static Scheduler()
         {
             ObjectFactory.Initialize(x=>x.AddRegistry<SmRegistry>());
+        }
+
+        /// <summary>
+        /// Instantiates Scheduler, including any configuration.
+        /// </summary>
+        /// <param name="action">A lambda that configures that sets the Scheduler configuration.</param>
+        public static void Initialize(Action<IConfiguration> action)
+        {
+            var configuration = new Configuration();
+            action(configuration);
+
+            Configuration = configuration;
         }
 
         /// <summary>
@@ -30,8 +48,21 @@ namespace R.Scheduler
                 {
                     if (null == _instance)
                     {
-                        ISchedulerFactory schedFact = new StdSchedulerFactory();
+                        if (null == Configuration)
+                        {
+                            Configuration = new Configuration();
+                        }
+
+                        ISchedulerFactory schedFact = new StdSchedulerFactory(GetProperties());
                         _instance = schedFact.GetScheduler();
+
+                        // Initialise message bus
+                        IBus bus = Bus.Initialize(config =>
+                        {
+                            config.ScanForMesssageHandlers = true;
+                        });
+
+                        bus.StartConsuming();
                     }
                 }
             }
@@ -39,29 +70,38 @@ namespace R.Scheduler
             return _instance;
         }
 
-        /// <summary>
-        /// Sets implementation of IPluginStore in IoC Container. 
-        /// (Must be called before Scheduler.Instance())
-        /// </summary>
-        /// <exception cref="Exception"></exception>
-        public static void SetPluginStore(PluginStoreType pluginStoreType)
+        private static NameValueCollection GetProperties()
         {
-            if (null != _instance)
-            {
-                throw new Exception("PluginStore cannot be set after the scheduler has been initialized.");
-            }
+            var properties = new NameValueCollection();
+            properties["quartz.scheduler.instanceName"] = Configuration.InstanceName;
+            properties["quartz.scheduler.instanceId"] = Configuration.InstanceId;
 
-            switch (pluginStoreType)
+            switch (Configuration.PersistanceStoreType)
             {
-                case PluginStoreType.InMemory:
+                case PersistanceStoreType.InMemory:
+                    // Set implementation of IPluginStore in IoC Container. 
                     ObjectFactory.Configure(x => x.For<IPluginStore>().Use<InMemoryPluginStore>());
+                    
+                    // Set properties
+                    properties["quartz.jobStore.type"] = "Quartz.Simpl.RAMJobStore, Quartz";
                     break;
-                case PluginStoreType.Postgre:
+                case PersistanceStoreType.Postgre:
+                    //Sets implementation of IPluginStore in IoC Container. 
                     ObjectFactory.Configure(x => x.For<IPluginStore>().Use<PostgrePluginStore>());
+                    
+                    // Set properties
+                    properties["quartz.jobStore.type"] = "Quartz.Impl.AdoJobStore.JobStoreTX, Quartz";
+                    properties["quartz.jobStore.useProperties"] = Configuration.UseProperties;
+                    properties["quartz.jobStore.dataSource"] = "default";
+                    properties["quartz.jobStore.tablePrefix"] = Configuration.TablePrefix;
+                    properties["quartz.dataSource.default.connectionString"] = Configuration.ConnectionString;
+                    properties["quartz.dataSource.default.provider"] = "Npgsql-20";
                     break;
                 default:
-                    throw new Exception(string.Format("Unsupported pluginStoreType {0}", pluginStoreType));
+                    throw new Exception(string.Format("Unsupported PersistanceStoreType {0}", Configuration.PersistanceStoreType));
             }
+
+            return properties;
         }
     }
 }

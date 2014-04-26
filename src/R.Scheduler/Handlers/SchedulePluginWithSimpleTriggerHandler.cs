@@ -1,4 +1,5 @@
-﻿using Quartz;
+﻿using System;
+using Quartz;
 using R.MessageBus.Interfaces;
 using R.Scheduler.Contracts.Interfaces;
 using R.Scheduler.Contracts.Messages;
@@ -19,17 +20,31 @@ namespace R.Scheduler.Handlers
         {
             var registeredPlugin = _pluginStore.GetRegisteredPlugin(command.PluginName);
 
+            if (null == registeredPlugin)
+            {
+                throw new ArgumentException(string.Format("Error loading registered plugin {0}", command.PluginName));
+            }
+
+            // Set default values
+            string groupName = !string.IsNullOrEmpty(command.GroupName) ? command.GroupName : command.PluginName;
+            string jobName = !string.IsNullOrEmpty(command.JobName) ? command.JobName : command.PluginName + "_Job_" + DateTime.UtcNow.ToString("yyMMddhhmmss");
+            string triggerName = !string.IsNullOrEmpty(command.TriggerName) ? command.TriggerName : command.PluginName + "_Trigger_" + DateTime.UtcNow.ToString("yyMMddhhmmss");
+            DateTimeOffset startAt = (DateTime.MinValue != command.StartDateTime) ? command.StartDateTime : DateTime.UtcNow;
+
             IJobDetail jobDetail = JobBuilder.Create<PluginRunner>()
-                .WithIdentity(command.JobName, command.GroupName)
+                .WithIdentity(jobName, groupName)
                 .StoreDurably(false)
                 .Build();
 
             jobDetail.JobDataMap.Add("pluginPath", registeredPlugin.AssemblyPath);
 
-            var trigger = (ISimpleTrigger) TriggerBuilder.Create()
-                .WithIdentity(command.TriggerName, command.GroupName)
-                .StartAt(command.RunDateTime)
+            var trigger = (ISimpleTrigger)TriggerBuilder.Create()
+                .WithIdentity(triggerName, groupName)
+                .StartAt(startAt)
                 .Build();
+
+            trigger.RepeatCount = command.RepeatCount;
+            trigger.RepeatInterval = command.RepeatInterval;
 
             IScheduler sched = Scheduler.Instance();
             sched.ScheduleJob(jobDetail, trigger);

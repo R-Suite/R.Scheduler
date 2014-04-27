@@ -30,6 +30,11 @@ namespace R.Scheduler
         /// <param name="action">A lambda that configures that sets the Scheduler configuration.</param>
         public static void Initialize(Action<IConfiguration> action)
         {
+            if (null != _instance)
+            {
+                throw new Exception("Scheduler cannot be initialized after the Scheduler Instance has been created.");
+            }
+
             var configuration = new Configuration();
             action(configuration);
 

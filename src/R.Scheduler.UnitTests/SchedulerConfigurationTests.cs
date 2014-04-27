@@ -9,13 +9,13 @@ namespace R.Scheduler.UnitTests
         //note: methods are static, the Scheduler class is not really testable
 
         [Fact]
-        public void ShouldThrowWhenPluginStoreIsSetAfterSchedulerIsStarted()
+        public void ShouldThrowWhenSchedulerIsInitializedAfterSchedulerIsStarted()
         {
             // Arrange
             Scheduler.Instance();
 
             // Act / Assert
-            Assert.Throws<Exception>(() => Scheduler.SetPluginStore(PluginStoreType.InMemory));
+            Assert.Throws<Exception>(() => Scheduler.Initialize(c=>c.ConnectionString = "test connection string"));
         }
     }
 }

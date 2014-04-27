@@ -87,7 +87,7 @@ namespace R.Scheduler
                     break;
                 case PersistanceStoreType.Postgre:
                     //Sets implementation of IPluginStore in IoC Container. 
-                    ObjectFactory.Configure(x => x.For<IPluginStore>().Use<PostgrePluginStore>());
+                    ObjectFactory.Configure(x =>x.For<IPluginStore>().Use<PostgrePluginStore>().Ctor<string>("connectionString").Is(Configuration.ConnectionString));
                     
                     // Set properties
                     properties["quartz.jobStore.type"] = "Quartz.Impl.AdoJobStore.JobStoreTX, Quartz";

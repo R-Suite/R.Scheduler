@@ -18,8 +18,8 @@ namespace R.Scheduler.TestClient
                 new SchedulePluginWithSimpleTrigger(Guid.NewGuid())
                 {
                     PluginName = "FakePlugin",
-                    //RepeatCount = 1,
-                    //RepeatInterval = new TimeSpan(0,0,0,5),
+                    RepeatCount = 1,
+                    RepeatInterval = new TimeSpan(0, 0, 0, 5),
                 });
         }
     }

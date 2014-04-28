@@ -1,10 +1,11 @@
-﻿using Quartz;
-using R.MessageBus;
-using R.MessageBus.Interfaces;
-using R.Scheduler.Contracts;
-using R.Scheduler.Contracts.Interfaces;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Quartz;
 
-namespace R.Scheduler
+namespace R.Scheduler.Host
 {
     class Program
     {
@@ -19,15 +20,6 @@ namespace R.Scheduler
 
             IScheduler sched = Scheduler.Instance();
             sched.Start();
-            
-
-            // Initialise message bus
-            //IBus bus = Bus.Initialize(config =>
-            //{
-            //    config.ScanForMesssageHandlers = true;
-            //});
-
-            //bus.StartConsuming();
         }
     }
 }

@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{59E14D25-72BD-4E1F-A224-B8A6F5179B90}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>R.Scheduler</RootNamespace>
     <AssemblyName>R.Scheduler</AssemblyName>
@@ -30,6 +30,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Common.Logging">
@@ -109,7 +112,6 @@
     <Compile Include="Handlers\DeschedulePluginTriggerHandler.cs" />
     <Compile Include="Handlers\RegisterPluginHandler.cs" />
     <Compile Include="Handlers\SchedulePluginWithSimpleTriggerHandler.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scheduler.cs" />
     <Compile Include="SmRegistry.cs" />
@@ -125,10 +127,6 @@
     <ProjectReference Include="..\R.Scheduler.Contracts\R.Scheduler.Contracts.csproj">
       <Project>{C2F4994F-DB81-4779-8490-89250561F0D7}</Project>
       <Name>R.Scheduler.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\R.Scheduler.Core\R.Scheduler.Core.csproj">
-      <Project>{734fcd07-d2e8-4150-98e9-834b6dcf22df}</Project>
-      <Name>R.Scheduler.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\R.Scheduler.JobRunners\R.Scheduler.JobRunners.csproj">
       <Project>{ee8b4dc9-a116-4cf0-a5fc-064a709ebe90}</Project>

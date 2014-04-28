@@ -1,4 +1,4 @@
-﻿using R.Scheduler.Core;
+﻿using R.Scheduler.Contracts.Interfaces;
 
 namespace R.Scheduler.FakeJobPlugin
 {

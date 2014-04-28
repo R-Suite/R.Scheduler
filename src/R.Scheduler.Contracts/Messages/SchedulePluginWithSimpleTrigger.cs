@@ -11,12 +11,10 @@ namespace R.Scheduler.Contracts.Messages
         }
 
         public string PluginName { get; set; }
+        public string TriggerName { get; set; }
+
         public DateTime StartDateTime { get; set; }
         public int RepeatCount { get; set; }
         public TimeSpan RepeatInterval { get; set; }
-
-        public string JobName { get; set; }
-        public string TriggerName { get; set; }
-        public string GroupName { get; set; }
     }
 }

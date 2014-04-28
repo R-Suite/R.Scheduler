@@ -13,7 +13,7 @@ namespace R.Scheduler
             // Initialise scheduler
             Scheduler.Initialize(config =>
             {
-                config.PersistanceStoreType = PersistanceStoreType.Postgre;
+                //config.PersistanceStoreType = PersistanceStoreType.Postgre;
                 config.ConnectionString = "Server=localhost;Port=5432;Database=Scheduler;User Id=postgres;Password=schoolsoft;";
             });
 

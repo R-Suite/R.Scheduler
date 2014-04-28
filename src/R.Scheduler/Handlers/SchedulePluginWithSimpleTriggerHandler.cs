@@ -18,26 +18,37 @@ namespace R.Scheduler.Handlers
 
         public void Execute(SchedulePluginWithSimpleTrigger command)
         {
+            if (string.IsNullOrEmpty(command.PluginName))
+                throw new ArgumentException("Required fields PluginName is null or empty.");
+
             var registeredPlugin = _pluginStore.GetRegisteredPlugin(command.PluginName);
 
             if (null == registeredPlugin)
-            {
                 throw new ArgumentException(string.Format("Error loading registered plugin {0}", command.PluginName));
-            }
+
+            IScheduler sched = Scheduler.Instance();
 
             // Set default values
-            string groupName = !string.IsNullOrEmpty(command.GroupName) ? command.GroupName : command.PluginName;
-            string jobName = !string.IsNullOrEmpty(command.JobName) ? command.JobName : command.PluginName + "_Job_" + DateTime.UtcNow.ToString("yyMMddhhmmss");
+            string groupName = command.PluginName;
+            string jobName = "Job_" + command.PluginName;
             string triggerName = !string.IsNullOrEmpty(command.TriggerName) ? command.TriggerName : command.PluginName + "_Trigger_" + DateTime.UtcNow.ToString("yyMMddhhmmss");
             DateTimeOffset startAt = (DateTime.MinValue != command.StartDateTime) ? command.StartDateTime : DateTime.UtcNow;
 
-            IJobDetail jobDetail = JobBuilder.Create<PluginRunner>()
-                .WithIdentity(jobName, groupName)
-                .StoreDurably(false)
-                .Build();
+            // Check if jobDetail already exists
+            IJobDetail jobDetail = sched.GetJobDetail(new JobKey(jobName, groupName));
 
-            jobDetail.JobDataMap.Add("pluginPath", registeredPlugin.AssemblyPath);
+            // If jobDetail does not exist, create new
+            if (null == jobDetail)
+            {
+                jobDetail = JobBuilder.Create<PluginRunner>()
+                    .WithIdentity(jobName, groupName)
+                    .StoreDurably(false)
+                    .Build();
 
+                jobDetail.JobDataMap.Add("pluginPath", registeredPlugin.AssemblyPath);
+            }
+
+            // Create new "Simple" Trigger
             var trigger = (ISimpleTrigger)TriggerBuilder.Create()
                 .WithIdentity(triggerName, groupName)
                 .StartAt(startAt)
@@ -46,7 +57,6 @@ namespace R.Scheduler.Handlers
             trigger.RepeatCount = command.RepeatCount;
             trigger.RepeatInterval = command.RepeatInterval;
 
-            IScheduler sched = Scheduler.Instance();
             sched.ScheduleJob(jobDetail, trigger);
         }
     }

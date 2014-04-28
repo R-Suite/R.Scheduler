@@ -105,6 +105,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration.cs" />
+    <Compile Include="Handlers\DescheduleJobHandler.cs" />
     <Compile Include="Handlers\RegisterPluginHandler.cs" />
     <Compile Include="Handlers\SchedulePluginWithSimpleTriggerHandler.cs" />
     <Compile Include="Program.cs" />

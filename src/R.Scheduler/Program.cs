@@ -19,7 +19,6 @@ namespace R.Scheduler
 
             IScheduler sched = Scheduler.Instance();
             sched.Start();
-
             
 
             // Initialise message bus

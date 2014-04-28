@@ -47,6 +47,7 @@
     <Compile Include="Interfaces\IConfiguration.cs" />
     <Compile Include="Interfaces\IPluginStore.cs" />
     <Compile Include="Interfaces\RegisteredPlugin.cs" />
+    <Compile Include="Messages\DescheduleJob.cs" />
     <Compile Include="Messages\JobExecutedMessage.cs" />
     <Compile Include="Messages\RegisterPlugin.cs" />
     <Compile Include="Messages\SchedulePluginWithSimpleTrigger.cs" />

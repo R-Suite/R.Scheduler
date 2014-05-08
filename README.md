@@ -1,5 +1,5 @@
 # R.Scheduler
-A simple, easy to use plugin execution engine built on top of Quartz Enterprise Scheduler .NET
+An experimental, easy to use plugin execution engine built on top of Quartz Enterprise Scheduler .NET and R.MessageBus
 
 ## Getting Started
 

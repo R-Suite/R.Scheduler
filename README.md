@@ -22,13 +22,13 @@ Initialize also takes a single lambda/action parameter for custom configuration.
 
 ```c#
 R.Scheduler.Scheduler.Initialize(config =>
-            {
-                config.PersistanceStoreType = PersistanceStoreType.Postgre;
-                config.ConnectionString = "Server=localhost;Port=5432;Database=Scheduler;User Id=xxx;Password=xxx;";
-                config.TransportSettings.Host = "localhost";
-                config.TransportSettings.Username = "xxx";
-                config.TransportSettings.Password = "xxx";
-            });
+{
+    config.PersistanceStoreType = PersistanceStoreType.Postgre;
+    config.ConnectionString = "Server=localhost;Port=5432;Database=Scheduler;User Id=xxx;Password=xxx;";
+    config.TransportSettings.Host = "localhost";
+    config.TransportSettings.Username = "xxx";
+    config.TransportSettings.Password = "xxx";
+});
 
 IScheduler sched = R.Scheduler.Scheduler.Instance();
 sched.Start();

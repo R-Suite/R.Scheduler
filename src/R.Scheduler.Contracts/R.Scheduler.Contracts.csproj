@@ -43,7 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Interfaces\BasePlugin.cs" />
+    <Compile Include="Interfaces\BaseJobPlugin.cs" />
     <Compile Include="Interfaces\IJobPlugin.cs" />
     <Compile Include="Interfaces\IConfiguration.cs" />
     <Compile Include="Interfaces\IPluginStore.cs" />

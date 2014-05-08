@@ -2,7 +2,7 @@
 
 namespace R.Scheduler.Contracts.Interfaces
 {
-    public abstract class BasePlugin : IJobPlugin
+    public abstract class BaseJobPlugin : IJobPlugin
     {
         public virtual string Name
         {

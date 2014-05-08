@@ -2,7 +2,7 @@
 
 namespace R.Scheduler.FakeJobPlugin
 {
-    public class Plugin : BasePlugin
+    public class Plugin : BaseJobPlugin
     {
         public override string Name
         {

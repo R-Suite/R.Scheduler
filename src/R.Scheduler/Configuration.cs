@@ -1,5 +1,7 @@
-﻿using R.Scheduler.Contracts;
-using R.Scheduler.Contracts.Interfaces;
+﻿using R.MessageBus;
+using R.MessageBus.Interfaces;
+using R.Scheduler.Contracts;
+using IConfiguration = R.Scheduler.Contracts.Interfaces.IConfiguration;
 
 namespace R.Scheduler
 {
@@ -12,6 +14,9 @@ namespace R.Scheduler
             InstanceName = "RScheduler";
             InstanceId = "instance_one";
             UseProperties = "true";
+            
+            var messageBusConfig = new MessageBus.Configuration();
+            TransportSettings = messageBusConfig.TransportSettings;
         }
 
         public PersistanceStoreType PersistanceStoreType { get; set; }
@@ -20,5 +25,7 @@ namespace R.Scheduler
         public string InstanceName { get; set; }
         public string InstanceId { get; set; }
         public string UseProperties { get; set; }
+
+        public ITransportSettings TransportSettings { get; set; }
     }
 }

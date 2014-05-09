@@ -38,6 +38,19 @@ namespace R.Scheduler.JobRunners
             }
 
             //todo: load plugins into new app domain
+            /*
+            var setup = new AppDomainSetup
+            {
+                PrivateBinPath = privateBinPath,
+                ApplicationBase = appBase,
+                ShadowCopyFiles = "true",
+                ShadowCopyDirectories = assemblyFolderPath
+            };
+
+            var assemblyName = Path.GetFileNameWithoutExtension(pluginPath);
+            var domain = AppDomain.CreateDomain("Plugin Domain" + assemblyName, null, setup);
+            var res = domain.CreateInstanceAndUnwrap(assemblyName, typeName) as IJobPlugin;
+            */
 
             Assembly pluginAssembly;
             try

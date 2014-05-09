@@ -1,4 +1,6 @@
-﻿namespace R.Scheduler.Contracts.Interfaces
+﻿using R.MessageBus.Interfaces;
+
+namespace R.Scheduler.Contracts.Interfaces
 {
     public interface IConfiguration
     {
@@ -8,5 +10,7 @@
         string InstanceName { get; set; }
         string InstanceId { get; set; }
         string UseProperties { get; set; }
+
+        ITransportSettings TransportSettings { get; set; }
     }
 }

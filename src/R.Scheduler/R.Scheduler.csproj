@@ -122,6 +122,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
+    <None Include="R.Scheduler.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\R.Scheduler.Contracts\R.Scheduler.Contracts.csproj">

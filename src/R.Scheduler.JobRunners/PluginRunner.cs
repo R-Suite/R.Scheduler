@@ -10,22 +10,36 @@ using StructureMap;
 
 namespace R.Scheduler.JobRunners
 {
+    /// <summary>
+    /// PluginRunner loads and executes JobPlugins within a separate AppDomain.
+    /// </summary>
     public class PluginRunner : IJob
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public IBus Bus { get; set; }
 
+        /// <summary>
+        /// Ctor used by Scheduler engine
+        /// </summary>
         public PluginRunner()
         {
             Bus = ObjectFactory.Container.GetInstance<IBus>();
         }
 
+        /// <summary>
+        /// Ctor used for testing. Allows injecting a mock/fake instance of IBus.
+        /// </summary>
+        /// <param name="bus"></param>
         public PluginRunner(IBus bus)
         {
             Bus = bus;
         }
 
+        /// <summary>
+        /// Entry point into the job execution.
+        /// </summary>
+        /// <param name="context"></param>
         public void Execute(IJobExecutionContext context)
         {
             JobDataMap dataMap = context.JobDetail.JobDataMap;
@@ -38,40 +52,11 @@ namespace R.Scheduler.JobRunners
                 return;
             }
 
-            var appBase = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
-            var assemblyFolderPath = Path.GetDirectoryName(pluginPath);
-            var privateBinPath = assemblyFolderPath;
+            var pluginAssemblyName = Path.GetFileNameWithoutExtension(pluginPath);
 
-            if (assemblyFolderPath != null && assemblyFolderPath.StartsWith(appBase))
-            {
-                privateBinPath = assemblyFolderPath.Replace(appBase, string.Empty);
-                if (privateBinPath.StartsWith(@"\"))
-                    privateBinPath = privateBinPath.Substring(1);
-            }
-            
-            var setup = new AppDomainSetup
-            {
-                ApplicationBase = appBase,
-                PrivateBinPath = privateBinPath,
-                ShadowCopyFiles = "true",
-                ShadowCopyDirectories = assemblyFolderPath,
-                LoaderOptimization = LoaderOptimization.MultiDomainHost
-            };
-
-            var assemblyName = Path.GetFileNameWithoutExtension(pluginPath);
-            var domain = AppDomain.CreateDomain(Guid.NewGuid() + "_" + assemblyName, null, setup);
-
-            // Load PluginAppDomainHelper into new AppDomain to get plugin type using reflection
-            PluginAppDomainHelper helper = null;
-            var pluginFinderType = typeof(PluginAppDomainHelper);
-            if (!string.IsNullOrEmpty(pluginFinderType.FullName))
-                helper = domain.CreateInstanceAndUnwrap(pluginFinderType.Assembly.FullName, pluginFinderType.FullName) as PluginAppDomainHelper;
-            if (helper == null)
-                throw new Exception("Couldn't create plugin domain helper");
-            helper.PluginAssemblyPath = pluginPath;
-            
-            var pluginTypeName = helper.PluginTypeName;
-            var jobPlugin = domain.CreateInstanceAndUnwrap(assemblyName, pluginTypeName) as IJobPlugin;
+            var appDomain = GetAppDomain(pluginPath, pluginAssemblyName);
+            var pluginTypeName = GetPluginTypeName(appDomain, pluginPath);
+            var jobPlugin = appDomain.CreateInstanceAndUnwrap(pluginAssemblyName, pluginTypeName) as IJobPlugin;
 
             bool success = false;
             try
@@ -93,8 +78,55 @@ namespace R.Scheduler.JobRunners
 
             Bus.Publish(new JobExecutedMessage(Guid.NewGuid()) { Success = success, Timestamp = DateTime.UtcNow, Type = pluginTypeName });
 
-            helper = null;
-            AppDomain.Unload(domain);
+            AppDomain.Unload(appDomain);
         }
+
+        #region Private Methods
+
+        private static AppDomain GetAppDomain(string pluginPath, string pluginAssemblyName)
+        {
+            var appBase = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
+            var assemblyFolderPath = Path.GetDirectoryName(pluginPath);
+            var privateBinPath = assemblyFolderPath;
+
+            if (assemblyFolderPath != null && assemblyFolderPath.StartsWith(appBase))
+            {
+                privateBinPath = assemblyFolderPath.Replace(appBase, string.Empty);
+                if (privateBinPath.StartsWith(@"\"))
+                    privateBinPath = privateBinPath.Substring(1);
+            }
+
+            var setup = new AppDomainSetup
+            {
+                ApplicationBase = appBase,
+                PrivateBinPath = privateBinPath,
+                ShadowCopyFiles = "true",
+                ShadowCopyDirectories = assemblyFolderPath,
+                LoaderOptimization = LoaderOptimization.MultiDomainHost
+            };
+
+            var appDomain = AppDomain.CreateDomain(Guid.NewGuid() + "_" + pluginAssemblyName, null, setup);
+
+            return appDomain;
+        }
+
+        private static string GetPluginTypeName(AppDomain domain, string pluginPath)
+        {
+            PluginAppDomainHelper helper = null;
+            var pluginFinderType = typeof (PluginAppDomainHelper);
+
+            if (!string.IsNullOrEmpty(pluginFinderType.FullName))
+                helper =
+                    domain.CreateInstanceAndUnwrap(pluginFinderType.Assembly.FullName, pluginFinderType.FullName, false,
+                        BindingFlags.CreateInstance, null, new object[] {pluginPath}, null, null) as
+                        PluginAppDomainHelper;
+
+            if (helper == null)
+                throw new Exception("Couldn't create plugin domain helper");
+
+            return helper.PluginTypeName;
+        }
+
+        #endregion
     }
 }

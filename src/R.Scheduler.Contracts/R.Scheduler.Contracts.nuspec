@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>R.Scheduler.Contracts</id>
+    <version>0.0.0.1</version>
+    <title>R.Scheduler.Contracts</title>
+    <authors>Jakub Pachansky</authors>
+    <owners>Jakub Pachansky,Tim Watson</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>R Scheduler Contracts</description>
+    <language>en-GB</language>
+    <projectUrl>https://github.com/R-Suite/R.Scheduler</projectUrl>
+    <copyright>Copyright 2014 R.Scheduler. All rights reserved</copyright>
+    <tags>Scheduler Contracts,Scheduler.Contracts,Scheduler.Interfaces,R.Scheduler,R Scheduler,Scheduler</tags>
+  </metadata>
+  <files>
+    <file src="bin\Release\R.Scheduler.Contracts.dll" target="lib\net40\R.Scheduler.Contracts.dll" />
+  </files>
+</package>

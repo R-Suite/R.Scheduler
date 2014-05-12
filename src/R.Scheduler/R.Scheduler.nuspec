@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>R.Scheduler</id>
-    <version>0.0.0.2</version>
+    <version>0.0.0.4</version>
     <title>R.Scheduler</title>
     <authors>Jakub Pachansky</authors>
     <owners>Jakub Pachansky,Tim Watson</owners>
@@ -14,12 +14,12 @@
     <tags>Scheduler,R Scheduler,R.Scheduler,Quartz Scheduler,RScheduler,R.MessageBus Scheduler,Scheduling</tags>
     <dependencies>
       <dependency id="R.MessageBus" version="" />
+      <dependency id="R.Scheduler.Contracts" version="" />
       <dependency id="Quartz" version="2.2.3" />
     </dependencies>
   </metadata>
   <files>
     <file src="bin\Release\R.Scheduler.dll" target="lib\net40\R.Scheduler.dll" />
-    <file src="bin\Release\R.Scheduler.Contracts.dll" target="lib\net40\R.Scheduler.Contracts.dll" />
     <file src="bin\Release\R.Scheduler.JobRunners.dll" target="lib\net40\R.Scheduler.JobRunners.dll" />
     <file src="bin\Release\R.Scheduler.Persistance.dll" target="lib\net40\R.Scheduler.Persistance.dll" />
   </files>

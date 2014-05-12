@@ -23,8 +23,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.Persistance", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.TestClient", "R.Scheduler.TestClient\R.Scheduler.TestClient.csproj", "{4FBF650F-1C9F-4559-AF65-B19FA69611A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.Host", "R.Scheduler.Host\R.Scheduler.Host.csproj", "{78A3AEAA-D336-4C45-A884-905CC1B25D5E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,10 +61,6 @@ Global
 		{4FBF650F-1C9F-4559-AF65-B19FA69611A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4FBF650F-1C9F-4559-AF65-B19FA69611A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4FBF650F-1C9F-4559-AF65-B19FA69611A0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{78A3AEAA-D336-4C45-A884-905CC1B25D5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{78A3AEAA-D336-4C45-A884-905CC1B25D5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{78A3AEAA-D336-4C45-A884-905CC1B25D5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{78A3AEAA-D336-4C45-A884-905CC1B25D5E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

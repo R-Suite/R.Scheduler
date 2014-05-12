@@ -43,7 +43,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Interfaces\BasePlugin.cs" />
     <Compile Include="Interfaces\BaseJobPlugin.cs" />
     <Compile Include="Interfaces\IJobPlugin.cs" />
     <Compile Include="Interfaces\IConfiguration.cs" />
@@ -59,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="R.Scheduler.Contracts.nuspec" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

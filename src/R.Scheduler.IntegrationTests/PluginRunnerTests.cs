@@ -12,15 +12,15 @@ namespace R.Scheduler.IntegrationTests
     public class PluginRunnerTests
     {
         private readonly Mock<IJobExecutionContext> _mockJobExecutionContext = new Mock<IJobExecutionContext>();
-        private readonly Mock<IProducer> _mockPublisher = new Mock<IProducer>();
+        private readonly Mock<IBus> _mockBus= new Mock<IBus>();
 
         [Fact]
         public void TestExecuteMethodLoadsPluginFromPathAndExecutesIt()
         {
             // Arrange
-            _mockPublisher.Setup(p => p.Publish(It.IsAny<JobExecutedMessage>()));
+            _mockBus.Setup(p => p.Publish(It.IsAny<JobExecutedMessage>()));
 
-            var pluginRunner = new PluginRunner(_mockPublisher.Object);
+            var pluginRunner = new PluginRunner(_mockBus.Object);
 
             string currentDirectory = Directory.GetCurrentDirectory();
             IJobDetail jobDetail = new JobDetailImpl("jobsettings", typeof(IJob));
@@ -31,14 +31,14 @@ namespace R.Scheduler.IntegrationTests
             pluginRunner.Execute(_mockJobExecutionContext.Object);
 
             // Assert
-            _mockPublisher.Verify(p => p.Publish(It.Is<JobExecutedMessage>(i => i.Success && i.Type == "Plugin")), Times.Once);
+            _mockBus.Verify(p => p.Publish(It.Is<JobExecutedMessage>(i => i.Success && i.Type == "R.Scheduler.FakeJobPlugin.Plugin")), Times.Once);
         }
 
         [Fact]
         public void TestExecuteMethodReturnsWhenPluginPathIsMissingInJobDataMap()
         {
             // Arrange
-            var pluginRunner = new PluginRunner();
+            var pluginRunner = new PluginRunner(_mockBus.Object);
 
             IJobDetail jobDetail = new JobDetailImpl("jobsettings", typeof(IJob));
             _mockJobExecutionContext.SetupGet(p => p.JobDetail).Returns(jobDetail);
@@ -47,7 +47,7 @@ namespace R.Scheduler.IntegrationTests
             pluginRunner.Execute(_mockJobExecutionContext.Object);
 
             // Assert
-            _mockPublisher.Verify(p => p.Publish(It.IsAny<JobExecutedMessage>()), Times.Never());
+            _mockBus.Verify(p => p.Publish(It.IsAny<JobExecutedMessage>()), Times.Never());
         }
     }
 }

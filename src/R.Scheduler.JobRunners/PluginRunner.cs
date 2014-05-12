@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -7,22 +8,24 @@ using Quartz;
 using R.MessageBus.Interfaces;
 using R.Scheduler.Contracts.Interfaces;
 using R.Scheduler.Contracts.Messages;
+using StructureMap;
 
 namespace R.Scheduler.JobRunners
 {
     public class PluginRunner : IJob
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly IProducer _producer;
+
+        public IBus Bus { get; set; }
 
         public PluginRunner()
         {
-            
+            Bus = ObjectFactory.Container.GetInstance<IBus>();
         }
 
-        public PluginRunner(IProducer producer)
+        public PluginRunner(IBus bus)
         {
-            _producer = producer;
+            Bus = bus;
         }
 
         public void Execute(IJobExecutionContext context)
@@ -37,53 +40,63 @@ namespace R.Scheduler.JobRunners
                 return;
             }
 
-            //todo: load plugins into new app domain
-            /*
+            var appBase = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
+            var assemblyFolderPath = Path.GetDirectoryName(pluginPath);
+            var privateBinPath = assemblyFolderPath;
+
+            if (assemblyFolderPath != null && assemblyFolderPath.StartsWith(appBase))
+            {
+                privateBinPath = assemblyFolderPath.Replace(appBase, string.Empty);
+                if (privateBinPath.StartsWith(@"\"))
+                    privateBinPath = privateBinPath.Substring(1);
+            }
+            
             var setup = new AppDomainSetup
             {
-                PrivateBinPath = privateBinPath,
                 ApplicationBase = appBase,
+                PrivateBinPath = privateBinPath,
                 ShadowCopyFiles = "true",
-                ShadowCopyDirectories = assemblyFolderPath
+                ShadowCopyDirectories = assemblyFolderPath,
+                LoaderOptimization = LoaderOptimization.MultiDomainHost
             };
 
             var assemblyName = Path.GetFileNameWithoutExtension(pluginPath);
-            var domain = AppDomain.CreateDomain("Plugin Domain" + assemblyName, null, setup);
-            var res = domain.CreateInstanceAndUnwrap(assemblyName, typeName) as IJobPlugin;
-            */
+            var domain = AppDomain.CreateDomain(Guid.NewGuid() + "_" + assemblyName, null, setup);
 
-            Assembly pluginAssembly;
+            // Load PluginAppDomainHelper into new AppDomain to get plugin type using reflection
+            PluginAppDomainHelper helper = null;
+            var pluginFinderType = typeof(PluginAppDomainHelper);
+            if (!string.IsNullOrEmpty(pluginFinderType.FullName))
+                helper = domain.CreateInstanceAndUnwrap(pluginFinderType.Assembly.FullName, pluginFinderType.FullName) as PluginAppDomainHelper;
+            if (helper == null)
+                throw new Exception("Couldn't create plugin domain helper");
+            helper.PluginAssemblyPath = pluginPath;
+            
+            var pluginTypeName = helper.PluginTypeName;
+            var jobPlugin = domain.CreateInstanceAndUnwrap(assemblyName, pluginTypeName) as IJobPlugin;
+
+            bool success = false;
             try
             {
-                pluginAssembly = Assembly.LoadFrom(pluginPath);
+                if (jobPlugin != null)
+                {
+                    jobPlugin.Execute();
+                    success = true;
+                }
+                else
+                {
+                    Logger.Error(string.Format("Plugin cannot be null {0}.", pluginTypeName));
+                }
             }
             catch (Exception ex)
             {
-                Logger.Error(string.Format("Error loading plugin assembly from file {0}.", pluginPath), ex);
-                return;
+                Logger.Error(string.Format("Error occured in {0}.", pluginTypeName), ex);
             }
 
-            var pluginTypes = from type in pluginAssembly.GetTypes()
-                              where typeof(IJobPlugin).IsAssignableFrom(type)
-                              select type;
+            Bus.Publish(new JobExecutedMessage(Guid.NewGuid()) { Success = success, Timestamp = DateTime.UtcNow, Type = pluginTypeName });
 
-            foreach (var pluginType in pluginTypes)
-            {
-                var instanceOfJobPlugin = (IJobPlugin)Activator.CreateInstance(pluginType);
-
-                bool success = false;
-                try
-                {
-                    instanceOfJobPlugin.Execute();
-                    success = true;
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(string.Format("Error occured in {0}.", pluginType.Name), ex);
-                }
-
-                _producer.Publish(new JobExecutedMessage(Guid.NewGuid()) { Success = success, Timestamp = DateTime.UtcNow, Type = pluginType.Name });
-            }
+            helper = null;
+            AppDomain.Unload(domain);
         }
     }
 }

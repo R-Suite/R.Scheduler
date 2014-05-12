@@ -46,6 +46,8 @@ namespace R.Scheduler.JobRunners
 
             string pluginPath = dataMap.GetString("pluginPath");
 
+            Logger.Info("Entering PluginRunner.Execute(). pluginPath=" + pluginPath);
+
             if (string.IsNullOrEmpty(pluginPath) || !File.Exists(pluginPath))
             {
                 Logger.Error(string.Format("plugin file '{0}' does not exist.", pluginPath));
@@ -56,7 +58,16 @@ namespace R.Scheduler.JobRunners
 
             var appDomain = GetAppDomain(pluginPath, pluginAssemblyName);
             var pluginTypeName = GetPluginTypeName(appDomain, pluginPath);
-            var jobPlugin = appDomain.CreateInstanceAndUnwrap(pluginAssemblyName, pluginTypeName) as IJobPlugin;
+            IJobPlugin jobPlugin;
+            try
+            {
+                jobPlugin = appDomain.CreateInstanceAndUnwrap(pluginAssemblyName, pluginTypeName) as IJobPlugin;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(string.Format("Error creating instance of IJobPlugin. {0}.", ex.Message));
+                return;
+            }
 
             bool success = false;
             try

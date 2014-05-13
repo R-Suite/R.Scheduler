@@ -98,6 +98,8 @@ namespace R.Scheduler.JobRunners
 
             var setup = new AppDomainSetup
             {
+                ApplicationName = pluginAssemblyName,
+                CachePath = assemblyFolderPath,
                 ApplicationBase = appBase,
                 PrivateBinPath = privateBinPath,
                 ShadowCopyFiles = "true",

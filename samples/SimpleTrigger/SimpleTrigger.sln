@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.Host", "R.Scheduler.Host\R.Scheduler.Host.csproj", "{58522753-318C-45D8-A30C-35FCF1F38E76}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.MyPlugin", "R.Scheduler.MyPlugin\R.Scheduler.MyPlugin.csproj", "{B54B7B26-D172-457E-B5AF-36E9AF7DB592}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.TestClient", "R.Scheduler.TestClient\R.Scheduler.TestClient.csproj", "{FA2DDDF2-C199-4BE7-8F69-4130359320F5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{58522753-318C-45D8-A30C-35FCF1F38E76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58522753-318C-45D8-A30C-35FCF1F38E76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58522753-318C-45D8-A30C-35FCF1F38E76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58522753-318C-45D8-A30C-35FCF1F38E76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B54B7B26-D172-457E-B5AF-36E9AF7DB592}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B54B7B26-D172-457E-B5AF-36E9AF7DB592}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B54B7B26-D172-457E-B5AF-36E9AF7DB592}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B54B7B26-D172-457E-B5AF-36E9AF7DB592}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA2DDDF2-C199-4BE7-8F69-4130359320F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA2DDDF2-C199-4BE7-8F69-4130359320F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA2DDDF2-C199-4BE7-8F69-4130359320F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA2DDDF2-C199-4BE7-8F69-4130359320F5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -42,6 +42,7 @@ namespace R.Scheduler.JobRunners
         /// <param name="context"></param>
         public void Execute(IJobExecutionContext context)
         {
+            var errorDetails = string.Empty;
             JobDataMap dataMap = context.JobDetail.JobDataMap;
 
             string pluginPath = dataMap.GetString("pluginPath");
@@ -58,6 +59,7 @@ namespace R.Scheduler.JobRunners
 
             var appDomain = GetAppDomain(pluginPath, pluginAssemblyName);
             var pluginTypeName = GetPluginTypeName(appDomain, pluginPath);
+
             IJobPlugin jobPlugin;
             try
             {
@@ -66,7 +68,7 @@ namespace R.Scheduler.JobRunners
             catch (Exception ex)
             {
                 Logger.Error(string.Format("Error creating instance of IJobPlugin. {0}.", ex.Message));
-                return;
+                jobPlugin = null;
             }
 
             bool success = false;
@@ -84,10 +86,11 @@ namespace R.Scheduler.JobRunners
             }
             catch (Exception ex)
             {
+                errorDetails = ex.Message;
                 Logger.Error(string.Format("Error occured in {0}.", pluginTypeName), ex);
             }
 
-            Bus.Publish(new JobExecutedMessage(Guid.NewGuid()) { Success = success, Timestamp = DateTime.UtcNow, Type = pluginTypeName });
+            Bus.Publish(new JobExecutedMessage(Guid.NewGuid()) { Success = success, Timestamp = DateTime.UtcNow, Type = pluginTypeName, ErrorDetails = errorDetails });
 
             AppDomain.Unload(appDomain);
         }
@@ -115,6 +118,7 @@ namespace R.Scheduler.JobRunners
                 PrivateBinPath = privateBinPath,
                 ShadowCopyFiles = "true",
                 ShadowCopyDirectories = assemblyFolderPath,
+                ConfigurationFile = pluginPath + ".config",
                 LoaderOptimization = LoaderOptimization.MultiDomainHost
             };
 

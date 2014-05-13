@@ -12,6 +12,7 @@ namespace R.Scheduler.Contracts.Messages
 
         public bool Success { get; set; }
         public string Type { get; set; }
+        public string ErrorDetails { get; set; }
         public DateTime Timestamp { get; set; }
     }
 }

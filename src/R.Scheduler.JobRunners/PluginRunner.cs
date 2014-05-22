@@ -17,23 +17,12 @@ namespace R.Scheduler.JobRunners
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public IBus Bus { get; set; }
-
         /// <summary>
         /// Ctor used by Scheduler engine
         /// </summary>
         public PluginRunner()
         {
-            Bus = ObjectFactory.Container.GetInstance<IBus>();
-        }
-
-        /// <summary>
-        /// Ctor used for testing. Allows injecting a mock/fake instance of IBus.
-        /// </summary>
-        /// <param name="bus"></param>
-        public PluginRunner(IBus bus)
-        {
-            Bus = bus;
+            Logger.Info("Entering PluginRunner.ctor().");
         }
 
         /// <summary>
@@ -42,7 +31,6 @@ namespace R.Scheduler.JobRunners
         /// <param name="context"></param>
         public void Execute(IJobExecutionContext context)
         {
-            var errorDetails = string.Empty;
             JobDataMap dataMap = context.JobDetail.JobDataMap;
 
             string pluginPath = dataMap.GetString("pluginPath");
@@ -71,13 +59,12 @@ namespace R.Scheduler.JobRunners
                 jobPlugin = null;
             }
 
-            bool success = false;
             try
             {
                 if (jobPlugin != null)
                 {
                     jobPlugin.Execute();
-                    success = true;
+                    Logger.Info("Job Executed. pluginPath=" + pluginPath);
                 }
                 else
                 {
@@ -86,11 +73,8 @@ namespace R.Scheduler.JobRunners
             }
             catch (Exception ex)
             {
-                errorDetails = ex.Message;
                 Logger.Error(string.Format("Error occured in {0}.", pluginTypeName), ex);
             }
-
-            Bus.Publish(new JobExecutedMessage(Guid.NewGuid()) { Success = success, Timestamp = DateTime.UtcNow, Type = pluginTypeName, ErrorDetails = errorDetails });
 
             AppDomain.Unload(appDomain);
         }

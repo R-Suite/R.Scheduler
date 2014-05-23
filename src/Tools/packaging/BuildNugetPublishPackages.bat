@@ -1,4 +1,4 @@
-SET OUTDIR=C:\GitHub\R.Scheduler\src\
+SET OUTDIR=C:\GIT\RSuite\R.Scheduler\src\
 
 @ECHO === === === === === === === ===
 
@@ -9,7 +9,7 @@ del *.nupkg
 NuGet pack "%OUTDIR%R.Scheduler\R.Scheduler.nuspec"
 
 
-nuget.exe push R.Scheduler.0.0.0.6.nupkg
+nuget.exe push R.Scheduler.0.0.0.8.nupkg
            
 @ECHO === === === === === === === ===
 

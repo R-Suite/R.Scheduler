@@ -35,7 +35,8 @@ namespace R.Scheduler.Handlers
             DateTimeOffset startAt = (DateTime.MinValue != command.StartDateTime) ? command.StartDateTime : DateTime.UtcNow;
 
             // Check if jobDetail already exists
-            IJobDetail jobDetail = sched.GetJobDetail(new JobKey(jobName, groupName));
+            var jobKey = new JobKey(jobName, groupName);
+            IJobDetail jobDetail = sched.GetJobDetail(jobKey);
 
             // If jobDetail does not exist, create new
             if (null == jobDetail)
@@ -51,13 +52,22 @@ namespace R.Scheduler.Handlers
             // Create new "Simple" Trigger
             var trigger = (ISimpleTrigger)TriggerBuilder.Create()
                 .WithIdentity(triggerName, groupName)
+                .ForJob(jobDetail)
                 .StartAt(startAt)
                 .Build();
 
             trigger.RepeatCount = command.RepeatCount;
             trigger.RepeatInterval = command.RepeatInterval;
 
-            sched.ScheduleJob(jobDetail, trigger);
+            // Schedule Job
+            if (sched.CheckExists(jobKey))
+            {
+                sched.ScheduleJob(trigger);
+            }
+            else
+            {
+                sched.ScheduleJob(jobDetail, trigger);
+            }
         }
     }
 }

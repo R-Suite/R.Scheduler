@@ -23,5 +23,7 @@ namespace R.Scheduler.Handlers
                 sched.DeleteJob(jobKey);
             }
         }
+
+        public IConsumeContext Context { get; set; }
     }
 }

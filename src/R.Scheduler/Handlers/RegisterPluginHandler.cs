@@ -24,5 +24,7 @@ namespace R.Scheduler.Handlers
                 Status = "registered"
             });
         }
+
+        public IConsumeContext Context { get; set; }
     }
 }

@@ -69,5 +69,7 @@ namespace R.Scheduler.Handlers
                 sched.ScheduleJob(jobDetail, trigger);
             }
         }
+
+        public IConsumeContext Context { get; set; }
     }
 }

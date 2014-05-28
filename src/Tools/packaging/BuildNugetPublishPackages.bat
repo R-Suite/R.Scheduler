@@ -9,7 +9,7 @@ del *.nupkg
 NuGet pack "%OUTDIR%R.Scheduler\R.Scheduler.nuspec"
 
 
-nuget.exe push R.Scheduler.0.0.0.9.nupkg
+nuget.exe push R.Scheduler.0.0.0.10.nupkg
            
 @ECHO === === === === === === === ===
 

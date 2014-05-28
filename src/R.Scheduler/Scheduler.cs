@@ -65,6 +65,7 @@ namespace R.Scheduler
                         IBus bus = Bus.Initialize(config =>
                         {
                             config.ScanForMesssageHandlers = true;
+                            config.TransportSettings = Configuration.TransportSettings;
                         });
 
                         bus.StartConsuming();

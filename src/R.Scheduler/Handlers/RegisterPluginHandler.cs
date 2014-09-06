@@ -1,4 +1,7 @@
-﻿using R.MessageBus.Interfaces;
+﻿using System.IO;
+using System.Reflection;
+using log4net;
+using R.MessageBus.Interfaces;
 using R.Scheduler.Contracts.Interfaces;
 using R.Scheduler.Contracts.Messages;
 
@@ -6,6 +9,7 @@ namespace R.Scheduler.Handlers
 {
     public class RegisterPluginHandler : IMessageHandler<RegisterPlugin>
     {
+        private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         readonly IPluginStore _pluginRepository;
 
         public RegisterPluginHandler(IPluginStore pluginRepository)
@@ -15,7 +19,12 @@ namespace R.Scheduler.Handlers
 
         public void Execute(RegisterPlugin command)
         {
-            //todo: verify valid plugin
+            if (!File.Exists(command.AssemblyPath))
+            {
+                Logger.ErrorFormat("Error registering plugin. Ivalid assembly path {0}", command.AssemblyPath);
+                return;
+            }
+            //todo: verify valid plugin.. reflection?
 
             _pluginRepository.RegisterPlugin(new Plugin
             {

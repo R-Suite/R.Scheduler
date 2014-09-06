@@ -105,6 +105,8 @@
     <Compile Include="Configuration.cs" />
     <Compile Include="Handlers\DeschedulePluginHandler.cs" />
     <Compile Include="Handlers\DeschedulePluginTriggerHandler.cs" />
+    <Compile Include="Handlers\ExecutePluginHandler.cs" />
+    <Compile Include="Handlers\GetRegisteredPluginsHandler.cs" />
     <Compile Include="Handlers\RegisterPluginHandler.cs" />
     <Compile Include="Handlers\SchedulePluginWithSimpleTriggerHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

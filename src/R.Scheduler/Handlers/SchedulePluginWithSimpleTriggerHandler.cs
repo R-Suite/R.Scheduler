@@ -54,10 +54,10 @@ namespace R.Scheduler.Handlers
                 .WithIdentity(triggerName, groupName)
                 .ForJob(jobDetail)
                 .StartAt(startAt)
+                .WithSimpleSchedule(x => x
+                    .WithInterval(command.RepeatInterval)
+                    .WithRepeatCount(command.RepeatCount))
                 .Build();
-
-            trigger.RepeatCount = command.RepeatCount;
-            trigger.RepeatInterval = command.RepeatInterval;
 
             // Schedule Job
             if (sched.CheckExists(jobKey))

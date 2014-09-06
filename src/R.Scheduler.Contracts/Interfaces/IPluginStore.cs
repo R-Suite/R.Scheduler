@@ -1,4 +1,6 @@
-﻿namespace R.Scheduler.Contracts.Interfaces
+﻿using System.Collections.Generic;
+
+namespace R.Scheduler.Contracts.Interfaces
 {
     public enum PluginStoreType
     {
@@ -10,6 +12,10 @@
     {
         Plugin GetRegisteredPlugin(string pluginName);
 
+        IList<Plugin> GetRegisteredPlugins();
+
         void RegisterPlugin(Plugin plugin);
+
+        PluginDetails GetRegisteredPluginDetails(string pluginName);
     }
 }

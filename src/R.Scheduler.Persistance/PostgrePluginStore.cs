@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Npgsql;
 using R.Scheduler.Contracts.Interfaces;
 
@@ -58,6 +59,45 @@ namespace R.Scheduler.Persistance
         }
 
         /// <summary>
+        /// Get all registered plugins
+        /// </summary>
+        /// <returns></returns>
+        public IList<Plugin> GetRegisteredPlugins()
+        {
+            IList<Plugin> retval = new List<Plugin>();
+
+            var conn = new NpgsqlConnection(_connectionString);
+            conn.Open();
+
+            var sql = @"SELECT plugin_name, assembly_path, status FROM rsched_plugins";
+            var command = new NpgsqlCommand(sql, conn);
+
+            try
+            {
+                var reader = command.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        retval.Add(new Plugin()
+                        {
+                            Name = (string) reader["plugin_name"],
+                            AssemblyPath = (string) reader["assembly_path"],
+                            Status = (string) reader["status"]
+                        });
+                    }
+                }
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return retval;
+        }
+
+        /// <summary>
         /// Register new plugin, or update existing one.
         /// </summary>
         /// <param name="plugin"></param>
@@ -104,6 +144,11 @@ namespace R.Scheduler.Persistance
             {
               conn.Close() ;
             }
+        }
+
+        public PluginDetails GetRegisteredPluginDetails(string pluginName)
+        {
+            throw new NotImplementedException();
         }
     }
 }

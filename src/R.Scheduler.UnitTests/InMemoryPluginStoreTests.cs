@@ -50,5 +50,22 @@ namespace R.Scheduler.UnitTests
             // Assert
             Assert.Equal("TestsAssemblyPath2", result.AssemblyPath);
         }
+
+        [Fact]
+        public void ShouldGetAllRegisteredPlugins()
+        {
+            // Arrange
+            var plugin = new Plugin { Name = "TestPlugin", AssemblyPath = "TestsAssemblyPath" };
+            var plugin2 = new Plugin { Name = "TestPlugin2", AssemblyPath = "TestsAssemblyPath2" };
+            IPluginStore pluginStore = new InMemoryPluginStore();
+            pluginStore.RegisterPlugin(plugin);
+            pluginStore.RegisterPlugin(plugin2);
+
+            // Act 
+            var result = pluginStore.GetRegisteredPlugins();
+
+            // Assert
+            Assert.Equal(2, result.Count);
+        }
     }
 }

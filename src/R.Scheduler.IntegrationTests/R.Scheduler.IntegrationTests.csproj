@@ -57,6 +57,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExecutePluginHandlerTests.cs" />
     <Compile Include="PluginRunnerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -74,6 +75,10 @@
     <ProjectReference Include="..\R.Scheduler.JobRunners\R.Scheduler.JobRunners.csproj">
       <Project>{EE8B4DC9-A116-4CF0-A5FC-064A709EBE90}</Project>
       <Name>R.Scheduler.JobRunners</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\R.Scheduler\R.Scheduler.csproj">
+      <Project>{59e14d25-72bd-4e1f-a224-b8a6f5179b90}</Project>
+      <Name>R.Scheduler</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

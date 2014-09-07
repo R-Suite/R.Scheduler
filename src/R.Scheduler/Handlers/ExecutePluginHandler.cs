@@ -2,6 +2,8 @@
 using log4net;
 using Quartz;
 using Quartz.Impl;
+using Quartz.Impl.Triggers;
+using Quartz.Job;
 using Quartz.Spi;
 using R.MessageBus.Interfaces;
 using R.Scheduler.Contracts.Interfaces;
@@ -30,12 +32,16 @@ namespace R.Scheduler.Handlers
                 return;
             }
 
-            IScheduler sched = Scheduler.Instance();
             IJobDetail jobDetail = new JobDetailImpl { JobDataMap = new JobDataMap { { "pluginPath", registeredPlugin.AssemblyPath} } };
-            var tfb = new TriggerFiredBundle(jobDetail, null, null, false, null, null, null, null);
-            IJobExecutionContext context = new JobExecutionContextImpl(sched, tfb, null);
+            IOperableTrigger trigger = new SimpleTriggerImpl("AdHockTrigger") { RepeatCount = 1};
+            var tfb = new TriggerFiredBundle(jobDetail, trigger, null, false, null, null, null, null);
+
+            IJob job = new NoOpJob();
+
+            IJobExecutionContext context = new JobExecutionContextImpl(null, tfb, job);
 
             var pluginRunner = new PluginRunner();
+
             pluginRunner.Execute(context);
         }
 

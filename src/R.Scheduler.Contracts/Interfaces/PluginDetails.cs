@@ -9,7 +9,5 @@ namespace R.Scheduler.Contracts.Interfaces
     public class PluginDetails
     {
         Plugin Plugin { get; set; }
-
-
     }
 }

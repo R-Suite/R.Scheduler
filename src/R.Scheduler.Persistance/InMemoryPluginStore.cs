@@ -44,6 +44,7 @@ namespace R.Scheduler.Persistance
                 {
                     retval.Add(new Plugin
                     {
+                        Id = ((Plugin)caheItem.Value).Id,
                         Name = caheItem.Key,
                         AssemblyPath = ((Plugin)caheItem.Value).AssemblyPath,
                         Status = ((Plugin)caheItem.Value).Status
@@ -61,6 +62,11 @@ namespace R.Scheduler.Persistance
         public void RegisterPlugin(Plugin plugin)
         {
             _policy = new CacheItemPolicy {AbsoluteExpiration = DateTimeOffset.Now.AddHours(10.00)};
+
+            if (!Cache.Contains(plugin.Name))
+            {
+                plugin.Id = Guid.NewGuid();
+            }
 
             Cache.Set(plugin.Name, plugin, _policy); 
         }

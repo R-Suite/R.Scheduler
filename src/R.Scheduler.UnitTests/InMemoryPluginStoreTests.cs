@@ -1,4 +1,5 @@
-﻿using R.Scheduler.Contracts.Interfaces;
+﻿using System;
+using R.Scheduler.Contracts.Interfaces;
 using R.Scheduler.Persistance;
 using Xunit;
 

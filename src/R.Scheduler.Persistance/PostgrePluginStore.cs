@@ -29,7 +29,7 @@ namespace R.Scheduler.Persistance
             var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
 
-            var sql = @"SELECT plugin_name, assembly_path, status FROM rsched_plugins WHERE plugin_name = :name;";
+            var sql = @"SELECT id plugin_name, assembly_path, status FROM rsched_plugins WHERE plugin_name = :name;";
             var command = new NpgsqlCommand(sql, conn);
 
             try
@@ -69,7 +69,7 @@ namespace R.Scheduler.Persistance
             var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
 
-            var sql = @"SELECT plugin_name, assembly_path, status FROM rsched_plugins";
+            var sql = @"SELECT id, plugin_name, assembly_path, status FROM rsched_plugins";
             var command = new NpgsqlCommand(sql, conn);
 
             try
@@ -80,8 +80,9 @@ namespace R.Scheduler.Persistance
                 {
                     while (reader.Read())
                     {
-                        retval.Add(new Plugin()
+                        retval.Add(new Plugin
                         {
+                            Id = (Guid) reader["id"] ,
                             Name = (string) reader["plugin_name"],
                             AssemblyPath = (string) reader["assembly_path"],
                             Status = (string) reader["status"]
@@ -106,7 +107,7 @@ namespace R.Scheduler.Persistance
             var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
 
-            var sqlInsert = @"INSERT INTO rsched_plugins(plugin_name, assembly_path, status) VALUES (:name, :assemblyPath, :status);";
+            var sqlInsert = @"INSERT INTO rsched_plugins(id, plugin_name, assembly_path, status) VALUES (:id, :name, :assemblyPath, :status);";
             var sqlUpdate = @"UPDATE rsched_plugins SET assembly_path=:assemblyPath, status=:status WHERE plugin_name=:name";
             var command = new NpgsqlCommand(sqlUpdate, conn);
 
@@ -116,12 +117,14 @@ namespace R.Scheduler.Persistance
                 {
                     try
                     {
+                        command.Parameters.Add(new NpgsqlParameter("id", NpgsqlTypes.NpgsqlDbType.Uuid));
                         command.Parameters.Add(new NpgsqlParameter("name", NpgsqlTypes.NpgsqlDbType.Varchar));
                         command.Parameters.Add(new NpgsqlParameter("assemblyPath", NpgsqlTypes.NpgsqlDbType.Varchar));
                         command.Parameters.Add(new NpgsqlParameter("status", NpgsqlTypes.NpgsqlDbType.Varchar));
-                        command.Parameters[0].Value = plugin.Name;
-                        command.Parameters[1].Value = plugin.AssemblyPath;
-                        command.Parameters[2].Value = "registered";
+                        command.Parameters[0].Value = Guid.NewGuid();
+                        command.Parameters[1].Value = plugin.Name;
+                        command.Parameters[2].Value = plugin.AssemblyPath;
+                        command.Parameters[3].Value = "registered";
 
                         int rowsAffected = command.ExecuteNonQuery();
 

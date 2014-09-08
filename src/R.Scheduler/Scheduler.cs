@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Specialized;
+using Microsoft.Owin.Hosting;
 using Quartz;
 using Quartz.Impl;
 using R.MessageBus;
 using R.MessageBus.Interfaces;
-using R.Scheduler.Contracts;
-using R.Scheduler.Contracts.Interfaces;
+using R.Scheduler.Interfaces;
 using R.Scheduler.Persistance;
 using StructureMap;
-using IConfiguration = R.Scheduler.Contracts.Interfaces.IConfiguration;
+using IConfiguration = R.Scheduler.Interfaces.IConfiguration;
 
 namespace R.Scheduler
 {
@@ -42,7 +42,8 @@ namespace R.Scheduler
         }
 
         /// <summary>
-        /// Gets instance of Quartz Scheduler
+        /// Gets instance of Quartz Scheduler.
+        /// Hosts R.MessageBus and WebApi endpoints if needed.
         /// </summary>
         /// <returns></returns>
         public static IScheduler Instance()
@@ -61,14 +62,21 @@ namespace R.Scheduler
                         ISchedulerFactory schedFact = new StdSchedulerFactory(GetProperties());
                         _instance = schedFact.GetScheduler();
 
-                        // Initialise message bus
-                        IBus bus = Bus.Initialize(config =>
+                        if (Configuration.EnableMessageBusSelfHost)
                         {
-                            config.ScanForMesssageHandlers = true;
-                            config.TransportSettings = Configuration.TransportSettings;
-                        });
+                            IBus bus = Bus.Initialize(config =>
+                            {
+                                config.ScanForMesssageHandlers = true;
+                                config.TransportSettings = Configuration.TransportSettings;
+                            });
 
-                        bus.StartConsuming();
+                            bus.StartConsuming();
+                        }
+
+                        if (Configuration.EnableWebApiSelfHost)
+                        {
+                            IDisposable webApiHost = WebApp.Start<Startup>(url: Configuration.WebApiBaseAddress);
+                        }
                     }
                 }
             }

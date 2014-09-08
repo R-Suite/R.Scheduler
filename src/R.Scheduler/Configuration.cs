@@ -1,11 +1,10 @@
-﻿using R.MessageBus;
-using R.MessageBus.Interfaces;
+﻿using R.MessageBus.Interfaces;
 using R.Scheduler.Contracts;
-using IConfiguration = R.Scheduler.Contracts.Interfaces.IConfiguration;
+using R.Scheduler.Interfaces;
 
 namespace R.Scheduler
 {
-    public class Configuration : IConfiguration
+    public class Configuration : Interfaces.IConfiguration
     {
         public Configuration()
         {
@@ -14,6 +13,10 @@ namespace R.Scheduler
             InstanceName = "RScheduler";
             InstanceId = "instance_one";
             UseProperties = "true";
+
+            EnableMessageBusSelfHost = false;
+            EnableWebApiSelfHost = true;
+            WebApiBaseAddress = "http://localhost:5000/";
             
             var messageBusConfig = new MessageBus.Configuration();
             TransportSettings = messageBusConfig.TransportSettings;
@@ -25,6 +28,10 @@ namespace R.Scheduler
         public string InstanceName { get; set; }
         public string InstanceId { get; set; }
         public string UseProperties { get; set; }
+
+        public bool EnableMessageBusSelfHost { get; set; }
+        public bool EnableWebApiSelfHost { get; set; }
+        public string WebApiBaseAddress { get; set; }
 
         public ITransportSettings TransportSettings { get; set; }
     }

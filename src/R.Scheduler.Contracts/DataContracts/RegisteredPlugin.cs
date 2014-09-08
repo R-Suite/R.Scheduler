@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace R.Scheduler.Contracts.Interfaces
+namespace R.Scheduler.Contracts.DataContracts
 {
     public class Plugin
     {

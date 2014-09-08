@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using R.MessageBus.Interfaces;
+using R.Scheduler.Contracts.DataContracts;
 using R.Scheduler.Contracts.Interfaces;
 
 namespace R.Scheduler.Contracts.Messages

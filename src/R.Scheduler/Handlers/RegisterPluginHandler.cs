@@ -2,8 +2,9 @@
 using System.Reflection;
 using log4net;
 using R.MessageBus.Interfaces;
-using R.Scheduler.Contracts.Interfaces;
+using R.Scheduler.Contracts.DataContracts;
 using R.Scheduler.Contracts.Messages;
+using R.Scheduler.Interfaces;
 
 namespace R.Scheduler.Handlers
 {

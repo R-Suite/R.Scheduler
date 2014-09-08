@@ -113,6 +113,10 @@
       <Project>{C2F4994F-DB81-4779-8490-89250561F0D7}</Project>
       <Name>R.Scheduler.Contracts</Name>
     </ProjectReference>
+    <ProjectReference Include="..\R.Scheduler.Interfaces\R.Scheduler.Interfaces.csproj">
+      <Project>{4010d63d-4ba3-4e41-9087-16cdd341febf}</Project>
+      <Name>R.Scheduler.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\R.Scheduler.Persistance\R.Scheduler.Persistance.csproj">
       <Project>{e1abac5b-6990-4eae-af61-fd9e08c64a18}</Project>
       <Name>R.Scheduler.Persistance</Name>

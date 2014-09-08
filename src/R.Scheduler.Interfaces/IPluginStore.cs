@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using R.Scheduler.Contracts.DataContracts;
 
-namespace R.Scheduler.Contracts.Interfaces
+namespace R.Scheduler.Interfaces
 {
     public enum PluginStoreType
     {

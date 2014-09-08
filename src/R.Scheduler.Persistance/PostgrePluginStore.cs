@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Npgsql;
-using R.Scheduler.Contracts.Interfaces;
+using R.Scheduler.Contracts.DataContracts;
+using R.Scheduler.Interfaces;
 
 namespace R.Scheduler.Persistance
 {

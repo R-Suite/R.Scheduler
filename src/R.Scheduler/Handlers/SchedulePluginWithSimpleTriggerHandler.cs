@@ -1,8 +1,8 @@
 ﻿using System;
 using Quartz;
 using R.MessageBus.Interfaces;
-using R.Scheduler.Contracts.Interfaces;
 using R.Scheduler.Contracts.Messages;
+using R.Scheduler.Interfaces;
 using R.Scheduler.JobRunners;
 
 namespace R.Scheduler.Handlers

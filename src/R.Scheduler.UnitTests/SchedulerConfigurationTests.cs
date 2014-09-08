@@ -1,5 +1,4 @@
 ﻿using System;
-using R.Scheduler.Contracts.Interfaces;
 using Xunit;
 
 namespace R.Scheduler.UnitTests
@@ -12,6 +11,12 @@ namespace R.Scheduler.UnitTests
         public void ShouldThrowWhenSchedulerIsInitializedAfterSchedulerIsStarted()
         {
             // Arrange
+            Scheduler.Initialize(c =>
+            {
+                c.EnableMessageBusSelfHost = false;
+                c.EnableWebApiSelfHost = false;
+            });
+
             Scheduler.Instance();
 
             // Act / Assert

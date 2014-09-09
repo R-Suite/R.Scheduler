@@ -20,7 +20,7 @@ namespace R.Scheduler.Handlers
         {
             Logger.InfoFormat("Entered DeschedulePlugin.Execute(). PluginName = {0}", message.PluginName);
 
-            _schedulerCore.DeschedulePlugin(message.PluginName);
+            _schedulerCore.DescheduleGroup(message.PluginName);
         }
 
         public IConsumeContext Context { get; set; }

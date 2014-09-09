@@ -13,6 +13,7 @@ namespace R.Scheduler.UnitTests
             // Arrange
             var plugin = new Plugin { Name = "TestPlugin", AssemblyPath = "TestsAssemblyPath"};
             IPluginStore pluginStore = new InMemoryPluginStore();
+            pluginStore.RemoveAllPlugins();
             pluginStore.RegisterPlugin(plugin);
 
             // Act 
@@ -27,6 +28,7 @@ namespace R.Scheduler.UnitTests
         {
             // Arrange
             IPluginStore pluginStore = new InMemoryPluginStore();
+            pluginStore.RemoveAllPlugins();
 
             // Act 
             var result = pluginStore.GetRegisteredPlugin("APlugin");
@@ -59,6 +61,7 @@ namespace R.Scheduler.UnitTests
             var plugin = new Plugin { Name = "TestPlugin", AssemblyPath = "TestsAssemblyPath" };
             var plugin2 = new Plugin { Name = "TestPlugin2", AssemblyPath = "TestsAssemblyPath2" };
             IPluginStore pluginStore = new InMemoryPluginStore();
+            pluginStore.RemoveAllPlugins();
             pluginStore.RegisterPlugin(plugin);
             pluginStore.RegisterPlugin(plugin2);
 
@@ -67,6 +70,25 @@ namespace R.Scheduler.UnitTests
 
             // Assert
             Assert.Equal(2, result.Count);
+        }
+
+        [Fact]
+        public void ShouldRemovePlugin()
+        {
+            // Arrange
+            var plugin = new Plugin { Name = "TestPlugin", AssemblyPath = "TestsAssemblyPath" };
+            var plugin2 = new Plugin { Name = "TestPlugin2", AssemblyPath = "TestsAssemblyPath2" };
+            IPluginStore pluginStore = new InMemoryPluginStore();
+            pluginStore.RemoveAllPlugins();
+            pluginStore.RegisterPlugin(plugin);
+            pluginStore.RegisterPlugin(plugin2);
+
+            // Act 
+            var result = pluginStore.RemovePlugin("TestPlugin");
+
+            // Assert
+            Assert.Equal(1, result);
+            Assert.Equal(1, pluginStore.GetRegisteredPlugins().Count);
         }
     }
 }

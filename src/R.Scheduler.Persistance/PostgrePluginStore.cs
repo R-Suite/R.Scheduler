@@ -162,6 +162,8 @@ namespace R.Scheduler.Persistance
 
             var sql = @"DELETE FROM rsched_plugins WHERE plugin_name=:name";
             var command = new NpgsqlCommand(sql, conn);
+            command.Parameters.Add(new NpgsqlParameter("name", NpgsqlTypes.NpgsqlDbType.Varchar));
+            command.Parameters[0].Value = pluginName;
 
             try
             {
@@ -171,6 +173,11 @@ namespace R.Scheduler.Persistance
             {
                 conn.Close();
             }
+        }
+
+        public int RemoveAllPlugins()
+        {
+            throw new NotImplementedException();
         }
 
         public PluginDetails GetRegisteredPluginDetails(string pluginName)

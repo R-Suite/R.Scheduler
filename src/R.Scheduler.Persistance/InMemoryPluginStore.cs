@@ -89,6 +89,27 @@ namespace R.Scheduler.Persistance
             return 0;
         }
 
+        /// <summary>
+        /// Remove all pugins from cache object
+        /// </summary>
+        /// <returns></returns>
+        public int RemoveAllPlugins()
+        {
+            if (Cache.GetCount() > 0)
+            {
+                int count = 0;
+                foreach (var element in Cache)
+                {
+                    Cache.Remove(element.Key);
+                    count++;
+                }
+
+                return count;
+            }
+
+            return 0;
+        }
+
         public PluginDetails GetRegisteredPluginDetails(string pluginName)
         {
             throw new NotImplementedException();

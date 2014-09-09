@@ -48,6 +48,7 @@
     <Compile Include="ISchedulerCore.cs" />
     <Compile Include="PersistanceStoreType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SimpleTrigger.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\R.Scheduler.Contracts\R.Scheduler.Contracts.csproj">

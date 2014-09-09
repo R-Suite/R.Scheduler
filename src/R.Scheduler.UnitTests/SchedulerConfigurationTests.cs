@@ -5,8 +5,6 @@ namespace R.Scheduler.UnitTests
 {
     public class SchedulerConfigurationTests
     {
-        //note: methods are static, the Scheduler class is not really testable
-
         [Fact]
         public void ShouldThrowWhenSchedulerIsInitializedAfterSchedulerIsStarted()
         {
@@ -21,6 +19,26 @@ namespace R.Scheduler.UnitTests
 
             // Act / Assert
             Assert.Throws<Exception>(() => Scheduler.Initialize(c=>c.ConnectionString = "test connection string"));
+        }
+
+        [Fact]
+        public void ShouldEnableWebApiSelfHostWhenSchedulerIsStarted()
+        {
+            // Act
+            Scheduler.Initialize(c => { });
+
+            // Assert
+            Assert.True(Scheduler.Configuration.EnableWebApiSelfHost);
+        }
+
+        [Fact]
+        public void ShouldDisableMessageBusSelfHostWhenSchedulerIsStarted()
+        {
+            // Act
+            Scheduler.Initialize(c => { });
+
+            // Assert
+            Assert.False(Scheduler.Configuration.EnableMessageBusSelfHost);
         }
     }
 }

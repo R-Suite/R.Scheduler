@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using log4net;
@@ -14,6 +15,9 @@ using R.Scheduler.JobRunners;
 
 namespace R.Scheduler
 {
+    /// <summary>
+    /// todo: separate core scheduler functionality from the plugin-specific scheduler functionality 
+    /// </summary>
     public class SchedulerCore : ISchedulerCore
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -83,19 +87,92 @@ namespace R.Scheduler
             }
         }
 
-        public void DeschedulePlugin(string pluginName)
+        public void DescheduleGroup(string groupName)
         {
             IScheduler sched = Scheduler.Instance();
 
-            Quartz.Collection.ISet<TriggerKey> triggerKeys = sched.GetTriggerKeys(GroupMatcher<TriggerKey>.GroupEquals(pluginName));
+            Quartz.Collection.ISet<TriggerKey> triggerKeys = sched.GetTriggerKeys(GroupMatcher<TriggerKey>.GroupEquals(groupName));
             sched.UnscheduleJobs(triggerKeys.ToList());
 
             // delete job if no triggers are left
-            var jobKeys = sched.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(pluginName));
+            var jobKeys = sched.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(groupName));
 
             foreach (var jobKey in jobKeys)
             {
                 sched.DeleteJob(jobKey);
+            }
+        }
+
+        public void DescheduleTrigger(string groupName, string triggerName)
+        {
+            if (string.IsNullOrEmpty(groupName) || string.IsNullOrEmpty(triggerName))
+                throw new ArgumentException("One or both of the required fields (groupName, triggerName) is null or empty.");
+
+            IScheduler sched = Scheduler.Instance();
+
+            var triggerKey = new TriggerKey(triggerName, groupName);
+            sched.UnscheduleJob(triggerKey);
+
+            // delete job if no triggers are left
+            var jobKeys = sched.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(groupName));
+
+            foreach (var jobKey in jobKeys)
+            {
+                var triggers = sched.GetTriggersOfJob(jobKey);
+
+                if (!triggers.Any())
+                    sched.DeleteJob(jobKey);
+            }
+        }
+
+        public void ScheduleSimpleTrigger(SimpleTrigger simpleTrigger)
+        {
+            if (string.IsNullOrEmpty(simpleTrigger.GroupName))
+                throw new ArgumentException("Required fields GroupName is null or empty.");
+
+            IScheduler sched = Scheduler.Instance();
+
+            // Set default values
+            string groupName = simpleTrigger.GroupName;
+            string jobName = !string.IsNullOrEmpty(simpleTrigger.JobName) ? simpleTrigger.JobName : "Job_" + simpleTrigger.GroupName;
+            string triggerName = !string.IsNullOrEmpty(simpleTrigger.TriggerName) ? simpleTrigger.TriggerName : simpleTrigger.GroupName + "_Trigger_" + DateTime.UtcNow.ToString("yyMMddhhmmss");
+            DateTimeOffset startAt = (DateTime.MinValue != simpleTrigger.StartDateTime) ? simpleTrigger.StartDateTime : DateTime.UtcNow;
+
+            // Check if jobDetail already exists
+            var jobKey = new JobKey(jobName, groupName);
+            IJobDetail jobDetail = sched.GetJobDetail(jobKey);
+
+            // If jobDetail does not exist, create new
+            if (null == jobDetail)
+            {
+                jobDetail = JobBuilder.Create<PluginRunner>()
+                    .WithIdentity(jobName, groupName)
+                    .StoreDurably(false)
+                    .Build();
+                foreach (var mapItem in simpleTrigger.DataMap)
+                {
+                    jobDetail.JobDataMap.Add(mapItem.Key, mapItem.Value);
+                }
+            }
+
+            // Create new "Simple" Trigger
+            var trigger = (ISimpleTrigger)TriggerBuilder.Create()
+                .WithIdentity(triggerName, groupName)
+                .ForJob(jobDetail)
+                .StartAt(startAt)
+                .WithSimpleSchedule(x => x
+                    .WithInterval(simpleTrigger.RepeatInterval)
+                    .WithRepeatCount(simpleTrigger.RepeatCount))
+                .Build();
+
+            // Schedule Job
+            if (sched.CheckExists(jobKey))
+            {
+                sched.ScheduleJob(trigger);
+            }
+            else
+            {
+                sched.ScheduleJob(jobDetail, trigger);
             }
         }
     }

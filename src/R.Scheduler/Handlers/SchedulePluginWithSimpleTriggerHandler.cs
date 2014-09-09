@@ -1,73 +1,44 @@
 ﻿using System;
-using Quartz;
+using System.Collections.Generic;
+using System.Reflection;
+using log4net;
 using R.MessageBus.Interfaces;
 using R.Scheduler.Contracts.Messages;
 using R.Scheduler.Interfaces;
-using R.Scheduler.JobRunners;
 
 namespace R.Scheduler.Handlers
 {
     public class SchedulePluginWithSimpleTriggerHandler : IMessageHandler<SchedulePluginWithSimpleTrigger>
     {
-        readonly IPluginStore _pluginStore;
+        private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        readonly ISchedulerCore _schedulerCore;
+        private readonly IPluginStore _pluginStore;
 
-        public SchedulePluginWithSimpleTriggerHandler(IPluginStore pluginStore)
+        public SchedulePluginWithSimpleTriggerHandler(ISchedulerCore schedulerCore, IPluginStore pluginStore)
         {
+            _schedulerCore = schedulerCore;
             _pluginStore = pluginStore;
         }
 
         public void Execute(SchedulePluginWithSimpleTrigger command)
         {
-            if (string.IsNullOrEmpty(command.PluginName))
-                throw new ArgumentException("Required fields PluginName is null or empty.");
+            Logger.InfoFormat("Entered SchedulePluginWithSimpleTriggerHandler.Execute(). PluginName = {0}", command.PluginName);
 
             var registeredPlugin = _pluginStore.GetRegisteredPlugin(command.PluginName);
 
             if (null == registeredPlugin)
                 throw new ArgumentException(string.Format("Error loading registered plugin {0}", command.PluginName));
 
-            IScheduler sched = Scheduler.Instance();
-
-            // Set default values
-            string groupName = command.PluginName;
-            string jobName = "Job_" + command.PluginName;
-            string triggerName = !string.IsNullOrEmpty(command.TriggerName) ? command.TriggerName : command.PluginName + "_Trigger_" + DateTime.UtcNow.ToString("yyMMddhhmmss");
-            DateTimeOffset startAt = (DateTime.MinValue != command.StartDateTime) ? command.StartDateTime : DateTime.UtcNow;
-
-            // Check if jobDetail already exists
-            var jobKey = new JobKey(jobName, groupName);
-            IJobDetail jobDetail = sched.GetJobDetail(jobKey);
-
-            // If jobDetail does not exist, create new
-            if (null == jobDetail)
+            _schedulerCore.ScheduleSimpleTrigger(new SimpleTrigger
             {
-                jobDetail = JobBuilder.Create<PluginRunner>()
-                    .WithIdentity(jobName, groupName)
-                    .StoreDurably(false)
-                    .Build();
-
-                jobDetail.JobDataMap.Add("pluginPath", registeredPlugin.AssemblyPath);
-            }
-
-            // Create new "Simple" Trigger
-            var trigger = (ISimpleTrigger)TriggerBuilder.Create()
-                .WithIdentity(triggerName, groupName)
-                .ForJob(jobDetail)
-                .StartAt(startAt)
-                .WithSimpleSchedule(x => x
-                    .WithInterval(command.RepeatInterval)
-                    .WithRepeatCount(command.RepeatCount))
-                .Build();
-
-            // Schedule Job
-            if (sched.CheckExists(jobKey))
-            {
-                sched.ScheduleJob(trigger);
-            }
-            else
-            {
-                sched.ScheduleJob(jobDetail, trigger);
-            }
+                GroupName = command.PluginName,
+                JobName = "Job_" + command.PluginName,
+                RepeatCount = command.RepeatCount,
+                RepeatInterval = command.RepeatInterval,
+                StartDateTime = command.StartDateTime,
+                TriggerName = command.TriggerName,
+                DataMap = new Dictionary<string, object> { { "pluginPath", registeredPlugin.AssemblyPath } }
+            });
         }
 
         public IConsumeContext Context { get; set; }

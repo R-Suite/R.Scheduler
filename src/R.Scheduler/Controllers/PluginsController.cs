@@ -34,21 +34,21 @@ namespace R.Scheduler.Controllers
         // POST api/plugins/execute 
         [AcceptVerbs("POST")]
         [Route("api/plugins/execute")]
-        public void Execute([FromBody]string name)
+        public void Execute([FromBody]string model)
         {
-            Logger.InfoFormat("Entered PluginsController.Execute(). name = {0}", name);
+            Logger.InfoFormat("Entered PluginsController.Execute(). name = {0}", model);
 
-            _schedulerCore.ExecutePlugin(name);
+            _schedulerCore.ExecutePlugin(model);
         }
 
-        // POST api/plugins/register 
+        // POST api/plugins 
         [AcceptVerbs("POST")]
-        [Route("api/plugins/register")]
-        public void Register([FromBody]string name, [FromBody]string assemblyPath)
+        [Route("api/plugins")]
+        public void Post([FromBody]Plugin model)
         {
-            Logger.InfoFormat("Entered PluginsController.Register(). name = {0}", name);
+            Logger.InfoFormat("Entered PluginsController.Post(). name = {0}", model.Name);
 
-            _schedulerCore.RegisterPlugin(name, assemblyPath);
+            _schedulerCore.RegisterPlugin(model.Name, model.AssemblyPath);
         }
         
         // GET api/plugins/5 
@@ -57,24 +57,19 @@ namespace R.Scheduler.Controllers
             return "value";
         }
 
-        // POST api/plugins 
-        public void Post([FromBody]string value)
-        {
-        }
-
         // PUT api/plugins/5 
         public void Put(int id, [FromBody]string value)
         {
         }
 
-        // DELETE api/plugins 
+        // DELETE api/plugins/id 
         [AcceptVerbs("DELETE")]
         [Route("api/plugins")]
-        public void Delete(string name)
+        public void Delete(string id)
         {
-            Logger.InfoFormat("Entered PluginsController.Delete(). name = {0}", name);
+            Logger.InfoFormat("Entered PluginsController.Delete(). id = {0}", id);
 
-            _schedulerCore.RemovePlugin(name);
+            _schedulerCore.RemovePlugin(id);
         }
     } 
 }

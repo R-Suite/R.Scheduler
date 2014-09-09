@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataContracts\PluginSimpleTrigger.cs" />
     <Compile Include="Interfaces\BaseJobPlugin.cs" />
     <Compile Include="Interfaces\IJobPlugin.cs" />
     <Compile Include="DataContracts\PluginDetails.cs" />

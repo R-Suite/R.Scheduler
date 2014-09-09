@@ -1,37 +1,26 @@
-﻿using System;
-using System.Linq;
-using Quartz;
-using Quartz.Impl.Matchers;
+﻿using System.Reflection;
+using log4net;
 using R.MessageBus.Interfaces;
 using R.Scheduler.Contracts.Messages;
+using R.Scheduler.Interfaces;
 
 namespace R.Scheduler.Handlers
 {
     public class DeschedulePluginTriggerHandler : IMessageHandler<DeschedulePluginTrigger>
     {
+        private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        readonly ISchedulerCore _schedulerCore;
+
+        public DeschedulePluginTriggerHandler(ISchedulerCore schedulerCore)
+        {
+            _schedulerCore = schedulerCore;
+        }
+
         public void Execute(DeschedulePluginTrigger message)
         {
-            if (string.IsNullOrEmpty(message.PluginName) || string.IsNullOrEmpty(message.TriggerName))
-                throw new ArgumentException("One or both of the required fields (PluginName, TriggerName) is null or empty.");
+            Logger.InfoFormat("Entered DeschedulePluginTriggerHandler.Execute(). PluginName = {0}. TriggerName = {1}", message.PluginName, message.TriggerName);
 
-            IScheduler sched = Scheduler.Instance();
-
-            string groupName = message.PluginName;
-            string triggerName = message.TriggerName;
-
-            var triggerKey = new TriggerKey(triggerName, groupName);
-            sched.UnscheduleJob(triggerKey);
-
-            // delete job if no triggers are left
-            var jobKeys = sched.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(groupName));
-
-            foreach (var jobKey in jobKeys)
-            {
-                var triggers = sched.GetTriggersOfJob(jobKey);
-
-                if (!triggers.Any())
-                    sched.DeleteJob(jobKey);
-            }
+            _schedulerCore.DescheduleTrigger(message.PluginName, message.TriggerName);
         }
 
         public IConsumeContext Context { get; set; }

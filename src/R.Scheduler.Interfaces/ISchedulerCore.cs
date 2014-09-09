@@ -8,6 +8,10 @@
 
         void RemovePlugin(string pluginName);
 
-        void DeschedulePlugin(string pluginName);
+        void DescheduleGroup(string groupName);
+
+        void DescheduleTrigger(string groupName, string triggerName);
+
+        void ScheduleSimpleTrigger(SimpleTrigger simpleTrigger);
     }
 }

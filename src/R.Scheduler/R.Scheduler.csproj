@@ -128,6 +128,7 @@
   <ItemGroup>
     <Compile Include="Configuration.cs" />
     <Compile Include="Controllers\PluginsController.cs" />
+    <Compile Include="Controllers\PluginSimpleTriggersController.cs" />
     <Compile Include="Handlers\RemovePluginHandler.cs" />
     <Compile Include="SchedulerCore.cs" />
     <Compile Include="Handlers\DeschedulePluginHandler.cs" />

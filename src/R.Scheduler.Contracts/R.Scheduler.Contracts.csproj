@@ -47,6 +47,7 @@
     <Compile Include="Interfaces\IJobPlugin.cs" />
     <Compile Include="DataContracts\PluginDetails.cs" />
     <Compile Include="DataContracts\RegisteredPlugin.cs" />
+    <Compile Include="Messages\RemovePlugin.cs" />
     <Compile Include="Messages\DeschedulePluginTrigger.cs" />
     <Compile Include="Messages\DeschedulePlugin.cs" />
     <Compile Include="Messages\ExecutePlugin.cs" />

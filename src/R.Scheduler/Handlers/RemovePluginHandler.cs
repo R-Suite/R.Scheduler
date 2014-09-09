@@ -6,21 +6,21 @@ using R.Scheduler.Interfaces;
 
 namespace R.Scheduler.Handlers
 {
-    public class RegisterPluginHandler : IMessageHandler<RegisterPlugin>
+    public class RemovePluginHandler : IMessageHandler<RemovePlugin>
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         readonly ISchedulerCore _schedulerCore;
 
-        public RegisterPluginHandler(ISchedulerCore schedulerCore)
+        public RemovePluginHandler(ISchedulerCore schedulerCore)
         {
             _schedulerCore = schedulerCore;
         }
 
-        public void Execute(RegisterPlugin command)
+        public void Execute(RemovePlugin message)
         {
-            Logger.InfoFormat("Entered RegisterPluginHandler.Execute(). PluginName = {0}", command.PluginName);
+            Logger.InfoFormat("Entered RemovePluginHandler.Execute(). PluginName = {0}", message.PluginName);
 
-            _schedulerCore.RegisterPlugin(command.PluginName, command.AssemblyPath);
+            _schedulerCore.RemovePlugin(message.PluginName);
         }
 
         public IConsumeContext Context { get; set; }

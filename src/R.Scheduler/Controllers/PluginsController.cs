@@ -3,7 +3,6 @@ using System.Reflection;
 using System.Web.Http;
 using log4net;
 using R.Scheduler.Contracts.DataContracts;
-using R.Scheduler.Contracts.Interfaces;
 using R.Scheduler.Interfaces;
 using StructureMap;
 
@@ -42,6 +41,16 @@ namespace R.Scheduler.Controllers
             _schedulerCore.ExecutePlugin(name);
         }
 
+        // POST api/plugins/register 
+        [AcceptVerbs("POST")]
+        [Route("api/plugins/register")]
+        public void Register([FromBody]string name, [FromBody]string assemblyPath)
+        {
+            Logger.InfoFormat("Entered PluginsController.Register(). name = {0}", name);
+
+            _schedulerCore.RegisterPlugin(name, assemblyPath);
+        }
+        
         // GET api/plugins/5 
         public string Get(int id)
         {
@@ -58,9 +67,14 @@ namespace R.Scheduler.Controllers
         {
         }
 
-        // DELETE api/plugins/5 
-        public void Delete(int id)
+        // DELETE api/plugins 
+        [AcceptVerbs("DELETE")]
+        [Route("api/plugins")]
+        public void Delete(string name)
         {
+            Logger.InfoFormat("Entered PluginsController.Delete(). name = {0}", name);
+
+            _schedulerCore.RemovePlugin(name);
         }
     } 
 }

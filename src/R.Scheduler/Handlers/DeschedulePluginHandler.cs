@@ -1,27 +1,26 @@
-﻿using System.Linq;
-using Quartz;
-using Quartz.Impl.Matchers;
+﻿using System.Reflection;
+using log4net;
 using R.MessageBus.Interfaces;
 using R.Scheduler.Contracts.Messages;
+using R.Scheduler.Interfaces;
 
 namespace R.Scheduler.Handlers
 {
     public class DeschedulePluginHandler : IMessageHandler<DeschedulePlugin>
     {
+        private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        readonly ISchedulerCore _schedulerCore;
+
+        public DeschedulePluginHandler(ISchedulerCore schedulerCore)
+        {
+            _schedulerCore = schedulerCore;
+        }
+
         public void Execute(DeschedulePlugin message)
         {
-            IScheduler sched = Scheduler.Instance();
+            Logger.InfoFormat("Entered DeschedulePlugin.Execute(). PluginName = {0}", message.PluginName);
 
-            Quartz.Collection.ISet<TriggerKey> triggerKeys = sched.GetTriggerKeys(GroupMatcher<TriggerKey>.GroupEquals(message.PluginName));
-            sched.UnscheduleJobs(triggerKeys.ToList());
-
-            // delete job if no triggers are left
-            var jobKeys = sched.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(message.PluginName));
-
-            foreach (var jobKey in jobKeys)
-            {
-                sched.DeleteJob(jobKey);
-            }
+            _schedulerCore.DeschedulePlugin(message.PluginName);
         }
 
         public IConsumeContext Context { get; set; }

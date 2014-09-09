@@ -1,10 +1,14 @@
-﻿using System.Reflection;
+﻿using System.IO;
+using System.Linq;
+using System.Reflection;
 using log4net;
 using Quartz;
 using Quartz.Impl;
+using Quartz.Impl.Matchers;
 using Quartz.Impl.Triggers;
 using Quartz.Job;
 using Quartz.Spi;
+using R.Scheduler.Contracts.DataContracts;
 using R.Scheduler.Interfaces;
 using R.Scheduler.JobRunners;
 
@@ -41,6 +45,58 @@ namespace R.Scheduler
             var pluginRunner = new PluginRunner();
 
             pluginRunner.Execute(context);
+        }
+
+        public void RegisterPlugin(string pluginName, string assemblyPath)
+        {
+            if (!File.Exists(assemblyPath))
+            {
+                Logger.ErrorFormat("Error registering plugin {0}. Invalid assembly path {1}", pluginName, assemblyPath);
+                return;
+            }
+            //todo: verify valid plugin.. reflection?
+
+            _pluginStore.RegisterPlugin(new Plugin
+            {
+                AssemblyPath = assemblyPath,
+                Name = pluginName,
+                Status = "registered"
+            });
+        }
+
+        public void RemovePlugin(string pluginName)
+        {
+            IScheduler sched = Scheduler.Instance();
+
+            var jobKeys = sched.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(pluginName));
+
+            foreach (var jobKey in jobKeys)
+            {
+                sched.DeleteJob(jobKey);
+            }
+
+            int result = _pluginStore.RemovePlugin(pluginName);
+
+            if (result == 0)
+            {
+                Logger.WarnFormat("Error removing  from data store. Plugin {0} not found", pluginName);
+            }
+        }
+
+        public void DeschedulePlugin(string pluginName)
+        {
+            IScheduler sched = Scheduler.Instance();
+
+            Quartz.Collection.ISet<TriggerKey> triggerKeys = sched.GetTriggerKeys(GroupMatcher<TriggerKey>.GroupEquals(pluginName));
+            sched.UnscheduleJobs(triggerKeys.ToList());
+
+            // delete job if no triggers are left
+            var jobKeys = sched.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(pluginName));
+
+            foreach (var jobKey in jobKeys)
+            {
+                sched.DeleteJob(jobKey);
+            }
         }
     }
 }

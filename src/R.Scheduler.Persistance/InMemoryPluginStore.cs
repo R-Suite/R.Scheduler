@@ -72,6 +72,23 @@ namespace R.Scheduler.Persistance
             Cache.Set(plugin.Name, plugin, _policy); 
         }
 
+        /// <summary>
+        /// Remove plugin from cache object
+        /// </summary>
+        /// <param name="pluginName"></param>
+        /// <returns></returns>
+        public int RemovePlugin(string pluginName)
+        {
+            if (Cache.Contains(pluginName))
+            {
+                Cache.Remove(pluginName);
+
+                return 1;
+            }
+
+            return 0;
+        }
+
         public PluginDetails GetRegisteredPluginDetails(string pluginName)
         {
             throw new NotImplementedException();

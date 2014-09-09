@@ -17,6 +17,8 @@ namespace R.Scheduler.Interfaces
 
         void RegisterPlugin(Plugin plugin);
 
+        int RemovePlugin(string pluginName);
+
         PluginDetails GetRegisteredPluginDetails(string pluginName);
     }
 }

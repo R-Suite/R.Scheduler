@@ -150,6 +150,29 @@ namespace R.Scheduler.Persistance
             }
         }
 
+        /// <summary>
+        /// Removes registered plugin from db
+        /// </summary>
+        /// <param name="pluginName"></param>
+        /// <returns></returns>
+        public int RemovePlugin(string pluginName)
+        {
+            var conn = new NpgsqlConnection(_connectionString);
+            conn.Open();
+
+            var sql = @"DELETE FROM rsched_plugins WHERE plugin_name=:name";
+            var command = new NpgsqlCommand(sql, conn);
+
+            try
+            {
+                return command.ExecuteNonQuery();
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
         public PluginDetails GetRegisteredPluginDetails(string pluginName)
         {
             throw new NotImplementedException();

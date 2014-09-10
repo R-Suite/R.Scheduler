@@ -41,6 +41,16 @@ namespace R.Scheduler.Controllers
             _schedulerCore.ExecutePlugin(model);
         }
 
+        // POST api/plugins/execute 
+        [AcceptVerbs("POST")]
+        [Route("api/plugins/deschedule")]
+        public void Deschedule([FromBody]string model)
+        {
+            Logger.InfoFormat("Entered PluginsController.Deschedule(). name = {0}", model);
+
+            _schedulerCore.DescheduleJobGroup(model);
+        }
+
         // POST api/plugins 
         [AcceptVerbs("POST")]
         [Route("api/plugins")]

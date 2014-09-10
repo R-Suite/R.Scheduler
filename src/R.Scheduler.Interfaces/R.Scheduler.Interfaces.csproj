@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CronTrigger.cs" />
     <Compile Include="IConfiguration.cs" />
     <Compile Include="IPluginStore.cs" />
     <Compile Include="ISchedulerCore.cs" />

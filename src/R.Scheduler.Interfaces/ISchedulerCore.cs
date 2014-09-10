@@ -13,5 +13,7 @@
         void DescheduleTrigger(string groupName, string triggerName);
 
         void ScheduleSimpleTrigger(SimpleTrigger simpleTrigger);
+
+        void ScheduleCronTrigger(CronTrigger cronTrigger);
     }
 }

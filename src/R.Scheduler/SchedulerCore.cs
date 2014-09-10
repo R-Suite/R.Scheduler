@@ -17,6 +17,7 @@ namespace R.Scheduler
 {
     /// <summary>
     /// todo: separate core scheduler functionality from the plugin-specific scheduler functionality 
+    /// todo: remove dependency on PluginRunner
     /// </summary>
     public class SchedulerCore : ISchedulerCore
     {
@@ -163,6 +164,56 @@ namespace R.Scheduler
                 .WithSimpleSchedule(x => x
                     .WithInterval(simpleTrigger.RepeatInterval)
                     .WithRepeatCount(simpleTrigger.RepeatCount))
+                .Build();
+
+            // Schedule Job
+            if (sched.CheckExists(jobKey))
+            {
+                sched.ScheduleJob(trigger);
+            }
+            else
+            {
+                sched.ScheduleJob(jobDetail, trigger);
+            }
+        }
+
+        public void ScheduleCronTrigger(CronTrigger cronTrigger)
+        {
+            if (string.IsNullOrEmpty(cronTrigger.Name))
+                throw new ArgumentException("Required fields Name is null or empty.");
+
+            IScheduler sched = Scheduler.Instance();
+
+            // Set default values
+            string name = cronTrigger.Name;
+            string group = !string.IsNullOrEmpty(cronTrigger.Group) ? cronTrigger.Group : cronTrigger.Name + "_TriggerGroup_" + DateTime.UtcNow.ToString("yyMMddhhmmss");
+            string jobName = !string.IsNullOrEmpty(cronTrigger.JobName) ? cronTrigger.Name : "Job_" + cronTrigger.Name;
+            string jobGroup = !string.IsNullOrEmpty(cronTrigger.JobGroup) ? cronTrigger.Name : "JobGroup_" + cronTrigger.Name;
+            DateTimeOffset startAt = (DateTime.MinValue != cronTrigger.StartDateTime) ? cronTrigger.StartDateTime : DateTime.UtcNow;
+
+            // Check if jobDetail already exists
+            var jobKey = new JobKey(jobName, jobGroup);
+            IJobDetail jobDetail = sched.GetJobDetail(jobKey);
+
+            // If jobDetail does not exist, create new
+            if (null == jobDetail)
+            {
+                jobDetail = JobBuilder.Create<PluginRunner>()
+                    .WithIdentity(jobName, jobGroup)
+                    .StoreDurably(false)
+                    .Build();
+                foreach (var mapItem in cronTrigger.DataMap)
+                {
+                    jobDetail.JobDataMap.Add(mapItem.Key, mapItem.Value);
+                }
+            }
+
+            // Create new "Simple" Trigger
+            var trigger = (ICronTrigger)TriggerBuilder.Create()
+                .WithIdentity(name, group)
+                .ForJob(jobDetail)
+                .WithCronSchedule(cronTrigger.CronExpression)
+                .StartAt(startAt)
                 .Build();
 
             // Schedule Job

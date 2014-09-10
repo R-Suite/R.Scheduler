@@ -84,6 +84,17 @@ namespace R.Scheduler
             return _instance;
         }
 
+        /// <summary>
+        /// Halts firing and cleans up resources
+        /// </summary>
+        public static void Shutdown()
+        {
+            if (null != _instance)
+            {
+                _instance.Shutdown();
+            }
+        }
+
         private static NameValueCollection GetProperties()
         {
             var properties = new NameValueCollection();

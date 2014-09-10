@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -39,17 +40,29 @@ namespace R.Scheduler
                 return;
             }
 
-            IJobDetail jobDetail = new JobDetailImpl { JobDataMap = new JobDataMap { { "pluginPath", registeredPlugin.AssemblyPath} } };
-            IOperableTrigger trigger = new SimpleTriggerImpl("AdHockTrigger") { RepeatCount = 1};
-            var tfb = new TriggerFiredBundle(jobDetail, trigger, null, false, null, null, null, null);
+            IScheduler sched = Scheduler.Instance();
 
-            IJob job = new NoOpJob();
+            // Set default values
+            Guid temp = Guid.NewGuid();
+            string name = temp + "_Name";
+            string group = temp + "_Group";
+            string jobName = temp + "_Job";
+            string jobGroup = temp + "_JobGroup";
 
-            IJobExecutionContext context = new JobExecutionContextImpl(null, tfb, job);
+            IJobDetail jobDetail = JobBuilder.Create<PluginRunner>()
+                .WithIdentity(jobName, jobGroup)
+                .StoreDurably(false)
+                .Build();
+            jobDetail.JobDataMap.Add("pluginPath", registeredPlugin.AssemblyPath);
 
-            var pluginRunner = new PluginRunner();
+            var trigger = (ISimpleTrigger) TriggerBuilder.Create()
+                .WithIdentity(name, group)
+                .StartNow()
+                .ForJob(jobDetail)
+                .WithSimpleSchedule(x => x.WithRepeatCount(0))
+                .Build();
 
-            pluginRunner.Execute(context);
+            sched.ScheduleJob(jobDetail, trigger);
         }
 
         public void RegisterPlugin(string pluginName, string assemblyPath)
@@ -88,7 +101,7 @@ namespace R.Scheduler
             }
         }
 
-        public void DescheduleGroup(string groupName)
+        public void DescheduleJobGroup(string groupName)
         {
             IScheduler sched = Scheduler.Instance();
 
@@ -104,92 +117,44 @@ namespace R.Scheduler
             }
         }
 
-        public void DescheduleTrigger(string groupName, string triggerName)
+        public void DescheduleTrigger(string triggerGroup, string triggerName)
         {
-            if (string.IsNullOrEmpty(groupName) || string.IsNullOrEmpty(triggerName))
+            if (string.IsNullOrEmpty(triggerGroup) || string.IsNullOrEmpty(triggerName))
                 throw new ArgumentException("One or both of the required fields (groupName, triggerName) is null or empty.");
 
             IScheduler sched = Scheduler.Instance();
 
-            var triggerKey = new TriggerKey(triggerName, groupName);
+            var triggerKey = new TriggerKey(triggerName, triggerGroup);
             sched.UnscheduleJob(triggerKey);
 
             // delete job if no triggers are left
-            var jobKeys = sched.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(groupName));
+            IList<string> jobGroups = sched.GetJobGroupNames();
 
-            foreach (var jobKey in jobKeys)
+            foreach (string group in jobGroups)
             {
-                var triggers = sched.GetTriggersOfJob(jobKey);
-
-                if (!triggers.Any())
-                    sched.DeleteJob(jobKey);
-            }
-        }
-
-        public void ScheduleSimpleTrigger(SimpleTrigger simpleTrigger)
-        {
-            if (string.IsNullOrEmpty(simpleTrigger.GroupName))
-                throw new ArgumentException("Required fields GroupName is null or empty.");
-
-            IScheduler sched = Scheduler.Instance();
-
-            // Set default values
-            string groupName = simpleTrigger.GroupName;
-            string jobName = !string.IsNullOrEmpty(simpleTrigger.JobName) ? simpleTrigger.JobName : "Job_" + simpleTrigger.GroupName;
-            string triggerName = !string.IsNullOrEmpty(simpleTrigger.TriggerName) ? simpleTrigger.TriggerName : simpleTrigger.GroupName + "_Trigger_" + DateTime.UtcNow.ToString("yyMMddhhmmss");
-            DateTimeOffset startAt = (DateTime.MinValue != simpleTrigger.StartDateTime) ? simpleTrigger.StartDateTime : DateTime.UtcNow;
-
-            // Check if jobDetail already exists
-            var jobKey = new JobKey(jobName, groupName);
-            IJobDetail jobDetail = sched.GetJobDetail(jobKey);
-
-            // If jobDetail does not exist, create new
-            if (null == jobDetail)
-            {
-                jobDetail = JobBuilder.Create<PluginRunner>()
-                    .WithIdentity(jobName, groupName)
-                    .StoreDurably(false)
-                    .Build();
-                foreach (var mapItem in simpleTrigger.DataMap)
+                var groupMatcher = GroupMatcher<JobKey>.GroupContains(group);
+                var jobKeys = sched.GetJobKeys(groupMatcher);
+                foreach (var jobKey in jobKeys)
                 {
-                    jobDetail.JobDataMap.Add(mapItem.Key, mapItem.Value);
+                    var triggers = sched.GetTriggersOfJob(jobKey);
+                    if (!triggers.Any())
+                        sched.DeleteJob(jobKey);
                 }
             }
-
-            // Create new "Simple" Trigger
-            var trigger = (ISimpleTrigger)TriggerBuilder.Create()
-                .WithIdentity(triggerName, groupName)
-                .ForJob(jobDetail)
-                .StartAt(startAt)
-                .WithSimpleSchedule(x => x
-                    .WithInterval(simpleTrigger.RepeatInterval)
-                    .WithRepeatCount(simpleTrigger.RepeatCount))
-                .Build();
-
-            // Schedule Job
-            if (sched.CheckExists(jobKey))
-            {
-                sched.ScheduleJob(trigger);
-            }
-            else
-            {
-                sched.ScheduleJob(jobDetail, trigger);
-            }
         }
 
-        public void ScheduleCronTrigger(CronTrigger cronTrigger)
+        public void ScheduleTrigger(BaseTrigger myTrigger)
         {
-            if (string.IsNullOrEmpty(cronTrigger.Name))
-                throw new ArgumentException("Required fields Name is null or empty.");
-
             IScheduler sched = Scheduler.Instance();
 
             // Set default values
-            string name = cronTrigger.Name;
-            string group = !string.IsNullOrEmpty(cronTrigger.Group) ? cronTrigger.Group : cronTrigger.Name + "_TriggerGroup_" + DateTime.UtcNow.ToString("yyMMddhhmmss");
-            string jobName = !string.IsNullOrEmpty(cronTrigger.JobName) ? cronTrigger.Name : "Job_" + cronTrigger.Name;
-            string jobGroup = !string.IsNullOrEmpty(cronTrigger.JobGroup) ? cronTrigger.Name : "JobGroup_" + cronTrigger.Name;
-            DateTimeOffset startAt = (DateTime.MinValue != cronTrigger.StartDateTime) ? cronTrigger.StartDateTime : DateTime.UtcNow;
+            Guid temp = Guid.NewGuid();
+            string name = !string.IsNullOrEmpty(myTrigger.Name) ? myTrigger.Name : temp + "_Name";
+            string group = !string.IsNullOrEmpty(myTrigger.Group) ? myTrigger.Group : temp + "_Group";
+            string jobName = !string.IsNullOrEmpty(myTrigger.JobName) ? myTrigger.JobName : temp + "_Job";
+            string jobGroup = !string.IsNullOrEmpty(myTrigger.JobGroup) ? myTrigger.JobGroup : temp + "_JobGroup";
+
+            DateTimeOffset startAt = (DateTime.MinValue != myTrigger.StartDateTime) ? myTrigger.StartDateTime : DateTime.UtcNow;
 
             // Check if jobDetail already exists
             var jobKey = new JobKey(jobName, jobGroup);
@@ -202,28 +167,55 @@ namespace R.Scheduler
                     .WithIdentity(jobName, jobGroup)
                     .StoreDurably(false)
                     .Build();
-                foreach (var mapItem in cronTrigger.DataMap)
+
+                foreach (var mapItem in myTrigger.DataMap)
                 {
                     jobDetail.JobDataMap.Add(mapItem.Key, mapItem.Value);
                 }
             }
 
-            // Create new "Simple" Trigger
-            var trigger = (ICronTrigger)TriggerBuilder.Create()
-                .WithIdentity(name, group)
-                .ForJob(jobDetail)
-                .WithCronSchedule(cronTrigger.CronExpression)
-                .StartAt(startAt)
-                .Build();
+            var cronTrigger = myTrigger as CronTrigger;
+            if (cronTrigger != null)
+            {
+                var trigger = (ICronTrigger) TriggerBuilder.Create()
+                    .WithIdentity(name, group)
+                    .ForJob(jobDetail)
+                    .WithCronSchedule(cronTrigger.CronExpression)
+                    .StartAt(startAt)
+                    .Build();
 
-            // Schedule Job
-            if (sched.CheckExists(jobKey))
-            {
-                sched.ScheduleJob(trigger);
+                // Schedule Job
+                if (sched.CheckExists(jobKey))
+                {
+                    sched.ScheduleJob(trigger);
+                }
+                else
+                {
+                    sched.ScheduleJob(jobDetail, trigger);
+                }
             }
-            else
+
+            var simpleTrigger = myTrigger as SimpleTrigger;
+            if (simpleTrigger != null)
             {
-                sched.ScheduleJob(jobDetail, trigger);
+                var trigger = (ISimpleTrigger)TriggerBuilder.Create()
+                    .WithIdentity(name, group)
+                    .ForJob(jobDetail)
+                    .StartAt(startAt)
+                    .WithSimpleSchedule(x => x
+                        .WithInterval(simpleTrigger.RepeatInterval)
+                        .WithRepeatCount(simpleTrigger.RepeatCount))
+                    .Build();
+
+                // Schedule Job
+                if (sched.CheckExists(jobKey))
+                {
+                    sched.ScheduleJob(trigger);
+                }
+                else
+                {
+                    sched.ScheduleJob(jobDetail, trigger);
+                }
             }
         }
     }

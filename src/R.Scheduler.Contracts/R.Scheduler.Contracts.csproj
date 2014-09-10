@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataContracts\PluginCronTrigger.cs" />
     <Compile Include="DataContracts\PluginSimpleTrigger.cs" />
     <Compile Include="Interfaces\BaseJobPlugin.cs" />
     <Compile Include="Interfaces\IJobPlugin.cs" />
@@ -55,6 +56,7 @@
     <Compile Include="Messages\GetRegisteredPluginsRequest.cs" />
     <Compile Include="Messages\GetRegisteredPluginsResponse.cs" />
     <Compile Include="Messages\RegisterPlugin.cs" />
+    <Compile Include="Messages\SchedulePluginWithCronTrigger.cs" />
     <Compile Include="Messages\SchedulePluginWithSimpleTrigger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

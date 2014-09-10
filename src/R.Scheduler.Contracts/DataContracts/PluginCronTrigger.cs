@@ -2,7 +2,7 @@
 
 namespace R.Scheduler.Contracts.DataContracts
 {
-    public class PluginSimpleTrigger
+    public class PluginCronTrigger
     {
         public string PluginName { get; set; }
 
@@ -12,7 +12,6 @@ namespace R.Scheduler.Contracts.DataContracts
         public string JobName { get; set; }
 
         public DateTime StartDateTime { get; set; }
-        public int RepeatCount { get; set; }
-        public TimeSpan RepeatInterval { get; set; }
+        public string CronExpression { get; set; }
     }
 }

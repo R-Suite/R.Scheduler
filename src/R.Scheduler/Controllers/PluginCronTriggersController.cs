@@ -9,23 +9,23 @@ using StructureMap;
 
 namespace R.Scheduler.Controllers
 {
-    public class PluginSimpleTriggersController : ApiController
+    public class PluginCronTriggersController : ApiController
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         readonly IPluginStore _pluginRepository;
         readonly ISchedulerCore _schedulerCore;
 
-        public PluginSimpleTriggersController()
+        public PluginCronTriggersController()
         {
             _pluginRepository = ObjectFactory.GetInstance<IPluginStore>();
             _schedulerCore = ObjectFactory.GetInstance<ISchedulerCore>();
         }
 
         [AcceptVerbs("POST")]
-        [Route("api/plugins/simpleTriggers")]
-        public void Post([FromBody]PluginSimpleTrigger model)
+        [Route("api/plugins/cronTriggers")]
+        public void Post([FromBody]PluginCronTrigger model)
         {
-            Logger.InfoFormat("Entered PluginSimpleTriggersController.Post(). PluginName = {0}", model.PluginName);
+            Logger.InfoFormat("Entered PluginCronTriggersController.Post(). PluginName = {0}", model.PluginName);
 
             var registeredPlugin = _pluginRepository.GetRegisteredPlugin(model.PluginName);
             var pluginName = registeredPlugin.Name;
@@ -33,25 +33,24 @@ namespace R.Scheduler.Controllers
             if (null == registeredPlugin)
                 throw new ArgumentException(string.Format("Error loading registered plugin {0}", model.PluginName));
 
-            _schedulerCore.ScheduleTrigger(new SimpleTrigger
+            _schedulerCore.ScheduleTrigger(new CronTrigger
             {
                 Name = model.TriggerName,
                 Group = !string.IsNullOrEmpty(model.TriggerGroup) ? model.TriggerGroup : pluginName + "_TriggerGroup",
                 JobName = model.JobName,
                 JobGroup = pluginName,
 
-                RepeatCount = model.RepeatCount,
-                RepeatInterval = model.RepeatInterval,
+                CronExpression = model.CronExpression,
                 StartDateTime = model.StartDateTime,
                 DataMap = new Dictionary<string, object> { { "pluginPath", registeredPlugin.AssemblyPath } }
             });
         }
 
         [AcceptVerbs("DELETE")]
-        [Route("api/plugins/simpleTriggers")]
+        [Route("api/plugins/cronTriggers")]
         public void Delete(string pluginName, string triggerName)
         {
-            Logger.InfoFormat("Entered PluginSimpleTriggersController.Delete(). pluginName = {0}. triggerName = {1}", pluginName, triggerName);
+            Logger.InfoFormat("Entered PluginCronTriggersController.Delete(). pluginName = {0}. triggerName = {1}", pluginName, triggerName);
 
             _schedulerCore.DescheduleTrigger(pluginName, triggerName);
         }

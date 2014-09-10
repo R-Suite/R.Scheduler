@@ -3,9 +3,9 @@ using R.MessageBus.Interfaces;
 
 namespace R.Scheduler.Contracts.Messages
 {
-    public class SchedulePluginWithSimpleTrigger : Message
+    public class SchedulePluginWithCronTrigger : Message
     {
-        public SchedulePluginWithSimpleTrigger(Guid correlationId)
+        public SchedulePluginWithCronTrigger(Guid correlationId)
             : base(correlationId)
         {
         }
@@ -18,7 +18,6 @@ namespace R.Scheduler.Contracts.Messages
         public string JobName { get; set; }
 
         public DateTime StartDateTime { get; set; }
-        public int RepeatCount { get; set; }
-        public TimeSpan RepeatInterval { get; set; }
+        public string CronExpression { get; set; }
     }
 }

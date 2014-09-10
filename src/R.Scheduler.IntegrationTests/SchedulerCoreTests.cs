@@ -9,7 +9,7 @@ namespace R.Scheduler.IntegrationTests
     {
         private readonly Mock<IPluginStore> _mockJobExecutionContext = new Mock<IPluginStore>();
 
-        [Fact]
+        [Fact(Skip = "Need to abstract the static scheduler away to make this class testable")]
         public void TestExecutePlugin()
         {
             // Arrange

@@ -8,36 +8,38 @@ using R.Scheduler.Interfaces;
 
 namespace R.Scheduler.Handlers
 {
-    public class SchedulePluginWithSimpleTriggerHandler : IMessageHandler<SchedulePluginWithSimpleTrigger>
+    public class SchedulePluginWithCronTriggerHandler : IMessageHandler<SchedulePluginWithCronTrigger>
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         readonly ISchedulerCore _schedulerCore;
         private readonly IPluginStore _pluginStore;
 
-        public SchedulePluginWithSimpleTriggerHandler(ISchedulerCore schedulerCore, IPluginStore pluginStore)
+        public SchedulePluginWithCronTriggerHandler(ISchedulerCore schedulerCore, IPluginStore pluginStore)
         {
             _schedulerCore = schedulerCore;
             _pluginStore = pluginStore;
         }
 
-        public void Execute(SchedulePluginWithSimpleTrigger command)
+        public void Execute(SchedulePluginWithCronTrigger command)
         {
-            Logger.InfoFormat("Entered SchedulePluginWithSimpleTriggerHandler.Execute(). PluginName = {0}", command.PluginName);
+            Logger.InfoFormat("Entered SchedulePluginWithCronTriggerHandler.Execute(). PluginName = {0}", command.PluginName);
+
+            if (string.IsNullOrEmpty(command.CronExpression))
+                throw new ArgumentException(string.Format("CronExpression is empty for {0}", command.PluginName));
 
             var registeredPlugin = _pluginStore.GetRegisteredPlugin(command.PluginName);
             var pluginName = registeredPlugin.Name;
 
             if (null == registeredPlugin)
-                throw new ArgumentException(string.Format("Error loading registered plugin {0}", command.PluginName));
+                throw new ArgumentException(string.Format("Error loading registered plugin {0}", pluginName));
 
-            _schedulerCore.ScheduleTrigger(new SimpleTrigger
+            _schedulerCore.ScheduleTrigger(new CronTrigger
             {
                 Name = command.TriggerName,
                 Group = !string.IsNullOrEmpty(command.TriggerGroup) ? command.TriggerGroup : pluginName + "_TriggerGroup",
                 JobName = command.JobName,
                 JobGroup = pluginName,
-                RepeatCount = command.RepeatCount,
-                RepeatInterval = command.RepeatInterval,
+                CronExpression = command.CronExpression,
                 StartDateTime = command.StartDateTime,
                 DataMap = new Dictionary<string, object> { { "pluginPath", registeredPlugin.AssemblyPath } }
             });

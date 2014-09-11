@@ -46,14 +46,5 @@ namespace R.Scheduler.Controllers
                 DataMap = new Dictionary<string, object> { { "pluginPath", registeredPlugin.AssemblyPath } }
             });
         }
-
-        [AcceptVerbs("DELETE")]
-        [Route("api/plugins/simpleTriggers")]
-        public void Delete(string pluginName, string triggerName)
-        {
-            Logger.InfoFormat("Entered PluginSimpleTriggersController.Delete(). pluginName = {0}. triggerName = {1}", pluginName, triggerName);
-
-            _schedulerCore.RemoveTrigger(triggerName, pluginName);
-        }
     }
 }

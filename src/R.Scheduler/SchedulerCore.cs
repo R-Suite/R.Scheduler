@@ -20,10 +20,12 @@ namespace R.Scheduler
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         readonly IPluginStore _pluginStore;
+        private readonly IScheduler _scheduler;
 
-        public SchedulerCore(IPluginStore pluginStore)
+        public SchedulerCore(IPluginStore pluginStore, IScheduler scheduler)
         {
             _pluginStore = pluginStore;
+            _scheduler = scheduler;
         }
 
         public void ExecutePlugin(string pluginName)
@@ -35,8 +37,6 @@ namespace R.Scheduler
                 Logger.ErrorFormat("Error getting registered plugin {0}", pluginName);
                 return;
             }
-
-            IScheduler sched = Scheduler.Instance();
 
             // Set default values
             Guid temp = Guid.NewGuid();
@@ -58,7 +58,7 @@ namespace R.Scheduler
                 .WithSimpleSchedule(x => x.WithRepeatCount(0))
                 .Build();
 
-            sched.ScheduleJob(jobDetail, trigger);
+            _scheduler.ScheduleJob(jobDetail, trigger);
         }
 
         public void RegisterPlugin(string pluginName, string assemblyPath)
@@ -80,26 +80,25 @@ namespace R.Scheduler
 
         public void RemovePlugin(string pluginName)
         {
-            IScheduler sched = Scheduler.Instance();
+            var jobKeys = _scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(pluginName));
 
-            var jobKeys = sched.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(pluginName));
-
-            sched.DeleteJobs(jobKeys.ToList());
+            _scheduler.DeleteJobs(jobKeys.ToList());
 
             int result = _pluginStore.RemovePlugin(pluginName);
 
             if (result == 0)
             {
-                Logger.WarnFormat("Error removing  from data store. Plugin {0} not found", pluginName);
+                Logger.WarnFormat("Error removing from data store. Plugin {0} not found", pluginName);
             }
         }
 
         public void RemoveJobGroup(string groupName)
         {
-            IScheduler sched = Scheduler.Instance();
+            if (string.IsNullOrEmpty(groupName))
+                throw new ArgumentException("groupName is null or empty.");
 
-            Quartz.Collection.ISet<JobKey> jobKeys = sched.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(groupName));
-            sched.DeleteJobs(jobKeys.ToList());
+            Quartz.Collection.ISet<JobKey> jobKeys = _scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(groupName));
+            _scheduler.DeleteJobs(jobKeys.ToList());
         }
 
         public void RemoveJob(string jobName, string jobGroup = null)
@@ -107,23 +106,21 @@ namespace R.Scheduler
             if (string.IsNullOrEmpty(jobName))
                 throw new ArgumentException("jobName is null or empty.");
 
-            IScheduler sched = Scheduler.Instance();
-
-            IList<string> jobGroups = !string.IsNullOrEmpty(jobGroup) ? new List<string> { jobGroup } : sched.GetJobGroupNames();
+            IList<string> jobGroups = !string.IsNullOrEmpty(jobGroup) ? new List<string> { jobGroup } : _scheduler.GetJobGroupNames();
 
             foreach (string group in jobGroups)
             {
                 var jobKey = new JobKey(jobName, group);
-                sched.DeleteJob(jobKey);
+
+                if (_scheduler.CheckExists(jobKey))
+                    _scheduler.DeleteJob(jobKey);
             }
         }
 
         public void RemoveTriggerGroup(string groupName)
         {
-            IScheduler sched = Scheduler.Instance();
-
-            Quartz.Collection.ISet<TriggerKey> triggerKeys = sched.GetTriggerKeys(GroupMatcher<TriggerKey>.GroupEquals(groupName));
-            sched.UnscheduleJobs(triggerKeys.ToList());
+            Quartz.Collection.ISet<TriggerKey> triggerKeys = _scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.GroupEquals(groupName));
+            _scheduler.UnscheduleJobs(triggerKeys.ToList());
         }
 
         public void RemoveTrigger(string triggerName, string triggerGroup = null)
@@ -131,21 +128,19 @@ namespace R.Scheduler
             if (string.IsNullOrEmpty(triggerName))
                 throw new ArgumentException("triggerName is null or empty.");
 
-            IScheduler sched = Scheduler.Instance();
-
-            IList<string> triggerGroups = !string.IsNullOrEmpty(triggerGroup) ? new List<string> { triggerGroup} : sched.GetTriggerGroupNames();
+            IList<string> triggerGroups = !string.IsNullOrEmpty(triggerGroup) ? new List<string> { triggerGroup } : _scheduler.GetTriggerGroupNames();
 
             foreach (string group in triggerGroups)
             {
                 var triggerKey = new TriggerKey(triggerName, group);
-                sched.UnscheduleJob(triggerKey);
+
+                if (_scheduler.CheckExists(triggerKey))
+                    _scheduler.UnscheduleJob(triggerKey);
             }
         }
 
         public void ScheduleTrigger(BaseTrigger myTrigger)
         {
-            IScheduler sched = Scheduler.Instance();
-
             // Set default values
             Guid temp = Guid.NewGuid();
             string name = !string.IsNullOrEmpty(myTrigger.Name) ? myTrigger.Name : temp + "_Name";
@@ -157,7 +152,7 @@ namespace R.Scheduler
 
             // Check if jobDetail already exists
             var jobKey = new JobKey(jobName, jobGroup);
-            IJobDetail jobDetail = sched.GetJobDetail(jobKey);
+            IJobDetail jobDetail = _scheduler.GetJobDetail(jobKey);
 
             // If jobDetail does not exist, create new
             if (null == jobDetail)
@@ -184,13 +179,13 @@ namespace R.Scheduler
                     .Build();
 
                 // Schedule Job
-                if (sched.CheckExists(jobKey))
+                if (_scheduler.CheckExists(jobKey))
                 {
-                    sched.ScheduleJob(trigger);
+                    _scheduler.ScheduleJob(trigger);
                 }
                 else
                 {
-                    sched.ScheduleJob(jobDetail, trigger);
+                    _scheduler.ScheduleJob(jobDetail, trigger);
                 }
             }
 
@@ -207,13 +202,13 @@ namespace R.Scheduler
                     .Build();
 
                 // Schedule Job
-                if (sched.CheckExists(jobKey))
+                if (_scheduler.CheckExists(jobKey))
                 {
-                    sched.ScheduleJob(trigger);
+                    _scheduler.ScheduleJob(trigger);
                 }
                 else
                 {
-                    sched.ScheduleJob(jobDetail, trigger);
+                    _scheduler.ScheduleJob(jobDetail, trigger);
                 }
             }
         }

@@ -45,14 +45,5 @@ namespace R.Scheduler.Controllers
                 DataMap = new Dictionary<string, object> { { "pluginPath", registeredPlugin.AssemblyPath } }
             });
         }
-
-        [AcceptVerbs("DELETE")]
-        [Route("api/plugins/cronTriggers")]
-        public void Delete(string pluginName, string triggerName)
-        {
-            Logger.InfoFormat("Entered PluginCronTriggersController.Delete(). pluginName = {0}. triggerName = {1}", pluginName, triggerName);
-
-            _schedulerCore.RemoveTrigger(triggerName, pluginName);
-        }
     }
 }

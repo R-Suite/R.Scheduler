@@ -6,21 +6,21 @@ using R.Scheduler.Interfaces;
 
 namespace R.Scheduler.Handlers
 {
-    public class DeschedulePluginTriggerHandler : IMessageHandler<DeschedulePluginTrigger>
+    public class DescheduleTriggerHandler : IMessageHandler<DescheduleTrigger>
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         readonly ISchedulerCore _schedulerCore;
 
-        public DeschedulePluginTriggerHandler(ISchedulerCore schedulerCore)
+        public DescheduleTriggerHandler(ISchedulerCore schedulerCore)
         {
             _schedulerCore = schedulerCore;
         }
 
-        public void Execute(DeschedulePluginTrigger message)
+        public void Execute(DescheduleTrigger message)
         {
-            Logger.InfoFormat("Entered DeschedulePluginTriggerHandler.Execute(). PluginName = {0}. TriggerName = {1}", message.PluginName, message.TriggerName);
+            Logger.InfoFormat("Entered DescheduleTriggerHandler.Execute(). TriggerName = {0}, TriggerGroup = {1}", message.TriggerName, message.TriggerGroup);
 
-            _schedulerCore.RemoveTrigger(message.TriggerName, message.PluginName);
+            _schedulerCore.RemoveTrigger(message.TriggerName, message.TriggerGroup);
         }
 
         public IConsumeContext Context { get; set; }

@@ -3,10 +3,7 @@ using System.IO;
 using System.Reflection;
 using log4net;
 using Quartz;
-using R.MessageBus.Interfaces;
 using R.Scheduler.Contracts.Interfaces;
-using R.Scheduler.Contracts.Messages;
-using StructureMap;
 
 namespace R.Scheduler.JobRunners
 {

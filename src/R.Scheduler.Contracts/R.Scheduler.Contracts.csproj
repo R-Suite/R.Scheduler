@@ -49,6 +49,8 @@
     <Compile Include="Interfaces\IJobPlugin.cs" />
     <Compile Include="DataContracts\PluginDetails.cs" />
     <Compile Include="DataContracts\RegisteredPlugin.cs" />
+    <Compile Include="Messages\DescheduleJob.cs" />
+    <Compile Include="Messages\DescheduleTriggerGroup.cs" />
     <Compile Include="Messages\RemovePlugin.cs" />
     <Compile Include="Messages\DeschedulePluginTrigger.cs" />
     <Compile Include="Messages\DeschedulePlugin.cs" />

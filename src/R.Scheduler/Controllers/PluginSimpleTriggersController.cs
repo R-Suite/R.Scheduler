@@ -53,7 +53,7 @@ namespace R.Scheduler.Controllers
         {
             Logger.InfoFormat("Entered PluginSimpleTriggersController.Delete(). pluginName = {0}. triggerName = {1}", pluginName, triggerName);
 
-            _schedulerCore.DescheduleTrigger(pluginName, triggerName);
+            _schedulerCore.RemoveTrigger(triggerName, pluginName);
         }
     }
 }

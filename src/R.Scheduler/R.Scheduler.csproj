@@ -127,9 +127,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration.cs" />
+    <Compile Include="Controllers\JobsController.cs" />
     <Compile Include="Controllers\PluginCronTriggersController.cs" />
     <Compile Include="Controllers\PluginsController.cs" />
     <Compile Include="Controllers\PluginSimpleTriggersController.cs" />
+    <Compile Include="Controllers\TriggerGroupsController.cs" />
+    <Compile Include="Handlers\DescheduleJobHandler.cs" />
+    <Compile Include="Handlers\DescheduleTriggerGroupHandler.cs" />
     <Compile Include="Handlers\RemovePluginHandler.cs" />
     <Compile Include="Handlers\SchedulePluginWithCronTriggerHandler.cs" />
     <Compile Include="SchedulerCore.cs" />

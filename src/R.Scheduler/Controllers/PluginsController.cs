@@ -48,7 +48,7 @@ namespace R.Scheduler.Controllers
         {
             Logger.InfoFormat("Entered PluginsController.Deschedule(). name = {0}", model);
 
-            _schedulerCore.DescheduleJobGroup(model);
+            _schedulerCore.RemoveJobGroup(model);
         }
 
         // POST api/plugins 

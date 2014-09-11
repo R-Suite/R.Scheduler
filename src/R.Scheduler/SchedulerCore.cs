@@ -5,11 +5,7 @@ using System.Linq;
 using System.Reflection;
 using log4net;
 using Quartz;
-using Quartz.Impl;
 using Quartz.Impl.Matchers;
-using Quartz.Impl.Triggers;
-using Quartz.Job;
-using Quartz.Spi;
 using R.Scheduler.Contracts.DataContracts;
 using R.Scheduler.Interfaces;
 using R.Scheduler.JobRunners;
@@ -88,10 +84,7 @@ namespace R.Scheduler
 
             var jobKeys = sched.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(pluginName));
 
-            foreach (var jobKey in jobKeys)
-            {
-                sched.DeleteJob(jobKey);
-            }
+            sched.DeleteJobs(jobKeys.ToList());
 
             int result = _pluginStore.RemovePlugin(pluginName);
 
@@ -101,45 +94,51 @@ namespace R.Scheduler
             }
         }
 
-        public void DescheduleJobGroup(string groupName)
+        public void RemoveJobGroup(string groupName)
+        {
+            IScheduler sched = Scheduler.Instance();
+
+            Quartz.Collection.ISet<JobKey> jobKeys = sched.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(groupName));
+            sched.DeleteJobs(jobKeys.ToList());
+        }
+
+        public void RemoveJob(string jobName, string jobGroup = null)
+        {
+            if (string.IsNullOrEmpty(jobName))
+                throw new ArgumentException("jobName is null or empty.");
+
+            IScheduler sched = Scheduler.Instance();
+
+            IList<string> jobGroups = !string.IsNullOrEmpty(jobGroup) ? new List<string> { jobGroup } : sched.GetJobGroupNames();
+
+            foreach (string group in jobGroups)
+            {
+                var jobKey = new JobKey(jobName, group);
+                sched.DeleteJob(jobKey);
+            }
+        }
+
+        public void RemoveTriggerGroup(string groupName)
         {
             IScheduler sched = Scheduler.Instance();
 
             Quartz.Collection.ISet<TriggerKey> triggerKeys = sched.GetTriggerKeys(GroupMatcher<TriggerKey>.GroupEquals(groupName));
             sched.UnscheduleJobs(triggerKeys.ToList());
-
-            // delete job if no triggers are left
-            var jobKeys = sched.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(groupName));
-
-            foreach (var jobKey in jobKeys)
-            {
-                sched.DeleteJob(jobKey);
-            }
         }
 
-        public void DescheduleTrigger(string triggerGroup, string triggerName)
+        public void RemoveTrigger(string triggerName, string triggerGroup = null)
         {
-            if (string.IsNullOrEmpty(triggerGroup) || string.IsNullOrEmpty(triggerName))
-                throw new ArgumentException("One or both of the required fields (groupName, triggerName) is null or empty.");
+            if (string.IsNullOrEmpty(triggerName))
+                throw new ArgumentException("triggerName is null or empty.");
 
             IScheduler sched = Scheduler.Instance();
 
-            var triggerKey = new TriggerKey(triggerName, triggerGroup);
-            sched.UnscheduleJob(triggerKey);
+            IList<string> triggerGroups = !string.IsNullOrEmpty(triggerGroup) ? new List<string> { triggerGroup} : sched.GetTriggerGroupNames();
 
-            // delete job if no triggers are left
-            IList<string> jobGroups = sched.GetJobGroupNames();
-
-            foreach (string group in jobGroups)
+            foreach (string group in triggerGroups)
             {
-                var groupMatcher = GroupMatcher<JobKey>.GroupContains(group);
-                var jobKeys = sched.GetJobKeys(groupMatcher);
-                foreach (var jobKey in jobKeys)
-                {
-                    var triggers = sched.GetTriggersOfJob(jobKey);
-                    if (!triggers.Any())
-                        sched.DeleteJob(jobKey);
-                }
+                var triggerKey = new TriggerKey(triggerName, group);
+                sched.UnscheduleJob(triggerKey);
             }
         }
 

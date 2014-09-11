@@ -8,9 +8,13 @@
 
         void RemovePlugin(string pluginName);
 
-        void DescheduleJobGroup(string groupName);
+        void RemoveJobGroup(string groupName);
 
-        void DescheduleTrigger(string groupName, string triggerName);
+        void RemoveJob(string jobName, string jobGroup = null);
+
+        void RemoveTriggerGroup(string groupName);
+
+        void RemoveTrigger(string triggerName, string groupName = null);
 
         void ScheduleTrigger(BaseTrigger myTrigger);
     }

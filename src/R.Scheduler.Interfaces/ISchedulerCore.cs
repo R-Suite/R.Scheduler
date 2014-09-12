@@ -1,8 +1,11 @@
-﻿namespace R.Scheduler.Interfaces
+﻿using System;
+using System.Collections.Generic;
+
+namespace R.Scheduler.Interfaces
 {
     public interface ISchedulerCore
     {
-        void ExecutePlugin(string pluginName);
+        void ExecuteJob(Type jobType, Dictionary<string, object> dataMap);
 
         void RegisterPlugin(string pluginName, string assemblyPath);
 
@@ -16,6 +19,6 @@
 
         void RemoveTrigger(string triggerName, string groupName = null);
 
-        void ScheduleTrigger(BaseTrigger myTrigger);
+        void ScheduleTrigger(BaseTrigger myTrigger, Type jobType);
     }
 }

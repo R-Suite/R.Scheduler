@@ -1,8 +1,10 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Reflection;
 using log4net;
 using R.MessageBus.Interfaces;
 using R.Scheduler.Contracts.Messages;
 using R.Scheduler.Interfaces;
+using R.Scheduler.JobRunners;
 
 namespace R.Scheduler.Handlers
 {
@@ -10,17 +12,29 @@ namespace R.Scheduler.Handlers
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         readonly ISchedulerCore _schedulerCore;
+        private readonly IPluginStore _pluginStore;
 
-        public ExecutePluginHandler(ISchedulerCore schedulerCore)
+        public ExecutePluginHandler(ISchedulerCore schedulerCore, IPluginStore pluginStore)
         {
             _schedulerCore = schedulerCore;
+            _pluginStore = pluginStore;
         }
 
         public void Execute(ExecutePlugin message)
         {
             Logger.InfoFormat("Entered ExecutePluginHandler.Execute(). PluginName = {0}", message.PluginName);
 
-            _schedulerCore.ExecutePlugin(message.PluginName);
+            var registeredPlugin = _pluginStore.GetRegisteredPlugin(message.PluginName);
+
+            if (null == registeredPlugin)
+            {
+                Logger.ErrorFormat("Error getting registered plugin {0}", message.PluginName);
+                return;
+            }
+
+            var dataMap = new Dictionary<string, object> { { "pluginPath", registeredPlugin.AssemblyPath } };
+
+            _schedulerCore.ExecuteJob(typeof(PluginRunner), dataMap);
         }
 
         public IConsumeContext Context { get; set; }

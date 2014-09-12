@@ -24,7 +24,7 @@ namespace R.Scheduler.UnitTests
             ISchedulerCore schedulerCore = new SchedulerCore(_mockPluginStore.Object, _mockScheduler.Object);
 
             // Act 
-            schedulerCore.ExecutePlugin("TestPlugin");
+            schedulerCore.ExecuteJob(typeof(IJob), new Dictionary<string, object> { { "pluginPath", "TestPath.dll" } });
 
             // Assert
             _mockScheduler.Verify(x => x.ScheduleJob(
@@ -135,9 +135,9 @@ namespace R.Scheduler.UnitTests
             _mockScheduler.Setup(x => x.CheckExists(It.IsAny<JobKey>())).Returns(false);
 
             ISchedulerCore schedulerCore = new SchedulerCore(_mockPluginStore.Object, _mockScheduler.Object);
-
+            
             // Act 
-            schedulerCore.ScheduleTrigger(myTrigger);
+            schedulerCore.ScheduleTrigger(myTrigger, typeof(IJob));
 
             // Assert
             _mockScheduler.Verify(x => x.ScheduleJob(
@@ -165,7 +165,7 @@ namespace R.Scheduler.UnitTests
             ISchedulerCore schedulerCore = new SchedulerCore(_mockPluginStore.Object, _mockScheduler.Object);
 
             // Act 
-            schedulerCore.ScheduleTrigger(myTrigger);
+            schedulerCore.ScheduleTrigger(myTrigger, typeof(IJob));
 
             // Assert
             _mockScheduler.Verify(x => x.ScheduleJob(

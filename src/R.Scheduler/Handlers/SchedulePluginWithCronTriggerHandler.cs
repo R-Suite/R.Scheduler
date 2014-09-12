@@ -5,6 +5,7 @@ using log4net;
 using R.MessageBus.Interfaces;
 using R.Scheduler.Contracts.Messages;
 using R.Scheduler.Interfaces;
+using R.Scheduler.JobRunners;
 
 namespace R.Scheduler.Handlers
 {
@@ -42,7 +43,7 @@ namespace R.Scheduler.Handlers
                 CronExpression = command.CronExpression,
                 StartDateTime = command.StartDateTime,
                 DataMap = new Dictionary<string, object> { { "pluginPath", registeredPlugin.AssemblyPath } }
-            });
+            }, typeof(PluginRunner));
         }
 
         public IConsumeContext Context { get; set; }

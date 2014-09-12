@@ -5,6 +5,7 @@ using System.Web.Http;
 using log4net;
 using R.Scheduler.Contracts.DataContracts;
 using R.Scheduler.Interfaces;
+using R.Scheduler.JobRunners;
 using StructureMap;
 
 namespace R.Scheduler.Controllers
@@ -44,7 +45,7 @@ namespace R.Scheduler.Controllers
                 RepeatInterval = model.RepeatInterval,
                 StartDateTime = model.StartDateTime,
                 DataMap = new Dictionary<string, object> { { "pluginPath", registeredPlugin.AssemblyPath } }
-            });
+            }, typeof(PluginRunner));
         }
     }
 }

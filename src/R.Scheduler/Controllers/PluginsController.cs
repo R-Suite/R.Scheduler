@@ -4,6 +4,7 @@ using System.Web.Http;
 using log4net;
 using R.Scheduler.Contracts.DataContracts;
 using R.Scheduler.Interfaces;
+using R.Scheduler.JobRunners;
 using StructureMap;
 
 namespace R.Scheduler.Controllers
@@ -38,7 +39,17 @@ namespace R.Scheduler.Controllers
         {
             Logger.InfoFormat("Entered PluginsController.Execute(). name = {0}", model);
 
-            _schedulerCore.ExecutePlugin(model);
+            var registeredPlugin = _pluginRepository.GetRegisteredPlugin(model);
+
+            if (null == registeredPlugin)
+            {
+                Logger.ErrorFormat("Error getting registered plugin {0}", model);
+                return;
+            }
+
+            var dataMap = new Dictionary<string, object> {{"pluginPath", registeredPlugin.AssemblyPath}};
+
+            _schedulerCore.ExecuteJob(typeof(PluginRunner), dataMap);
         }
 
         // POST api/plugins/execute 

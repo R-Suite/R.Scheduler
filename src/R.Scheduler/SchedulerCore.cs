@@ -14,7 +14,6 @@ namespace R.Scheduler
 {
     /// <summary>
     /// todo: separate core scheduler functionality from the plugin-specific scheduler functionality 
-    /// todo: remove dependency on PluginRunner
     /// </summary>
     public class SchedulerCore : ISchedulerCore
     {
@@ -28,16 +27,8 @@ namespace R.Scheduler
             _scheduler = scheduler;
         }
 
-        public void ExecutePlugin(string pluginName)
+        public void ExecuteJob(Type jobType, Dictionary<string, object> dataMap)
         {
-            var registeredPlugin = _pluginStore.GetRegisteredPlugin(pluginName);
-
-            if (null == registeredPlugin)
-            {
-                Logger.ErrorFormat("Error getting registered plugin {0}", pluginName);
-                return;
-            }
-
             // Set default values
             Guid temp = Guid.NewGuid();
             string name = temp + "_Name";
@@ -45,11 +36,18 @@ namespace R.Scheduler
             string jobName = temp + "_Job";
             string jobGroup = temp + "_JobGroup";
 
-            IJobDetail jobDetail = JobBuilder.Create<PluginRunner>()
+            IJobDetail jobDetail = JobBuilder.Create(jobType)
                 .WithIdentity(jobName, jobGroup)
                 .StoreDurably(false)
                 .Build();
-            jobDetail.JobDataMap.Add("pluginPath", registeredPlugin.AssemblyPath);
+
+            if (null != dataMap && dataMap.Count > 0)
+            {
+                foreach (var mapItem in dataMap)
+                {
+                    jobDetail.JobDataMap.Add(mapItem.Key, mapItem.Value);
+                }
+            }
 
             var trigger = (ISimpleTrigger) TriggerBuilder.Create()
                 .WithIdentity(name, group)
@@ -139,7 +137,7 @@ namespace R.Scheduler
             }
         }
 
-        public void ScheduleTrigger(BaseTrigger myTrigger)
+        public void ScheduleTrigger(BaseTrigger myTrigger, Type jobType)
         {
             // Set default values
             Guid temp = Guid.NewGuid();
@@ -157,7 +155,7 @@ namespace R.Scheduler
             // If jobDetail does not exist, create new
             if (null == jobDetail)
             {
-                jobDetail = JobBuilder.Create<PluginRunner>()
+                jobDetail = JobBuilder.Create(jobType)
                     .WithIdentity(jobName, jobGroup)
                     .StoreDurably(false)
                     .Build();

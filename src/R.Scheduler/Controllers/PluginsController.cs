@@ -90,7 +90,14 @@ namespace R.Scheduler.Controllers
         {
             Logger.InfoFormat("Entered PluginsController.Delete(). id = {0}", id);
 
-            _schedulerCore.RemovePlugin(id);
+            _schedulerCore.RemoveJobGroup(id);
+
+            int result = _pluginRepository.RemovePlugin(id);
+
+            if (result == 0)
+            {
+                Logger.WarnFormat("Error removing from data store. Plugin {0} not found", id);
+            }
         }
     } 
 }

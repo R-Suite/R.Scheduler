@@ -137,6 +137,7 @@
     <Compile Include="Handlers\DescheduleTriggerHandler.cs" />
     <Compile Include="Handlers\RemovePluginHandler.cs" />
     <Compile Include="Handlers\SchedulePluginWithCronTriggerHandler.cs" />
+    <Compile Include="JobTypes\Plugin\PluginJob.cs" />
     <Compile Include="SchedulerCore.cs" />
     <Compile Include="Handlers\DeschedulePluginHandler.cs" />
     <Compile Include="Handlers\ExecutePluginHandler.cs" />

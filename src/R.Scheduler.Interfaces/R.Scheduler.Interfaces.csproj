@@ -46,6 +46,7 @@
     <Compile Include="BaseTrigger.cs" />
     <Compile Include="CronTrigger.cs" />
     <Compile Include="IConfiguration.cs" />
+    <Compile Include="IJobTypeManager.cs" />
     <Compile Include="IPluginStore.cs" />
     <Compile Include="ISchedulerCore.cs" />
     <Compile Include="PersistanceStoreType.cs" />

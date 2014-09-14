@@ -6,7 +6,7 @@ using StructureMap;
 
 namespace R.Scheduler.Controllers
 {
-    class JobsController : ApiController
+    public class JobsController : ApiController
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         readonly ISchedulerCore _schedulerCore;

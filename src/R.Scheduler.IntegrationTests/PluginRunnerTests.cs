@@ -2,7 +2,7 @@
 using Moq;
 using Quartz;
 using Quartz.Impl;
-using R.Scheduler.JobRunners;
+using R.Scheduler.AssemblyPlugin;
 using Xunit;
 
 namespace R.Scheduler.IntegrationTests

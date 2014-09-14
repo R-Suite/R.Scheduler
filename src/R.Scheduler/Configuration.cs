@@ -1,10 +1,10 @@
 ﻿using R.MessageBus.Interfaces;
-using R.Scheduler.Contracts;
 using R.Scheduler.Interfaces;
+using IConfiguration = R.Scheduler.Interfaces.IConfiguration;
 
 namespace R.Scheduler
 {
-    public class Configuration : Interfaces.IConfiguration
+    public class Configuration : IConfiguration
     {
         public Configuration()
         {

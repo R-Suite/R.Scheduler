@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using Quartz;
 
 namespace R.Scheduler.Interfaces
 {
     public interface ISchedulerCore
     {
         void ExecuteJob(Type jobType, Dictionary<string, object> dataMap);
-
-        void RegisterPlugin(string pluginName, string assemblyPath);
-
-        void RemovePlugin(string pluginName);
 
         void RemoveJobGroup(string groupName);
 
@@ -20,5 +17,7 @@ namespace R.Scheduler.Interfaces
         void RemoveTrigger(string triggerName, string groupName = null);
 
         void ScheduleTrigger(BaseTrigger myTrigger, Type jobType);
+
+        IList<ITrigger> GetTriggersOfJobGroup(string groupName);
     }
 }

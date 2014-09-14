@@ -1,29 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using log4net;
 using Quartz;
 using Quartz.Impl.Matchers;
-using R.Scheduler.Contracts.DataContracts;
 using R.Scheduler.Interfaces;
-using R.Scheduler.JobRunners;
 
 namespace R.Scheduler
 {
     /// <summary>
-    /// todo: separate core scheduler functionality from the plugin-specific scheduler functionality 
+    /// 
     /// </summary>
     public class SchedulerCore : ISchedulerCore
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        readonly IPluginStore _pluginStore;
         private readonly IScheduler _scheduler;
 
-        public SchedulerCore(IPluginStore pluginStore, IScheduler scheduler)
+        public SchedulerCore(IScheduler scheduler)
         {
-            _pluginStore = pluginStore;
             _scheduler = scheduler;
         }
 
@@ -57,37 +52,6 @@ namespace R.Scheduler
                 .Build();
 
             _scheduler.ScheduleJob(jobDetail, trigger);
-        }
-
-        public void RegisterPlugin(string pluginName, string assemblyPath)
-        {
-            if (!File.Exists(assemblyPath))
-            {
-                Logger.ErrorFormat("Error registering plugin {0}. Invalid assembly path {1}", pluginName, assemblyPath);
-                return;
-            }
-            //todo: verify valid plugin.. reflection?
-
-            _pluginStore.RegisterPlugin(new Plugin
-            {
-                AssemblyPath = assemblyPath,
-                Name = pluginName,
-                Status = "registered"
-            });
-        }
-
-        public void RemovePlugin(string pluginName)
-        {
-            var jobKeys = _scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(pluginName));
-
-            _scheduler.DeleteJobs(jobKeys.ToList());
-
-            int result = _pluginStore.RemovePlugin(pluginName);
-
-            if (result == 0)
-            {
-                Logger.WarnFormat("Error removing from data store. Plugin {0} not found", pluginName);
-            }
         }
 
         public void RemoveJobGroup(string groupName)
@@ -209,6 +173,20 @@ namespace R.Scheduler
                     _scheduler.ScheduleJob(jobDetail, trigger);
                 }
             }
+        }
+
+        public IList<ITrigger> GetTriggersOfJobGroup(string groupName)
+        {
+            var retval = new List<ITrigger>();
+
+            Quartz.Collection.ISet<JobKey> jobKeys = _scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(groupName));
+
+            foreach (var jobKey in jobKeys)
+            {
+                retval.AddRange(_scheduler.GetTriggersOfJob(jobKey));
+            }
+
+            return retval;
         }
     }
 }

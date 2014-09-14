@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Moq;
 using Quartz;
-using Quartz.Impl.Matchers;
-using R.Scheduler.Contracts.DataContracts;
+using R.Scheduler.AssemblyPlugin.Contracts.DataContracts;
+using R.Scheduler.AssemblyPlugin.Interfaces;
 using R.Scheduler.Interfaces;
 using Xunit;
 
@@ -21,7 +20,7 @@ namespace R.Scheduler.UnitTests
             // Arrange
             _mockPluginStore.Setup(x => x.GetRegisteredPlugin("TestPlugin")).Returns(new Plugin { Name = "Test", AssemblyPath = @"TestPath.dll" });
 
-            ISchedulerCore schedulerCore = new SchedulerCore(_mockPluginStore.Object, _mockScheduler.Object);
+            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object);
 
             // Act 
             schedulerCore.ExecuteJob(typeof(IJob), new Dictionary<string, object> { { "pluginPath", "TestPath.dll" } });
@@ -33,22 +32,6 @@ namespace R.Scheduler.UnitTests
         }
 
         [Fact]
-        public void ShouldDeleteJobsAndDeletePluginWhenCalledRemovePlugin()
-        {
-            // Arrange
-            _mockScheduler.Setup(x => x.GetJobKeys(It.IsAny<GroupMatcher<JobKey>>())).Returns(new Quartz.Collection.HashSet<JobKey> { new JobKey("TestJobKey", "TestPlugin") });
-
-            ISchedulerCore schedulerCore = new SchedulerCore(_mockPluginStore.Object, _mockScheduler.Object);
-
-            // Act 
-            schedulerCore.RemovePlugin("TestPlugin");
-
-            // Assert
-            _mockScheduler.Verify(x => x.DeleteJobs(It.Is<List<JobKey>>(i => i.Any(j => j.Name == "TestJobKey"))));
-            _mockPluginStore.Verify(i => i.RemovePlugin("TestPlugin"), Times.Once());
-        }
-
-        [Fact]
         public void ShouldDeleteJobInAllJobGroupsWhenJobGroupIsNotSpecifiedInRemoveJob()
         {
             // Arrange
@@ -56,7 +39,7 @@ namespace R.Scheduler.UnitTests
             _mockScheduler.Setup(x => x.CheckExists(It.IsAny<JobKey>())).Returns(true);
 
 
-            ISchedulerCore schedulerCore = new SchedulerCore(_mockPluginStore.Object, _mockScheduler.Object);
+            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object);
 
             // Act 
             schedulerCore.RemoveJob("TestJob");
@@ -72,7 +55,7 @@ namespace R.Scheduler.UnitTests
             _mockScheduler.Setup(x => x.CheckExists(It.IsAny<JobKey>())).Returns(true);
 
 
-            ISchedulerCore schedulerCore = new SchedulerCore(_mockPluginStore.Object, _mockScheduler.Object);
+            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object);
 
             // Act 
             schedulerCore.RemoveJob("TestJob", "Group1");
@@ -90,7 +73,7 @@ namespace R.Scheduler.UnitTests
             _mockScheduler.Setup(x => x.CheckExists(It.IsAny<TriggerKey>())).Returns(true);
 
 
-            ISchedulerCore schedulerCore = new SchedulerCore(_mockPluginStore.Object, _mockScheduler.Object);
+            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object);
 
             // Act 
             schedulerCore.RemoveTrigger("TestTrigger");
@@ -106,7 +89,7 @@ namespace R.Scheduler.UnitTests
             _mockScheduler.Setup(x => x.CheckExists(It.IsAny<TriggerKey>())).Returns(true);
 
 
-            ISchedulerCore schedulerCore = new SchedulerCore(_mockPluginStore.Object, _mockScheduler.Object);
+            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object);
 
             // Act 
             schedulerCore.RemoveTrigger("TestTrigger", "Group1");
@@ -134,7 +117,7 @@ namespace R.Scheduler.UnitTests
             _mockScheduler.Setup(x => x.GetJobDetail(It.IsAny<JobKey>())).Returns(nullJd);
             _mockScheduler.Setup(x => x.CheckExists(It.IsAny<JobKey>())).Returns(false);
 
-            ISchedulerCore schedulerCore = new SchedulerCore(_mockPluginStore.Object, _mockScheduler.Object);
+            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object);
             
             // Act 
             schedulerCore.ScheduleTrigger(myTrigger, typeof(IJob));
@@ -162,7 +145,7 @@ namespace R.Scheduler.UnitTests
             _mockScheduler.Setup(x => x.GetJobDetail(It.IsAny<JobKey>())).Returns(nullJd);
             _mockScheduler.Setup(x => x.CheckExists(It.IsAny<JobKey>())).Returns(false);
 
-            ISchedulerCore schedulerCore = new SchedulerCore(_mockPluginStore.Object, _mockScheduler.Object);
+            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object);
 
             // Act 
             schedulerCore.ScheduleTrigger(myTrigger, typeof(IJob));

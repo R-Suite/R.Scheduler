@@ -5,8 +5,6 @@ VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler", "R.Scheduler\R.Scheduler.csproj", "{59E14D25-72BD-4E1F-A224-B8A6F5179B90}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.JobRunners", "R.Scheduler.JobRunners\R.Scheduler.JobRunners.csproj", "{EE8B4DC9-A116-4CF0-A5FC-064A709EBE90}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.Contracts", "R.Scheduler.Contracts\R.Scheduler.Contracts.csproj", "{C2F4994F-DB81-4779-8490-89250561F0D7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6E854787-A37D-422A-A0F3-C8707723EB4C}"
@@ -19,9 +17,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Fakes", "Fakes", "{ACF74C8F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.FakeJobPlugin", "R.Scheduler.FakeJobPlugin\R.Scheduler.FakeJobPlugin.csproj", "{3805AD73-D4CF-4762-81D5-C745FDFB97FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.Persistance", "R.Scheduler.Persistance\R.Scheduler.Persistance.csproj", "{E1ABAC5B-6990-4EAE-AF61-FD9E08C64A18}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.Interfaces", "R.Scheduler.Interfaces\R.Scheduler.Interfaces.csproj", "{4010D63D-4BA3-4E41-9087-16CDD341FEBF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.AssemblyPlugin", "R.Scheduler.AssemblyPlugin\R.Scheduler.AssemblyPlugin.csproj", "{A338A7FE-D041-41C3-9CDD-5E35171961DD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JobTypes", "JobTypes", "{6C0687DC-4023-4803-8690-197C9274A5C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,10 +33,6 @@ Global
 		{59E14D25-72BD-4E1F-A224-B8A6F5179B90}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59E14D25-72BD-4E1F-A224-B8A6F5179B90}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59E14D25-72BD-4E1F-A224-B8A6F5179B90}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EE8B4DC9-A116-4CF0-A5FC-064A709EBE90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EE8B4DC9-A116-4CF0-A5FC-064A709EBE90}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EE8B4DC9-A116-4CF0-A5FC-064A709EBE90}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EE8B4DC9-A116-4CF0-A5FC-064A709EBE90}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C2F4994F-DB81-4779-8490-89250561F0D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C2F4994F-DB81-4779-8490-89250561F0D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2F4994F-DB81-4779-8490-89250561F0D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -53,14 +49,14 @@ Global
 		{3805AD73-D4CF-4762-81D5-C745FDFB97FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3805AD73-D4CF-4762-81D5-C745FDFB97FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3805AD73-D4CF-4762-81D5-C745FDFB97FA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E1ABAC5B-6990-4EAE-AF61-FD9E08C64A18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E1ABAC5B-6990-4EAE-AF61-FD9E08C64A18}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E1ABAC5B-6990-4EAE-AF61-FD9E08C64A18}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E1ABAC5B-6990-4EAE-AF61-FD9E08C64A18}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4010D63D-4BA3-4E41-9087-16CDD341FEBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4010D63D-4BA3-4E41-9087-16CDD341FEBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4010D63D-4BA3-4E41-9087-16CDD341FEBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4010D63D-4BA3-4E41-9087-16CDD341FEBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A338A7FE-D041-41C3-9CDD-5E35171961DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A338A7FE-D041-41C3-9CDD-5E35171961DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A338A7FE-D041-41C3-9CDD-5E35171961DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A338A7FE-D041-41C3-9CDD-5E35171961DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -70,5 +66,6 @@ Global
 		{79CD8C58-F573-428C-AE6B-6A953FB3E2DC} = {6E854787-A37D-422A-A0F3-C8707723EB4C}
 		{ACF74C8F-7012-44A7-A924-4F87D805F93F} = {6E854787-A37D-422A-A0F3-C8707723EB4C}
 		{3805AD73-D4CF-4762-81D5-C745FDFB97FA} = {ACF74C8F-7012-44A7-A924-4F87D805F93F}
+		{A338A7FE-D041-41C3-9CDD-5E35171961DD} = {6C0687DC-4023-4803-8690-197C9274A5C0}
 	EndGlobalSection
 EndGlobal

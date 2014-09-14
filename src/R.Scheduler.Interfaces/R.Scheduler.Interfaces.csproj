@@ -30,6 +30,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Common.Logging">
+      <HintPath>..\packages\Common.Logging.2.1.2\lib\net40\Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Quartz">
+      <HintPath>..\packages\Quartz.2.2.4\lib\net40\Quartz.dll</HintPath>
+    </Reference>
     <Reference Include="R.MessageBus.Interfaces, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\R.MessageBus.Interfaces.1.0.1.14\lib\net40\R.MessageBus.Interfaces.dll</HintPath>
@@ -47,7 +53,7 @@
     <Compile Include="CronTrigger.cs" />
     <Compile Include="IConfiguration.cs" />
     <Compile Include="IJobTypeManager.cs" />
-    <Compile Include="IPluginStore.cs" />
+    <Compile Include="IUseSchedulerConnectionString.cs" />
     <Compile Include="ISchedulerCore.cs" />
     <Compile Include="PersistanceStoreType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -60,6 +66,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="job_scheduling_data_2_0.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

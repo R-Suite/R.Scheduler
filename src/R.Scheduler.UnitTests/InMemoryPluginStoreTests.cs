@@ -1,6 +1,6 @@
-﻿using R.Scheduler.Contracts.DataContracts;
-using R.Scheduler.Interfaces;
-using R.Scheduler.Persistance;
+﻿using R.Scheduler.AssemblyPlugin.Contracts.DataContracts;
+using R.Scheduler.AssemblyPlugin.Interfaces;
+using R.Scheduler.AssemblyPlugin.Persistance;
 using Xunit;
 
 namespace R.Scheduler.UnitTests
@@ -11,7 +11,7 @@ namespace R.Scheduler.UnitTests
         public void ShouldGetRegisteredPlugin()
         {
             // Arrange
-            var plugin = new Plugin { Name = "TestPlugin", AssemblyPath = "TestsAssemblyPath"};
+            var plugin = new Plugin { Name = "TestPlugin", AssemblyPath = "TestsAssemblyPath" };
             IPluginStore pluginStore = new InMemoryPluginStore();
             pluginStore.RemoveAllPlugins();
             pluginStore.RegisterPlugin(plugin);

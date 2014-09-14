@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A338A7FE-D041-41C3-9CDD-5E35171961DD}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>R.Scheduler.AssemblyPlugin</RootNamespace>
+    <AssemblyName>R.Scheduler.AssemblyPlugin</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Common.Logging">
+      <HintPath>..\packages\Common.Logging.2.1.2\lib\net40\Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Security">
+      <HintPath>..\packages\Npgsql.2.1.3\lib\net45\Mono.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.5\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Npgsql">
+      <HintPath>..\packages\Npgsql.2.1.3\lib\net45\Npgsql.dll</HintPath>
+    </Reference>
+    <Reference Include="Quartz">
+      <HintPath>..\packages\Quartz.2.2.4\lib\net40\Quartz.dll</HintPath>
+    </Reference>
+    <Reference Include="R.MessageBus.Interfaces">
+      <HintPath>..\packages\R.MessageBus.Interfaces.1.0.1.14\lib\net40\R.MessageBus.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="StructureMap">
+      <HintPath>..\packages\structuremap.2.6.4.1\lib\net40\StructureMap.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.2\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Web.Http, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.2\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Contracts\DataContracts\Plugin.cs" />
+    <Compile Include="Contracts\DataContracts\PluginCronTrigger.cs" />
+    <Compile Include="Contracts\DataContracts\PluginDetails.cs" />
+    <Compile Include="Contracts\DataContracts\PluginSimpleTrigger.cs" />
+    <Compile Include="Contracts\DataContracts\TriggerDetails.cs" />
+    <Compile Include="Contracts\Interfaces\BaseJobPlugin.cs" />
+    <Compile Include="Contracts\Interfaces\IJobPlugin.cs" />
+    <Compile Include="Contracts\Messages\DeschedulePlugin.cs" />
+    <Compile Include="Contracts\Messages\ExecutePlugin.cs" />
+    <Compile Include="Contracts\Messages\GetRegisteredPluginsRequest.cs" />
+    <Compile Include="Contracts\Messages\GetRegisteredPluginsResponse.cs" />
+    <Compile Include="Contracts\Messages\RegisterPlugin.cs" />
+    <Compile Include="Contracts\Messages\RemovePlugin.cs" />
+    <Compile Include="Contracts\Messages\SchedulePluginWithCronTrigger.cs" />
+    <Compile Include="Contracts\Messages\SchedulePluginWithSimpleTrigger.cs" />
+    <Compile Include="Controllers\PluginCronTriggersController.cs" />
+    <Compile Include="Controllers\PluginsController.cs" />
+    <Compile Include="Controllers\PluginSimpleTriggersController.cs" />
+    <Compile Include="Handlers\DeschedulePluginHandler.cs" />
+    <Compile Include="Handlers\ExecutePluginHandler.cs" />
+    <Compile Include="Handlers\GetRegisteredPluginsHandler.cs" />
+    <Compile Include="Handlers\RegisterPluginHandler.cs" />
+    <Compile Include="Handlers\RemovePluginHandler.cs" />
+    <Compile Include="Handlers\SchedulePluginWithCronTriggerHandler.cs" />
+    <Compile Include="Handlers\SchedulePluginWithSimpleTriggerHandler.cs" />
+    <Compile Include="Interfaces\IPluginStore.cs" />
+    <Compile Include="Persistance\InMemoryPluginStore.cs" />
+    <Compile Include="Persistance\PostgrePluginStore.cs" />
+    <Compile Include="PluginAppDomainHelper.cs" />
+    <Compile Include="PluginManager.cs" />
+    <Compile Include="PluginRunner.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SmRegistry.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="job_scheduling_data_2_0.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+    <None Include="R.Scheduler.AssemblyPlugin.nuspec" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\R.Scheduler.Interfaces\R.Scheduler.Interfaces.csproj">
+      <Project>{4010D63D-4BA3-4E41-9087-16CDD341FEBF}</Project>
+      <Name>R.Scheduler.Interfaces</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

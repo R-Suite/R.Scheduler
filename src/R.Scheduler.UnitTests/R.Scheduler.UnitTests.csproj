@@ -98,6 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="InMemoryPluginStoreTests.cs" />
+    <Compile Include="PluginManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SchedulerCoreTests.cs" />
   </ItemGroup>
@@ -117,9 +118,9 @@
       <Project>{4010d63d-4ba3-4e41-9087-16cdd341febf}</Project>
       <Name>R.Scheduler.Interfaces</Name>
     </ProjectReference>
-    <ProjectReference Include="..\R.Scheduler.Persistance\R.Scheduler.Persistance.csproj">
-      <Project>{e1abac5b-6990-4eae-af61-fd9e08c64a18}</Project>
-      <Name>R.Scheduler.Persistance</Name>
+    <ProjectReference Include="..\R.Scheduler.AssemblyPlugin\R.Scheduler.AssemblyPlugin.csproj">
+      <Project>{A338A7FE-D041-41C3-9CDD-5E35171961DD}</Project>
+      <Name>R.Scheduler.AssemblyPlugin</Name>
     </ProjectReference>
     <ProjectReference Include="..\R.Scheduler\R.Scheduler.csproj">
       <Project>{59e14d25-72bd-4e1f-a224-b8a6f5179b90}</Project>

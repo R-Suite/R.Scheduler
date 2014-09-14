@@ -1,5 +1,4 @@
 ﻿using R.MessageBus.Interfaces;
-using R.Scheduler.Contracts;
 
 namespace R.Scheduler.Interfaces
 {

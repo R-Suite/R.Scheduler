@@ -6,7 +6,6 @@ using Quartz.Impl;
 using R.MessageBus;
 using R.MessageBus.Interfaces;
 using R.Scheduler.Interfaces;
-using R.Scheduler.Persistance;
 using StructureMap;
 using IConfiguration = R.Scheduler.Interfaces.IConfiguration;
 
@@ -21,7 +20,12 @@ namespace R.Scheduler
 
         static Scheduler()
         {
-            ObjectFactory.Initialize(x=>x.AddRegistry<SmRegistry>());
+            ObjectFactory.Initialize(x => x.Scan(scan =>
+            {
+                scan.TheCallingAssembly();
+                scan.AssembliesFromApplicationBaseDirectory();
+                scan.LookForRegistries();
+            }));
         }
 
         /// <summary>
@@ -39,6 +43,8 @@ namespace R.Scheduler
             action(configuration);
 
             Configuration = configuration;
+
+            ObjectFactory.Configure(x => x.RegisterInterceptor(new JobTypePersistanceInterceptor(Configuration.ConnectionString)));
         }
 
         /// <summary>
@@ -105,14 +111,14 @@ namespace R.Scheduler
             {
                 case PersistanceStoreType.InMemory:
                     // Set implementation of IPluginStore in IoC Container. 
-                    ObjectFactory.Configure(x => x.For<IPluginStore>().Use<InMemoryPluginStore>());
+                    //ObjectFactory.Configure(x => x.For<IPluginStore>().Use<InMemoryPluginStore>());
                     
                     // Set properties
                     properties["quartz.jobStore.type"] = "Quartz.Simpl.RAMJobStore, Quartz";
                     break;
                 case PersistanceStoreType.Postgre:
                     //Sets implementation of IPluginStore in IoC Container. 
-                    ObjectFactory.Configure(x =>x.For<IPluginStore>().Use<PostgrePluginStore>().Ctor<string>("connectionString").Is(Configuration.ConnectionString));
+                    //ObjectFactory.Configure(x =>x.For<IPluginStore>().Use<PostgrePluginStore>().Ctor<string>("connectionString").Is(Configuration.ConnectionString));
                     
                     // Set properties
                     properties["quartz.jobStore.type"] = "Quartz.Impl.AdoJobStore.JobStoreTX, Quartz";
@@ -130,3 +136,4 @@ namespace R.Scheduler
         }
     }
 }
+

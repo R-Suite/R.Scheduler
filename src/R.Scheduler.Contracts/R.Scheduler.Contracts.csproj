@@ -43,23 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataContracts\PluginCronTrigger.cs" />
-    <Compile Include="DataContracts\PluginSimpleTrigger.cs" />
-    <Compile Include="Interfaces\BaseJobPlugin.cs" />
-    <Compile Include="Interfaces\IJobPlugin.cs" />
-    <Compile Include="DataContracts\PluginDetails.cs" />
-    <Compile Include="DataContracts\RegisteredPlugin.cs" />
     <Compile Include="Messages\DescheduleJob.cs" />
     <Compile Include="Messages\DescheduleTrigger.cs" />
     <Compile Include="Messages\DescheduleTriggerGroup.cs" />
-    <Compile Include="Messages\RemovePlugin.cs" />
-    <Compile Include="Messages\DeschedulePlugin.cs" />
-    <Compile Include="Messages\ExecutePlugin.cs" />
-    <Compile Include="Messages\GetRegisteredPluginsRequest.cs" />
-    <Compile Include="Messages\GetRegisteredPluginsResponse.cs" />
-    <Compile Include="Messages\RegisterPlugin.cs" />
-    <Compile Include="Messages\SchedulePluginWithCronTrigger.cs" />
-    <Compile Include="Messages\SchedulePluginWithSimpleTrigger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -68,6 +54,7 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

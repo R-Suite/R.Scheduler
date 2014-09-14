@@ -75,9 +75,9 @@
       <Project>{4010d63d-4ba3-4e41-9087-16cdd341febf}</Project>
       <Name>R.Scheduler.Interfaces</Name>
     </ProjectReference>
-    <ProjectReference Include="..\R.Scheduler.JobRunners\R.Scheduler.JobRunners.csproj">
-      <Project>{EE8B4DC9-A116-4CF0-A5FC-064A709EBE90}</Project>
-      <Name>R.Scheduler.JobRunners</Name>
+    <ProjectReference Include="..\R.Scheduler.AssemblyPlugin\R.Scheduler.AssemblyPlugin.csproj">
+      <Project>{A338A7FE-D041-41C3-9CDD-5E35171961DD}</Project>
+      <Name>R.Scheduler.AssemblyPlugin</Name>
     </ProjectReference>
     <ProjectReference Include="..\R.Scheduler\R.Scheduler.csproj">
       <Project>{59e14d25-72bd-4e1f-a224-b8a6f5179b90}</Project>

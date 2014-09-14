@@ -128,22 +128,12 @@
   <ItemGroup>
     <Compile Include="Configuration.cs" />
     <Compile Include="Controllers\JobsController.cs" />
-    <Compile Include="Controllers\PluginCronTriggersController.cs" />
-    <Compile Include="Controllers\PluginsController.cs" />
-    <Compile Include="Controllers\PluginSimpleTriggersController.cs" />
     <Compile Include="Controllers\TriggersController.cs" />
     <Compile Include="Handlers\DescheduleJobHandler.cs" />
     <Compile Include="Handlers\DescheduleTriggerGroupHandler.cs" />
     <Compile Include="Handlers\DescheduleTriggerHandler.cs" />
-    <Compile Include="Handlers\RemovePluginHandler.cs" />
-    <Compile Include="Handlers\SchedulePluginWithCronTriggerHandler.cs" />
-    <Compile Include="JobTypes\Plugin\PluginJob.cs" />
+    <Compile Include="JobTypePersistanceInterceptor.cs" />
     <Compile Include="SchedulerCore.cs" />
-    <Compile Include="Handlers\DeschedulePluginHandler.cs" />
-    <Compile Include="Handlers\ExecutePluginHandler.cs" />
-    <Compile Include="Handlers\GetRegisteredPluginsHandler.cs" />
-    <Compile Include="Handlers\RegisterPluginHandler.cs" />
-    <Compile Include="Handlers\SchedulePluginWithSimpleTriggerHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scheduler.cs" />
     <Compile Include="SmRegistry.cs" />
@@ -165,14 +155,6 @@
     <ProjectReference Include="..\R.Scheduler.Interfaces\R.Scheduler.Interfaces.csproj">
       <Project>{4010d63d-4ba3-4e41-9087-16cdd341febf}</Project>
       <Name>R.Scheduler.Interfaces</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\R.Scheduler.JobRunners\R.Scheduler.JobRunners.csproj">
-      <Project>{ee8b4dc9-a116-4cf0-a5fc-064a709ebe90}</Project>
-      <Name>R.Scheduler.JobRunners</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\R.Scheduler.Persistance\R.Scheduler.Persistance.csproj">
-      <Project>{E1ABAC5B-6990-4EAE-AF61-FD9E08C64A18}</Project>
-      <Name>R.Scheduler.Persistance</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

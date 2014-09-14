@@ -23,16 +23,15 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         }
 
         [AcceptVerbs("POST")]
-        [Route("api/plugins/cronTriggers")]
-        public void Post([FromBody]PluginCronTrigger model)
+        [Route("api/plugins/{pluginName}/cronTriggers")]
+        public void Post(string pluginName, [FromBody]PluginCronTrigger model)
         {
-            Logger.InfoFormat("Entered PluginCronTriggersController.Post(). PluginName = {0}", model.PluginName);
+            Logger.InfoFormat("Entered PluginCronTriggersController.Post(). PluginName = {0}", pluginName);
 
-            var registeredPlugin = _pluginRepository.GetRegisteredPlugin(model.PluginName);
-            var pluginName = registeredPlugin.Name;
+            var registeredPlugin = _pluginRepository.GetRegisteredPlugin(pluginName);
 
             if (null == registeredPlugin)
-                throw new ArgumentException(string.Format("Error loading registered plugin {0}", model.PluginName));
+                throw new ArgumentException(string.Format("Error loading registered plugin {0}", pluginName));
 
             _schedulerCore.ScheduleTrigger(new CronTrigger
             {

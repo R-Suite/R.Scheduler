@@ -23,13 +23,12 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         }
 
         [AcceptVerbs("POST")]
-        [Route("api/plugins/simpleTriggers")]
-        public void Post([FromBody]PluginSimpleTrigger model)
+        [Route("api/plugins/{pluginName}/simpleTriggers")]
+        public void Post(string pluginName, [FromBody]PluginSimpleTrigger model)
         {
-            Logger.InfoFormat("Entered PluginSimpleTriggersController.Post(). PluginName = {0}", model.PluginName);
+            Logger.InfoFormat("Entered PluginSimpleTriggersController.Post(). PluginName = {0}", pluginName);
 
-            var registeredPlugin = _pluginRepository.GetRegisteredPlugin(model.PluginName);
-            var pluginName = registeredPlugin.Name;
+            var registeredPlugin = _pluginRepository.GetRegisteredPlugin(pluginName);
 
             if (null == registeredPlugin)
                 throw new ArgumentException(string.Format("Error loading registered plugin {0}", model.PluginName));

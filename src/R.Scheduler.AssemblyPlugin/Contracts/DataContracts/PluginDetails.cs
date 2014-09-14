@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using R.Scheduler.Contracts.DataContracts;
 
 namespace R.Scheduler.AssemblyPlugin.Contracts.DataContracts
 {

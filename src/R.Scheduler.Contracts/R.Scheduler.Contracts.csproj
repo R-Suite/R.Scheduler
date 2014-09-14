@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataContracts\TriggerDetails.cs" />
     <Compile Include="Messages\DescheduleJob.cs" />
     <Compile Include="Messages\DescheduleTrigger.cs" />
     <Compile Include="Messages\DescheduleTriggerGroup.cs" />

@@ -5,9 +5,17 @@ using R.Scheduler.AssemblyPlugin.Contracts.DataContracts;
 
 namespace R.Scheduler.AssemblyPlugin.Contracts.Messages
 {
-    public class GetRegisteredPluginsResponse : Message
+    public class GetPluginsRequest : Message
     {
-        public GetRegisteredPluginsResponse(Guid correlationId) : base(correlationId)
+        public GetPluginsRequest(Guid correlationId) : base(correlationId)
+        {
+        }
+    }
+
+    public class GetPluginsResponse : Message
+    {
+        public GetPluginsResponse(Guid correlationId)
+            : base(correlationId)
         {
         }
 

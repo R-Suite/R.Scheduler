@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Web.Http;
 using log4net;
+using Quartz.Util;
 using R.Scheduler.AssemblyPlugin.Contracts.DataContracts;
 using R.Scheduler.AssemblyPlugin.Interfaces;
+using R.Scheduler.Contracts.DataContracts;
 using R.Scheduler.Interfaces;
 using StructureMap;
 
@@ -76,7 +79,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
 
         // GET api/values 
         [Route("api/plugins/{id}")]
-        public string Get(string id)
+        public PluginDetails Get(string id)
         {
             Logger.InfoFormat("Entered PluginsController.Get(). id = {0}", id);
 
@@ -88,10 +91,32 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
                 return null;
             }
 
+            var retval = new PluginDetails
+            {
+                PluginName = registeredPlugin.Name,
+                AssemblyPath = registeredPlugin.AssemblyPath,
+                TriggerDetails = new List<TriggerDetails>()
+            };
+            
+            var quartzTriggers = _schedulerCore.GetTriggersOfJobGroup(registeredPlugin.Name);
+
+            foreach (var quartzTrigger in quartzTriggers)
+            {
+                var nextFireTimeUtc = quartzTrigger.GetNextFireTimeUtc();
+                var previousFireTimeUtc = quartzTrigger.GetPreviousFireTimeUtc();
+                retval.TriggerDetails.Add(new TriggerDetails
+                {
+                    Description = quartzTrigger.Description,
+                    StartTimeUtc = quartzTrigger.StartTimeUtc.UtcDateTime,
+                    EndTimeUtc = (quartzTrigger.EndTimeUtc.HasValue) ? quartzTrigger.EndTimeUtc.Value.UtcDateTime : (DateTime?)null,
+                    NextFireTimeUtc = (nextFireTimeUtc.HasValue) ? nextFireTimeUtc.Value.UtcDateTime : (DateTime?)null,
+                    PreviousFireTimeUtc = (previousFireTimeUtc.HasValue) ? previousFireTimeUtc.Value.UtcDateTime : (DateTime?)null,
+                    FinalFireTimeUtc = (quartzTrigger.FinalFireTimeUtc.HasValue) ? quartzTrigger.FinalFireTimeUtc.Value.UtcDateTime : (DateTime?)null,
+                });
+            }
 
 
-
-            return "value";
+            return retval;
         }
 
         // PUT api/plugins/5 

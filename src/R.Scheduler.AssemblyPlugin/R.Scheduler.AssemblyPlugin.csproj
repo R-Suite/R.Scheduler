@@ -77,13 +77,12 @@
     <Compile Include="Contracts\DataContracts\PluginCronTrigger.cs" />
     <Compile Include="Contracts\DataContracts\PluginDetails.cs" />
     <Compile Include="Contracts\DataContracts\PluginSimpleTrigger.cs" />
-    <Compile Include="Contracts\DataContracts\TriggerDetails.cs" />
     <Compile Include="Contracts\Interfaces\BaseJobPlugin.cs" />
     <Compile Include="Contracts\Interfaces\IJobPlugin.cs" />
     <Compile Include="Contracts\Messages\DeschedulePlugin.cs" />
     <Compile Include="Contracts\Messages\ExecutePlugin.cs" />
-    <Compile Include="Contracts\Messages\GetRegisteredPluginsRequest.cs" />
-    <Compile Include="Contracts\Messages\GetRegisteredPluginsResponse.cs" />
+    <Compile Include="Contracts\Messages\GetPluginDetails.cs" />
+    <Compile Include="Contracts\Messages\GetPlugins.cs" />
     <Compile Include="Contracts\Messages\RegisterPlugin.cs" />
     <Compile Include="Contracts\Messages\RemovePlugin.cs" />
     <Compile Include="Contracts\Messages\SchedulePluginWithCronTrigger.cs" />
@@ -93,7 +92,8 @@
     <Compile Include="Controllers\PluginSimpleTriggersController.cs" />
     <Compile Include="Handlers\DeschedulePluginHandler.cs" />
     <Compile Include="Handlers\ExecutePluginHandler.cs" />
-    <Compile Include="Handlers\GetRegisteredPluginsHandler.cs" />
+    <Compile Include="Handlers\GetPluginDetailsHandler.cs" />
+    <Compile Include="Handlers\GetPluginsHandler.cs" />
     <Compile Include="Handlers\RegisterPluginHandler.cs" />
     <Compile Include="Handlers\RemovePluginHandler.cs" />
     <Compile Include="Handlers\SchedulePluginWithCronTriggerHandler.cs" />
@@ -115,6 +115,10 @@
     <None Include="R.Scheduler.AssemblyPlugin.nuspec" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\R.Scheduler.Contracts\R.Scheduler.Contracts.csproj">
+      <Project>{C2F4994F-DB81-4779-8490-89250561F0D7}</Project>
+      <Name>R.Scheduler.Contracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\R.Scheduler.Interfaces\R.Scheduler.Interfaces.csproj">
       <Project>{4010D63D-4BA3-4E41-9087-16CDD341FEBF}</Project>
       <Name>R.Scheduler.Interfaces</Name>

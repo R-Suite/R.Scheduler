@@ -6,20 +6,20 @@ using R.Scheduler.AssemblyPlugin.Interfaces;
 
 namespace R.Scheduler.AssemblyPlugin.Handlers
 {
-    public class GetRegisteredPluginsHandler : IMessageHandler<GetRegisteredPluginsRequest>
+    public class GetPluginsHandler : IMessageHandler<GetPluginsRequest>
     {
         readonly IPluginStore _pluginRepository;
 
-        public GetRegisteredPluginsHandler(IPluginStore pluginRepository)
+        public GetPluginsHandler(IPluginStore pluginRepository)
         {
             _pluginRepository = pluginRepository;
         }
 
-        public void Execute(GetRegisteredPluginsRequest message)
+        public void Execute(GetPluginsRequest message)
         {
             var registeredPlugins = _pluginRepository.GetRegisteredPlugins();
 
-            Context.Reply(new GetRegisteredPluginsResponse(message.CorrelationId) { RegisteredPlugins = (List<Plugin>)registeredPlugins });
+            Context.Reply(new GetPluginsResponse(message.CorrelationId) { RegisteredPlugins = (List<Plugin>)registeredPlugins });
         }
 
         public IConsumeContext Context { get; set; }

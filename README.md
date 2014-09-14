@@ -1,5 +1,6 @@
 # R.Scheduler
-An experimental, easy to use plugin execution engine built on top of Quartz Enterprise Scheduler .NET and R.MessageBus
+An experimental, easy to use plugin execution engine built on top of Quartz Enterprise Scheduler .NET. 
+REST API enpoints are exposed by default, R.MessageBus enpoints can be enabled via configuration.
 
 ## Getting Started
 
@@ -23,6 +24,8 @@ Initialize also takes a single lambda/action parameter for custom configuration.
 ```c#
 R.Scheduler.Scheduler.Initialize(config =>
 {
+    config.EnableWebApiSelfHost = true;
+    config.EnableMessageBusSelfHost = true;
     config.PersistanceStoreType = PersistanceStoreType.Postgre;
     config.ConnectionString = "Server=localhost;Port=5432;Database=Scheduler;User Id=xxx;Password=xxx;";
     config.TransportSettings.Host = "localhost";

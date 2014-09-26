@@ -45,6 +45,13 @@ namespace R.Scheduler
             Configuration = configuration;
 
             ObjectFactory.Configure(x => x.RegisterInterceptor(new JobTypePersistanceInterceptor(Configuration.ConnectionString)));
+
+            // Initialise JobTypes modules
+            var jobTypeStartups = ObjectFactory.GetAllInstances<IJobTypeStartup>();
+            foreach (var jobTypeStartup in jobTypeStartups)
+            {
+                jobTypeStartup.Initialise(Configuration);
+            }
         }
 
         /// <summary>
@@ -110,17 +117,12 @@ namespace R.Scheduler
             switch (Configuration.PersistanceStoreType)
             {
                 case PersistanceStoreType.InMemory:
-                    // Set implementation of IPluginStore in IoC Container. 
-                    //ObjectFactory.Configure(x => x.For<IPluginStore>().Use<InMemoryPluginStore>());
-                    
-                    // Set properties
+
                     properties["quartz.jobStore.type"] = "Quartz.Simpl.RAMJobStore, Quartz";
                     break;
+
                 case PersistanceStoreType.Postgre:
-                    //Sets implementation of IPluginStore in IoC Container. 
-                    //ObjectFactory.Configure(x =>x.For<IPluginStore>().Use<PostgrePluginStore>().Ctor<string>("connectionString").Is(Configuration.ConnectionString));
-                    
-                    // Set properties
+
                     properties["quartz.jobStore.type"] = "Quartz.Impl.AdoJobStore.JobStoreTX, Quartz";
                     properties["quartz.jobStore.useProperties"] = Configuration.UseProperties;
                     properties["quartz.jobStore.dataSource"] = "default";
@@ -128,6 +130,17 @@ namespace R.Scheduler
                     properties["quartz.dataSource.default.connectionString"] = Configuration.ConnectionString;
                     properties["quartz.dataSource.default.provider"] = "Npgsql-20";
                     break;
+
+                case PersistanceStoreType.SqlServer:
+
+                    properties["quartz.jobStore.type"] = "Quartz.Impl.AdoJobStore.JobStoreTX, Quartz";
+                    properties["quartz.jobStore.useProperties"] = Configuration.UseProperties;
+                    properties["quartz.jobStore.dataSource"] = "default";
+                    properties["quartz.jobStore.tablePrefix"] = Configuration.TablePrefix;
+                    properties["quartz.dataSource.default.connectionString"] = Configuration.ConnectionString;
+                    properties["quartz.dataSource.default.provider"] = "SqlServer-20";
+                    break;
+
                 default:
                     throw new Exception(string.Format("Unsupported PersistanceStoreType {0}", Configuration.PersistanceStoreType));
             }

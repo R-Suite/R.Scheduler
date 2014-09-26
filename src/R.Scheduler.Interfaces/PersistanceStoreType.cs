@@ -3,6 +3,7 @@
     public enum PersistanceStoreType
     {
         InMemory,
-        Postgre
+        Postgre,
+        SqlServer
     }
 }

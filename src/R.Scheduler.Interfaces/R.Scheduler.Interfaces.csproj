@@ -54,7 +54,6 @@
     <Compile Include="IConfiguration.cs" />
     <Compile Include="IJobTypeManager.cs" />
     <Compile Include="IJobTypeStartup.cs" />
-    <Compile Include="IUseSchedulerConnectionString.cs" />
     <Compile Include="ISchedulerCore.cs" />
     <Compile Include="PersistanceStoreType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

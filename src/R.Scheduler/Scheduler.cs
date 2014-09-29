@@ -44,7 +44,7 @@ namespace R.Scheduler
 
             Configuration = configuration;
 
-            ObjectFactory.Configure(x => x.RegisterInterceptor(new JobTypePersistanceInterceptor(Configuration.ConnectionString)));
+            //ObjectFactory.Configure(x => x.RegisterInterceptor(new JobTypePersistanceInterceptor(Configuration.ConnectionString)));
 
             // Initialise JobTypes modules
             var jobTypeStartups = ObjectFactory.GetAllInstances<IJobTypeStartup>();

@@ -26,10 +26,10 @@ namespace R.Scheduler.AssemblyPlugin
                 switch (_config.PersistanceStoreType)
                 {
                     case PersistanceStoreType.Postgre:
-                        retval = new PostgrePluginStore();
+                        retval = new PostgrePluginStore(_config.ConnectionString);
                         break;
                     case PersistanceStoreType.SqlServer:
-                        retval = new SqlServerPluginStore();
+                        retval = new SqlServerPluginStore(_config.ConnectionString);
                         break;
                     case PersistanceStoreType.InMemory:
                         retval = new InMemoryPluginStore();

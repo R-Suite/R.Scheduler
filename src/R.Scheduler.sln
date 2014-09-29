@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler", "R.Scheduler\R.Scheduler.csproj", "{59E14D25-72BD-4E1F-A224-B8A6F5179B90}"
 EndProject
@@ -22,6 +22,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.AssemblyPlugin", "R.Scheduler.AssemblyPlugin\R.Scheduler.AssemblyPlugin.csproj", "{A338A7FE-D041-41C3-9CDD-5E35171961DD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JobTypes", "JobTypes", "{6C0687DC-4023-4803-8690-197C9274A5C0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.TestHost", "R.Scheduler.TestHost\R.Scheduler.TestHost.csproj", "{F8F159E1-50E1-4755-BBDE-945794E11431}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +59,10 @@ Global
 		{A338A7FE-D041-41C3-9CDD-5E35171961DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A338A7FE-D041-41C3-9CDD-5E35171961DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A338A7FE-D041-41C3-9CDD-5E35171961DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8F159E1-50E1-4755-BBDE-945794E11431}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8F159E1-50E1-4755-BBDE-945794E11431}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8F159E1-50E1-4755-BBDE-945794E11431}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8F159E1-50E1-4755-BBDE-945794E11431}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,5 +73,6 @@ Global
 		{ACF74C8F-7012-44A7-A924-4F87D805F93F} = {6E854787-A37D-422A-A0F3-C8707723EB4C}
 		{3805AD73-D4CF-4762-81D5-C745FDFB97FA} = {ACF74C8F-7012-44A7-A924-4F87D805F93F}
 		{A338A7FE-D041-41C3-9CDD-5E35171961DD} = {6C0687DC-4023-4803-8690-197C9274A5C0}
+		{F8F159E1-50E1-4755-BBDE-945794E11431} = {6E854787-A37D-422A-A0F3-C8707723EB4C}
 	EndGlobalSection
 EndGlobal

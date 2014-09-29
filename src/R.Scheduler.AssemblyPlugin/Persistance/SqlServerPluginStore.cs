@@ -4,13 +4,17 @@ using System.Data;
 using System.Data.SqlClient;
 using R.Scheduler.AssemblyPlugin.Contracts.DataContracts;
 using R.Scheduler.AssemblyPlugin.Interfaces;
-using R.Scheduler.Interfaces;
 
 namespace R.Scheduler.AssemblyPlugin.Persistance
 {
-    public class SqlServerPluginStore : IPluginStore, IUseSchedulerConnectionString
+    public class SqlServerPluginStore : IPluginStore
     {
-        private string _connectionString;
+        private readonly string _connectionString;
+
+        public SqlServerPluginStore(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
 
         public Plugin GetRegisteredPlugin(string pluginName)
         {
@@ -19,7 +23,7 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
             var conn = new SqlConnection(_connectionString);
             conn.Open();
 
-            var sql = @"SELECT id plugin_name, assembly_path, status FROM rsched_plugins WHERE plugin_name = '@name';";
+            var sql = @"SELECT id plugin_name, assembly_path, status FROM rsched_plugins WHERE plugin_name = @name;";
             var command = new SqlCommand(sql, conn);
 
             try
@@ -89,24 +93,22 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
             var conn = new SqlConnection(_connectionString);
             conn.Open();
 
-            var sqlInsert = @"INSERT INTO rsched_plugins(id, plugin_name, assembly_path, status) VALUES ('@id', '@name', '@assemblyPath', '@status');";
+            var sqlInsert = @"INSERT INTO rsched_plugins(id, plugin_name, assembly_path, status) VALUES (@id, @name, @assemblyPath, @status);";
             var sqlUpdate = @"UPDATE rsched_plugins SET assembly_path='@assemblyPath', status='@status' WHERE plugin_name='@name'";
             var command = new SqlCommand(sqlUpdate, conn);
 
             try
             {
-                using (var pgTransaction = conn.BeginTransaction())
+                using (var transaction = conn.BeginTransaction())
                 {
                     try
                     {
-                        command.Parameters.Add(new SqlParameter("id", SqlDbType.UniqueIdentifier));
-                        command.Parameters.Add(new SqlParameter("name", SqlDbType.VarChar));
-                        command.Parameters.Add(new SqlParameter("assemblyPath", SqlDbType.VarChar));
-                        command.Parameters.Add(new SqlParameter("status", SqlDbType.VarChar));
-                        command.Parameters[0].Value = Guid.NewGuid();
-                        command.Parameters[1].Value = plugin.Name;
-                        command.Parameters[2].Value = plugin.AssemblyPath;
-                        command.Parameters[3].Value = "registered";
+                        command.Parameters.AddWithValue("@id", Guid.NewGuid());
+                        command.Parameters.AddWithValue("@name", plugin.Name);
+                        command.Parameters.AddWithValue("@assemblyPath", plugin.AssemblyPath);
+                        command.Parameters.AddWithValue("@status", "registered");
+
+                        command.Transaction = transaction;
 
                         int rowsAffected = command.ExecuteNonQuery();
 
@@ -116,11 +118,11 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
                             command.ExecuteScalar();
                         }
 
-                        pgTransaction.Commit();
+                        transaction.Commit();
                     }
                     catch (Exception)
                     {
-                        pgTransaction.Rollback();
+                        transaction.Rollback();
                         throw;
                     }
                 }
@@ -161,9 +163,5 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
             throw new NotImplementedException();
         }
 
-        public void SetConnectionString(string connectionString)
-        {
-            _connectionString = connectionString;
-        }
     }
 }

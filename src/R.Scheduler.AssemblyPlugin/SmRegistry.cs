@@ -9,7 +9,7 @@ namespace R.Scheduler.AssemblyPlugin
     {
         public SmRegistry()
         {
-            For<IPluginStore>().Use<PostgrePluginStore>();// default that my be overriden (using inteceptor) to use data store selected in Scheduler Configuration
+            For<IPluginStore>().Use<InMemoryPluginStore>();// default that my be overriden (using inteceptor) to use data store selected in Scheduler Configuration
             For<IJobTypeStartup>().Use<Startup>();
             For<IJobTypeManager>().Use<PluginManager>();
         }

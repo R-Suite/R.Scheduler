@@ -4,18 +4,17 @@ using Npgsql;
 using NpgsqlTypes;
 using R.Scheduler.AssemblyPlugin.Contracts.DataContracts;
 using R.Scheduler.AssemblyPlugin.Interfaces;
-using R.Scheduler.Interfaces;
 
 namespace R.Scheduler.AssemblyPlugin.Persistance
 {
     /// <summary>
     /// Postgre implementation of IPluginStore
     /// </summary>
-    public class PostgrePluginStore : IPluginStore, IUseSchedulerConnectionString
+    public class PostgrePluginStore : IPluginStore
     {
-        private string _connectionString;
+        private readonly string _connectionString;
 
-        public void SetConnectionString(string connectionString)
+        public PostgrePluginStore(string connectionString)
         {
             _connectionString = connectionString;
         }

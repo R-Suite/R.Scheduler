@@ -93,7 +93,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
 
             var retval = new PluginDetails
             {
-                PluginName = registeredPlugin.Name,
+                Name = registeredPlugin.Name,
                 AssemblyPath = registeredPlugin.AssemblyPath,
                 TriggerDetails = new List<TriggerDetails>()
             };

@@ -37,7 +37,7 @@ namespace R.Scheduler.AssemblyPlugin.Handlers
 
             var pluginDetails = new PluginDetails
             {
-                PluginName = registeredPlugin.Name,
+                Name = registeredPlugin.Name,
                 AssemblyPath = registeredPlugin.AssemblyPath,
                 TriggerDetails = new List<TriggerDetails>()
             };

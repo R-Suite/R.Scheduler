@@ -138,7 +138,7 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
             var conn = new SqlConnection(_connectionString);
             conn.Open();
 
-            var sql = @"DELETE FROM rsched_plugins WHERE plugin_name='@name'";
+            var sql = @"DELETE FROM rsched_plugins WHERE plugin_name=@name";
             var command = new SqlCommand(sql, conn);
             command.Parameters.Add(new SqlParameter("name", SqlDbType.VarChar));
             command.Parameters[0].Value = pluginName;

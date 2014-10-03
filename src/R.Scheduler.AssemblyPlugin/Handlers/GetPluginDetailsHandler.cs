@@ -50,6 +50,10 @@ namespace R.Scheduler.AssemblyPlugin.Handlers
                 var previousFireTimeUtc = quartzTrigger.GetPreviousFireTimeUtc();
                 pluginDetails.TriggerDetails.Add(new TriggerDetails
                 {
+                    Name = quartzTrigger.Key.Name,
+                    Group = quartzTrigger.Key.Group,
+                    JobName = quartzTrigger.JobKey.Name,
+                    JobGroup = quartzTrigger.JobKey.Group,
                     Description = quartzTrigger.Description,
                     StartTimeUtc = quartzTrigger.StartTimeUtc.UtcDateTime,
                     EndTimeUtc = (quartzTrigger.EndTimeUtc.HasValue) ? quartzTrigger.EndTimeUtc.Value.UtcDateTime : (DateTime?)null,

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Web.Http;
 using log4net;
-using Quartz.Util;
 using R.Scheduler.AssemblyPlugin.Contracts.DataContracts;
 using R.Scheduler.AssemblyPlugin.Interfaces;
 using R.Scheduler.Contracts.DataContracts;
@@ -77,14 +76,38 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
             _pluginManager.Register(model.Name, model.AssemblyPath);
         }
 
+        // PUT api/plugins/{id}
+        [AcceptVerbs("PUT")]
+        [Route("api/plugins/{id}")]
+        public void Put(string id, [FromBody]Plugin model)
+        {
+            Logger.InfoFormat("Entered PluginsController.Put(). name = {0}", model.Name);
+
+            _pluginRepository.UpdatePluginName(new Guid(id), model.Name);
+        }
+
         // GET api/values 
         [Route("api/plugins/{id}")]
         public PluginDetails Get(string id)
         {
             Logger.InfoFormat("Entered PluginsController.Get(). id = {0}", id);
 
-            var registeredPlugin = _pluginRepository.GetRegisteredPlugin(id);
+            Plugin registeredPlugin = null;
 
+            // Try to get plugin by id
+            Guid guidId;
+            if (Guid.TryParse(id, out guidId))
+            {
+                registeredPlugin = _pluginRepository.GetRegisteredPlugin(guidId);
+            }
+
+            // Couldn't get it by id, try by name
+            if (null == registeredPlugin)
+            {
+                registeredPlugin = _pluginRepository.GetRegisteredPlugin(id);
+            }
+
+            // Still couldn't get, return null
             if (null == registeredPlugin)
             {
                 Logger.ErrorFormat("Error getting registered plugin {0}", id);
@@ -119,13 +142,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
                 });
             }
 
-
             return retval;
-        }
-
-        // PUT api/plugins/5 
-        public void Put(int id, [FromBody]string value)
-        {
         }
 
         // DELETE api/plugins/id 

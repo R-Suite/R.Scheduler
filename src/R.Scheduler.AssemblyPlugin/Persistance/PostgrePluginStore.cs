@@ -43,12 +43,15 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
 
                 if (reader.HasRows)
                 {
-                    retval = new Plugin { Name = pluginName };
-
                     while (reader.Read())
                     {
-                        retval.AssemblyPath = (string)reader["assembly_path"];
-                        retval.Status = (string)reader["status"];
+                        retval = new Plugin
+                        {
+                            Id = Guid.Parse(reader["id"].ToString()),
+                            Name = (string)reader["plugin_name"],
+                            AssemblyPath = (string)reader["assembly_path"],
+                            Status = (string)reader["status"]
+                        };
                     }
                 }
             }
@@ -60,6 +63,49 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
             return retval;
         }
 
+        /// <summary>
+        /// Get registered plugin
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public Plugin GetRegisteredPlugin(Guid id)
+        {
+            Plugin retval = null;
+
+            var conn = new NpgsqlConnection(_connectionString);
+            conn.Open();
+
+            var sql = @"SELECT id plugin_name, assembly_path, status FROM rsched_plugins WHERE id = :id;";
+            var command = new NpgsqlCommand(sql, conn);
+
+            try
+            {
+                command.Parameters.Add(new NpgsqlParameter("id", NpgsqlDbType.Uuid));
+                command.Parameters[0].Value = id;
+
+                var reader = command.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        retval = new Plugin
+                        {
+                            Id = Guid.Parse(reader["id"].ToString()),
+                            Name = (string)reader["plugin_name"],
+                            AssemblyPath = (string)reader["assembly_path"],
+                            Status = (string)reader["status"]
+                        };
+                    }
+                }
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return retval;
+        }
         /// <summary>
         /// Get all registered plugins
         /// </summary>
@@ -148,6 +194,49 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
             finally
             {
               conn.Close() ;
+            }
+        }
+
+        /// <summary>
+        /// Update plugin name. (Assembly path cannot be updated once registered)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="name"></param>
+        public void UpdatePluginName(Guid id, string name)
+        {
+            var conn = new NpgsqlConnection(_connectionString);
+            conn.Open();
+
+            var sqlUpdate = @"UPDATE rsched_plugins SET plugin_name=:name WHERE id=:id";
+            var command = new NpgsqlCommand(sqlUpdate, conn);
+
+            try
+            {
+                using (var transaction = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        command.Parameters.Add(new NpgsqlParameter("id", NpgsqlDbType.Uuid));
+                        command.Parameters.Add(new NpgsqlParameter("name", NpgsqlDbType.Varchar));
+                        command.Parameters[0].Value = id;
+                        command.Parameters[1].Value = name;
+
+                        command.Transaction = transaction;
+
+                        command.ExecuteNonQuery();
+
+                        transaction.Commit();
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
+            }
+            finally
+            {
+                conn.Close();
             }
         }
 

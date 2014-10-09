@@ -20,27 +20,68 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
         {
             Plugin retval = null;
 
+            var sql = @"SELECT id, plugin_name, assembly_path, status FROM rsched_plugins WHERE plugin_name = @name;";
+
             var conn = new SqlConnection(_connectionString);
             conn.Open();
 
-            var sql = @"SELECT id plugin_name, assembly_path, status FROM rsched_plugins WHERE plugin_name = @name;";
             var command = new SqlCommand(sql, conn);
+            command.Parameters.Add(new SqlParameter("name", SqlDbType.VarChar));
+            command.Parameters[0].Value = pluginName;
 
             try
             {
-                command.Parameters.Add(new SqlParameter("name", SqlDbType.VarChar));
-                command.Parameters[0].Value = pluginName;
-
                 var reader = command.ExecuteReader();
 
                 if (reader.HasRows)
                 {
-                    retval = new Plugin { Name = pluginName };
-
                     while (reader.Read())
                     {
-                        retval.AssemblyPath = (string)reader["assembly_path"];
-                        retval.Status = (string)reader["status"];
+                        retval = new Plugin
+                        {
+                            Id = (Guid)reader["id"],
+                            Name = (string)reader["plugin_name"],
+                            AssemblyPath = (string)reader["assembly_path"],
+                            Status = (string)reader["status"]
+                        };
+                    }
+                }
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return retval;
+        }
+
+        public Plugin GetRegisteredPlugin(Guid id)
+        {
+            Plugin retval = null;
+
+            var sql = @"SELECT [id], [plugin_name], [assembly_path], [status] FROM rsched_plugins WHERE [id] = @id;";
+
+            var conn = new SqlConnection(_connectionString);
+            conn.Open();
+
+            var command = new SqlCommand(sql, conn);
+            command.Parameters.AddWithValue("@id", id);
+
+            try
+            {
+                var reader = command.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        retval = new Plugin
+                        {
+                            Id = Guid.Parse(reader["id"].ToString()),
+                            Name = (string)reader["plugin_name"],
+                            AssemblyPath = (string)reader["assembly_path"],
+                            Status = (string)reader["status"]
+                        };
                     }
                 }
             }
@@ -72,7 +113,7 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
                     {
                         retval.Add(new Plugin
                         {
-                            Id = (Guid)reader["id"],
+                            Id = Guid.Parse(reader["id"].ToString()),
                             Name = (string)reader["plugin_name"],
                             AssemblyPath = (string)reader["assembly_path"],
                             Status = (string)reader["status"]
@@ -117,6 +158,42 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
                             command.CommandText = sqlInsert;
                             command.ExecuteScalar();
                         }
+
+                        transaction.Commit();
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+        public void UpdatePluginName(Guid id, string name)
+        {
+            var conn = new SqlConnection(_connectionString);
+            conn.Open();
+
+            var sqlUpdate = @"UPDATE rsched_plugins SET plugin_name=@name WHERE id=@id";
+            var command = new SqlCommand(sqlUpdate, conn);
+
+            try
+            {
+                using (var transaction = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        command.Parameters.AddWithValue("@id", id);
+                        command.Parameters.AddWithValue("@name", name);
+
+                        command.Transaction = transaction;
+
+                        command.ExecuteNonQuery();
 
                         transaction.Commit();
                     }

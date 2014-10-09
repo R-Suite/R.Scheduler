@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Caching;
 using R.Scheduler.AssemblyPlugin.Contracts.DataContracts;
 using R.Scheduler.AssemblyPlugin.Interfaces;
@@ -29,6 +30,16 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
             }
 
             return retval;
+        }
+
+        /// <summary>
+        /// Get registered plugin
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public Plugin GetRegisteredPlugin(Guid id)
+        {
+            return Cache.Select(caheItem => (Plugin) caheItem.Value).FirstOrDefault(plugin => id == plugin.Id);
         }
 
         /// <summary>
@@ -70,6 +81,25 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
             }
 
             Cache.Set(plugin.Name, plugin, _policy); 
+        }
+
+        /// <summary>
+        /// Update plugin name
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="name"></param>
+        public void UpdatePluginName(Guid id, string name)
+        {
+            foreach (KeyValuePair<string, object> caheItem in Cache)
+            {
+                var plugin = (Plugin) caheItem.Value;
+
+                if (id == plugin.Id)
+                {
+                    plugin.Name = name;
+                    break;
+                }
+            }
         }
 
         /// <summary>

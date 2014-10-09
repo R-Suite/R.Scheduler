@@ -12,7 +12,7 @@ namespace R.Scheduler.TestHost
                 config.EnableWebApiSelfHost = true;
                 config.EnableMessageBusSelfHost = true;
                 config.PersistanceStoreType = PersistanceStoreType.SqlServer;
-                config.ConnectionString = @"Server=RUFFER-716Q85J\MSSQLSERVER2012; DataBase=Scheduler;Trusted_Connection=True;";
+                config.ConnectionString = @"Server=RUFFER-716Q85J\MSSQLSERVER2012; DataBase=RufferScheduler;Trusted_Connection=True;";
                 config.TransportSettings.Host = "localhost";
                 config.TransportSettings.Username = "guest";
                 config.TransportSettings.Password = "guest";

@@ -136,7 +136,6 @@
     <Compile Include="Configuration.cs" />
     <Compile Include="Controllers\JobsController.cs" />
     <Compile Include="Controllers\TriggersController.cs" />
-    <Compile Include="CorsModule.cs" />
     <Compile Include="Handlers\DescheduleJobHandler.cs" />
     <Compile Include="Handlers\DescheduleTriggerGroupHandler.cs" />
     <Compile Include="Handlers\DescheduleTriggerHandler.cs" />

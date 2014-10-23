@@ -58,8 +58,7 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
                     {
                         Id = ((Plugin)caheItem.Value).Id,
                         Name = caheItem.Key,
-                        AssemblyPath = ((Plugin)caheItem.Value).AssemblyPath,
-                        Status = ((Plugin)caheItem.Value).Status
+                        AssemblyPath = ((Plugin)caheItem.Value).AssemblyPath
                     });
                 }
             }

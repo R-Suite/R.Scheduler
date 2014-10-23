@@ -31,7 +31,7 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
             var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
 
-            var sql = @"SELECT id plugin_name, assembly_path, status FROM rsched_plugins WHERE plugin_name = :name;";
+            var sql = @"SELECT id plugin_name, assembly_path FROM rsched_plugins WHERE plugin_name = :name;";
             var command = new NpgsqlCommand(sql, conn);
 
             try
@@ -49,8 +49,7 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
                         {
                             Id = Guid.Parse(reader["id"].ToString()),
                             Name = (string)reader["plugin_name"],
-                            AssemblyPath = (string)reader["assembly_path"],
-                            Status = (string)reader["status"]
+                            AssemblyPath = (string)reader["assembly_path"]
                         };
                     }
                 }
@@ -75,7 +74,7 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
             var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
 
-            var sql = @"SELECT id plugin_name, assembly_path, status FROM rsched_plugins WHERE id = :id;";
+            var sql = @"SELECT id plugin_name, assembly_path FROM rsched_plugins WHERE id = :id;";
             var command = new NpgsqlCommand(sql, conn);
 
             try
@@ -93,8 +92,7 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
                         {
                             Id = Guid.Parse(reader["id"].ToString()),
                             Name = (string)reader["plugin_name"],
-                            AssemblyPath = (string)reader["assembly_path"],
-                            Status = (string)reader["status"]
+                            AssemblyPath = (string)reader["assembly_path"]
                         };
                     }
                 }
@@ -117,7 +115,7 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
             var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
 
-            var sql = @"SELECT id, plugin_name, assembly_path, status FROM rsched_plugins";
+            var sql = @"SELECT id, plugin_name, assembly_path FROM rsched_plugins";
             var command = new NpgsqlCommand(sql, conn);
 
             try
@@ -132,8 +130,7 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
                         {
                             Id = (Guid) reader["id"] ,
                             Name = (string) reader["plugin_name"],
-                            AssemblyPath = (string) reader["assembly_path"],
-                            Status = (string) reader["status"]
+                            AssemblyPath = (string) reader["assembly_path"]
                         });
                     }
                 }
@@ -155,8 +152,8 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
             var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
 
-            var sqlInsert = @"INSERT INTO rsched_plugins(id, plugin_name, assembly_path, status) VALUES (:id, :name, :assemblyPath, :status);";
-            var sqlUpdate = @"UPDATE rsched_plugins SET assembly_path=:assemblyPath, status=:status WHERE plugin_name=:name";
+            var sqlInsert = @"INSERT INTO rsched_plugins(id, plugin_name, assembly_path) VALUES (:id, :name, :assemblyPath);";
+            var sqlUpdate = @"UPDATE rsched_plugins SET assembly_path=:assemblyPath WHERE plugin_name=:name";
             var command = new NpgsqlCommand(sqlUpdate, conn);
 
             try
@@ -168,11 +165,9 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
                         command.Parameters.Add(new NpgsqlParameter("id", NpgsqlDbType.Uuid));
                         command.Parameters.Add(new NpgsqlParameter("name", NpgsqlDbType.Varchar));
                         command.Parameters.Add(new NpgsqlParameter("assemblyPath", NpgsqlDbType.Varchar));
-                        command.Parameters.Add(new NpgsqlParameter("status", NpgsqlDbType.Varchar));
                         command.Parameters[0].Value = Guid.NewGuid();
                         command.Parameters[1].Value = plugin.Name;
                         command.Parameters[2].Value = plugin.AssemblyPath;
-                        command.Parameters[3].Value = "registered";
 
                         int rowsAffected = command.ExecuteNonQuery();
 

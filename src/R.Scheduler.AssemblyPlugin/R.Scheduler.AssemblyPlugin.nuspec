@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>R.Scheduler.AssemblyPlugin</id>
-    <version>0.0.0.5</version>
+    <version>0.0.1</version>
     <title>R.Scheduler.AssemblyPlugin</title>
     <authors>Jakub Pachansky</authors>
     <owners>Jakub Pachansky,Tim Watson</owners>

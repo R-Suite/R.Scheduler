@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>R.Scheduler</id>
-    <version>0.0.3</version>
+    <version>0.0.4</version>
     <title>R.Scheduler</title>
     <authors>Jakub Pachansky</authors>
     <owners>Jakub Pachansky,Tim Watson</owners>
@@ -13,7 +13,6 @@
     <copyright>Copyright 2014 R.Scheduler. All rights reserved</copyright>
     <tags>Scheduler,R Scheduler,R.Scheduler,Quartz Scheduler,RScheduler,R.MessageBus Scheduler,Scheduling</tags>
     <dependencies>
-      <dependency id="R.MessageBus" version="" />
       <dependency id="R.Scheduler.Contracts" version="" />
       <dependency id="Quartz" version="2.2.4" />
       <dependency id="Microsoft.AspNet.WebApi.OwinSelfHost" version="5.2.2" />

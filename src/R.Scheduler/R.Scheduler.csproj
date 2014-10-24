@@ -68,39 +68,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Quartz.2.2.4\lib\net40\Quartz.dll</HintPath>
     </Reference>
-    <Reference Include="R.MessageBus">
-      <HintPath>..\packages\R.MessageBus.1.0.1.18\lib\net40\R.MessageBus.dll</HintPath>
-    </Reference>
-    <Reference Include="R.MessageBus.Client.RabbitMQ, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\R.MessageBus.Client.RabbitMQ.1.0.1.16\lib\net40\R.MessageBus.Client.RabbitMQ.dll</HintPath>
-    </Reference>
-    <Reference Include="R.MessageBus.Container, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\R.MessageBus.1.0.1.18\lib\net40\R.MessageBus.Container.dll</HintPath>
-    </Reference>
-    <Reference Include="R.MessageBus.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\R.MessageBus.1.0.1.18\lib\net40\R.MessageBus.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="R.MessageBus.Interfaces, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\R.MessageBus.Interfaces.1.0.1.14\lib\net40\R.MessageBus.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="R.MessageBus.Persistance.InMemory">
-      <HintPath>..\packages\R.MessageBus.1.0.1.18\lib\net40\R.MessageBus.Persistance.InMemory.dll</HintPath>
-    </Reference>
-    <Reference Include="R.MessageBus.Persistance.SqlServer">
-      <HintPath>..\packages\R.MessageBus.1.0.1.18\lib\net40\R.MessageBus.Persistance.SqlServer.dll</HintPath>
-    </Reference>
-    <Reference Include="R.MessageBus.Settings, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\R.MessageBus.Client.RabbitMQ.1.0.1.16\lib\net40\R.MessageBus.Settings.dll</HintPath>
-    </Reference>
-    <Reference Include="RabbitMQ.Client, Version=3.2.4.0, Culture=neutral, PublicKeyToken=89e7d7c5feba84ce, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\RabbitMQ.Client.3.2.4\lib\net30\RabbitMQ.Client.dll</HintPath>
-    </Reference>
     <Reference Include="StructureMap, Version=2.6.4.0, Culture=neutral, PublicKeyToken=e60ad81abae3c223, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\structuremap.2.6.4.1\lib\net40\StructureMap.dll</HintPath>
@@ -136,9 +103,6 @@
     <Compile Include="Configuration.cs" />
     <Compile Include="Controllers\JobsController.cs" />
     <Compile Include="Controllers\TriggersController.cs" />
-    <Compile Include="Handlers\DescheduleJobHandler.cs" />
-    <Compile Include="Handlers\DescheduleTriggerGroupHandler.cs" />
-    <Compile Include="Handlers\DescheduleTriggerHandler.cs" />
     <Compile Include="SchedulerCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scheduler.cs" />

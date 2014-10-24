@@ -3,8 +3,6 @@ using System.Collections.Specialized;
 using Microsoft.Owin.Hosting;
 using Quartz;
 using Quartz.Impl;
-using R.MessageBus;
-using R.MessageBus.Interfaces;
 using R.Scheduler.Interfaces;
 using StructureMap;
 using IConfiguration = R.Scheduler.Interfaces.IConfiguration;
@@ -44,8 +42,6 @@ namespace R.Scheduler
 
             Configuration = configuration;
 
-            //ObjectFactory.Configure(x => x.RegisterInterceptor(new JobTypePersistanceInterceptor(Configuration.ConnectionString)));
-
             // Initialise JobTypes modules
             var jobTypeStartups = ObjectFactory.GetAllInstances<IJobTypeStartup>();
             foreach (var jobTypeStartup in jobTypeStartups)
@@ -74,17 +70,6 @@ namespace R.Scheduler
 
                         ISchedulerFactory schedFact = new StdSchedulerFactory(GetProperties());
                         _instance = schedFact.GetScheduler();
-
-                        if (Configuration.EnableMessageBusSelfHost)
-                        {
-                            IBus bus = Bus.Initialize(config =>
-                            {
-                                config.ScanForMesssageHandlers = true;
-                                config.TransportSettings = Configuration.TransportSettings;
-                            });
-
-                            bus.StartConsuming();
-                        }
 
                         if (Configuration.EnableWebApiSelfHost)
                         {

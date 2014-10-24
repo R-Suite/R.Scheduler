@@ -1,6 +1,4 @@
-﻿using R.MessageBus.Interfaces;
-
-namespace R.Scheduler.Interfaces
+﻿namespace R.Scheduler.Interfaces
 {
     public interface IConfiguration
     {
@@ -11,10 +9,7 @@ namespace R.Scheduler.Interfaces
         string InstanceId { get; set; }
         string UseProperties { get; set; }
 
-        bool EnableMessageBusSelfHost { get; set; }
         bool EnableWebApiSelfHost { get; set; }
         string WebApiBaseAddress { get; set; }
-
-        ITransportSettings TransportSettings { get; set; }
     }
 }

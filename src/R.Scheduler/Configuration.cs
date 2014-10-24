@@ -1,5 +1,4 @@
-﻿using R.MessageBus.Interfaces;
-using R.Scheduler.Interfaces;
+﻿using R.Scheduler.Interfaces;
 using IConfiguration = R.Scheduler.Interfaces.IConfiguration;
 
 namespace R.Scheduler
@@ -14,12 +13,8 @@ namespace R.Scheduler
             InstanceId = "instance_one";
             UseProperties = "true";
 
-            EnableMessageBusSelfHost = false;
             EnableWebApiSelfHost = true;
             WebApiBaseAddress = "http://localhost:5000/";
-            
-            var messageBusConfig = new MessageBus.Configuration();
-            TransportSettings = messageBusConfig.TransportSettings;
         }
 
         public PersistanceStoreType PersistanceStoreType { get; set; }
@@ -29,10 +24,7 @@ namespace R.Scheduler
         public string InstanceId { get; set; }
         public string UseProperties { get; set; }
 
-        public bool EnableMessageBusSelfHost { get; set; }
         public bool EnableWebApiSelfHost { get; set; }
         public string WebApiBaseAddress { get; set; }
-
-        public ITransportSettings TransportSettings { get; set; }
     }
 }

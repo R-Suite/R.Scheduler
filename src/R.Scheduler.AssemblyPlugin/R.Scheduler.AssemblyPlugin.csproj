@@ -48,9 +48,6 @@
     <Reference Include="Quartz">
       <HintPath>..\packages\Quartz.2.2.4\lib\net40\Quartz.dll</HintPath>
     </Reference>
-    <Reference Include="R.MessageBus.Interfaces">
-      <HintPath>..\packages\R.MessageBus.Interfaces.1.0.1.14\lib\net40\R.MessageBus.Interfaces.dll</HintPath>
-    </Reference>
     <Reference Include="StructureMap">
       <HintPath>..\packages\structuremap.2.6.4.1\lib\net40\StructureMap.dll</HintPath>
     </Reference>
@@ -79,25 +76,9 @@
     <Compile Include="Contracts\DataContracts\PluginSimpleTrigger.cs" />
     <Compile Include="Contracts\Interfaces\BaseJobPlugin.cs" />
     <Compile Include="Contracts\Interfaces\IJobPlugin.cs" />
-    <Compile Include="Contracts\Messages\DeschedulePlugin.cs" />
-    <Compile Include="Contracts\Messages\ExecutePlugin.cs" />
-    <Compile Include="Contracts\Messages\GetPluginDetails.cs" />
-    <Compile Include="Contracts\Messages\GetPlugins.cs" />
-    <Compile Include="Contracts\Messages\RegisterPlugin.cs" />
-    <Compile Include="Contracts\Messages\RemovePlugin.cs" />
-    <Compile Include="Contracts\Messages\SchedulePluginWithCronTrigger.cs" />
-    <Compile Include="Contracts\Messages\SchedulePluginWithSimpleTrigger.cs" />
     <Compile Include="Controllers\PluginCronTriggersController.cs" />
     <Compile Include="Controllers\PluginsController.cs" />
     <Compile Include="Controllers\PluginSimpleTriggersController.cs" />
-    <Compile Include="Handlers\DeschedulePluginHandler.cs" />
-    <Compile Include="Handlers\ExecutePluginHandler.cs" />
-    <Compile Include="Handlers\GetPluginDetailsHandler.cs" />
-    <Compile Include="Handlers\GetPluginsHandler.cs" />
-    <Compile Include="Handlers\RegisterPluginHandler.cs" />
-    <Compile Include="Handlers\RemovePluginHandler.cs" />
-    <Compile Include="Handlers\SchedulePluginWithCronTriggerHandler.cs" />
-    <Compile Include="Handlers\SchedulePluginWithSimpleTriggerHandler.cs" />
     <Compile Include="Interfaces\IPluginStore.cs" />
     <Compile Include="Persistance\InMemoryPluginStore.cs" />
     <Compile Include="Persistance\PostgrePluginStore.cs" />

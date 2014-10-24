@@ -4,6 +4,7 @@ namespace R.Scheduler.Contracts.DataContracts
 {
     public class TriggerDetails
     {
+        public string Type { get; set; }
         public string Name { get; set; }
         public string Group { get; set; }
         public string JobName { get; set; }

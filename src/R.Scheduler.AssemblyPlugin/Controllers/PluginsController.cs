@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Web.Http;
 using log4net;
+using Quartz;
 using R.Scheduler.AssemblyPlugin.Contracts.DataContracts;
 using R.Scheduler.AssemblyPlugin.Interfaces;
 using R.Scheduler.Contracts.DataContracts;
@@ -123,8 +124,17 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
             
             var quartzTriggers = _schedulerCore.GetTriggersOfJobGroup(registeredPlugin.Name);
 
-            foreach (var quartzTrigger in quartzTriggers)
+            foreach (ITrigger quartzTrigger in quartzTriggers)
             {
+                var triggerType = string.Empty;
+                if (quartzTrigger is ICronTrigger)
+                {
+                    triggerType = "Cron";
+                }
+                if (quartzTrigger is ISimpleTrigger)
+                {
+                    triggerType = "Simple";
+                }
                 var nextFireTimeUtc = quartzTrigger.GetNextFireTimeUtc();
                 var previousFireTimeUtc = quartzTrigger.GetPreviousFireTimeUtc();
                 retval.TriggerDetails.Add(new TriggerDetails
@@ -139,6 +149,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
                     NextFireTimeUtc = (nextFireTimeUtc.HasValue) ? nextFireTimeUtc.Value.UtcDateTime : (DateTime?)null,
                     PreviousFireTimeUtc = (previousFireTimeUtc.HasValue) ? previousFireTimeUtc.Value.UtcDateTime : (DateTime?)null,
                     FinalFireTimeUtc = (quartzTrigger.FinalFireTimeUtc.HasValue) ? quartzTrigger.FinalFireTimeUtc.Value.UtcDateTime : (DateTime?)null,
+                    Type = triggerType
                 });
             }
 

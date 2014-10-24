@@ -30,10 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="R.MessageBus.Interfaces, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\R.MessageBus.Interfaces.1.0.1.14\lib\net40\R.MessageBus.Interfaces.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -44,13 +40,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataContracts\TriggerDetails.cs" />
-    <Compile Include="Messages\DescheduleJob.cs" />
-    <Compile Include="Messages\DescheduleTrigger.cs" />
-    <Compile Include="Messages\DescheduleTriggerGroup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="R.Scheduler.Contracts.nuspec">
       <SubType>Designer</SubType>
     </None>

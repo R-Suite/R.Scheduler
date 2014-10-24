@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>R.Scheduler</id>
-    <version>0.0.4</version>
+    <version>0.0.5</version>
     <title>R.Scheduler</title>
     <authors>Jakub Pachansky</authors>
     <owners>Jakub Pachansky,Tim Watson</owners>
@@ -17,6 +17,7 @@
       <dependency id="Quartz" version="2.2.4" />
       <dependency id="Microsoft.AspNet.WebApi.OwinSelfHost" version="5.2.2" />
       <dependency id="Microsoft.AspNet.WebApi.Cors" version="5.2.2" />
+      <dependency id="log4net" version="(2.0,)" />
   </dependencies>
   </metadata>
   <files>

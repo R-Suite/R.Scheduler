@@ -37,54 +37,153 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
             return registeredPlugins;
         }
 
-        // POST api/plugins/execute 
+        /// <summary>
+        /// Schedules a temporary job for an immediate execution
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [AcceptVerbs("POST")]
         [Route("api/plugins/execute")]
-        public void Execute([FromBody]string model)
+        public QueryResponse Execute([FromBody]string model)
         {
             Logger.InfoFormat("Entered PluginsController.Execute(). name = {0}", model);
+
+            var response = new QueryResponse { Valid = true };
 
             var registeredPlugin = _pluginRepository.GetRegisteredPlugin(model);
 
             if (null == registeredPlugin)
             {
                 Logger.ErrorFormat("Error getting registered plugin {0}", model);
-                return;
+                response.Valid = false;
+                response.Errors = new List<Error>
+                {
+                    new Error
+                    {
+                        Code = "RegisteredPluginNotFound",
+                        Type = "Sender",
+                        Message = string.Format("Plugin {0} not found", model)
+                    }
+                };
+
+                return response;
             }
 
             var dataMap = new Dictionary<string, object> {{"pluginPath", registeredPlugin.AssemblyPath}};
 
-            _schedulerCore.ExecuteJob(typeof(PluginRunner), dataMap);
+            try
+            {
+                _schedulerCore.ExecuteJob(typeof (PluginRunner), dataMap);
+            }
+            catch (Exception ex)
+            {
+                response.Valid = false;
+                response.Errors = new List<Error>
+                {
+                    new Error
+                    {
+                        Code = "ErrorTriggeringPlugin",
+                        Type = "Server",
+                        Message = string.Format("Error: {0}", ex.Message)
+                    }
+                };
+            }
+
+            return response;
         }
 
-        // POST api/plugins/execute 
+        /// <summary>
+        /// Removes all triggers.
+        /// </summary>
+        /// <param name="model">Pluin name</param>
+        /// <returns></returns>
         [AcceptVerbs("POST")]
         [Route("api/plugins/deschedule")]
-        public void Deschedule([FromBody]string model)
+        public QueryResponse Deschedule([FromBody]string model)
         {
             Logger.InfoFormat("Entered PluginsController.Deschedule(). name = {0}", model);
 
-            _schedulerCore.RemoveJobGroup(model);
+            var response = new QueryResponse { Valid = true };
+
+            try
+            {
+                _schedulerCore.RemoveJobGroup(model);
+            }
+            catch (Exception ex)
+            {
+                response.Valid = false;
+                response.Errors = new List<Error>
+                {
+                    new Error
+                    {
+                        Code = "ErrorRemovingJobGroup",
+                        Type = "Server",
+                        Message = string.Format("Error:{0}", ex.Message)
+                    }
+                };
+            }
+
+            return response;
         }
 
         // POST api/plugins 
         [AcceptVerbs("POST")]
         [Route("api/plugins")]
-        public void Post([FromBody]Plugin model)
+        public QueryResponse Post([FromBody]Plugin model)
         {
             Logger.InfoFormat("Entered PluginsController.Post(). name = {0}", model.Name);
 
-            _pluginManager.Register(model.Name, model.AssemblyPath);
+            var response = new QueryResponse { Valid = true };
+
+            try
+            {
+                _pluginManager.Register(model.Name, model.AssemblyPath);
+            }
+            catch (Exception ex)
+            {
+                response.Valid = false;
+                response.Errors = new List<Error>
+                {
+                    new Error
+                    {
+                        Code = "ErrorRegisteringPlugin",
+                        Type = "Server",
+                        Message = string.Format("Error: {0}", ex.Message)
+                    }
+                };
+            }
+
+            return response;
         }
 
         // PUT api/plugins/{id}
         [AcceptVerbs("PUT")]
         [Route("api/plugins/{id}")]
-        public void Put(string id, [FromBody]Plugin model)
+        public QueryResponse Put(string id, [FromBody]Plugin model)
         {
             Logger.InfoFormat("Entered PluginsController.Put(). name = {0}", model.Name);
 
-            _pluginRepository.UpdatePluginName(new Guid(id), model.Name);
+            var response = new QueryResponse { Valid = true };
+
+            try
+            {
+                _pluginRepository.UpdatePluginName(new Guid(id), model.Name);
+            }
+            catch (Exception ex)
+            {
+                response.Valid = false;
+                response.Errors = new List<Error>
+                {
+                    new Error
+                    {
+                        Code = "ErrorUpdatingPlugin",
+                        Type = "Server",
+                        Message = string.Format("Error: {0}", ex.Message)
+                    }
+                };
+            }
+
+            return response;
         }
 
         // GET api/values 
@@ -159,9 +258,11 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         // DELETE api/plugins/id 
         [AcceptVerbs("DELETE")]
         [Route("api/plugins")]
-        public void Delete(string id)
+        public QueryResponse Delete(string id)
         {
             Logger.InfoFormat("Entered PluginsController.Delete(). id = {0}", id);
+
+            var response = new QueryResponse { Valid = true };
 
             _schedulerCore.RemoveJobGroup(id);
 
@@ -170,7 +271,20 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
             if (result == 0)
             {
                 Logger.WarnFormat("Error removing from data store. Plugin {0} not found", id);
+
+                response.Valid = false;
+                response.Errors = new List<Error>
+                {
+                    new Error
+                    {
+                        Code = "RegisteredPluginNotFound",
+                        Type = "Sender",
+                        Message = string.Format("Plugin {0} not found", id)
+                    }
+                };
             }
+
+            return response;
         }
     } 
 }

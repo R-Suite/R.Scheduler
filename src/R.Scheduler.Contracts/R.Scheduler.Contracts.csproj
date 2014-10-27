@@ -39,6 +39,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataContracts\Error.cs" />
+    <Compile Include="DataContracts\QueryResponse.cs" />
     <Compile Include="DataContracts\TriggerDetails.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

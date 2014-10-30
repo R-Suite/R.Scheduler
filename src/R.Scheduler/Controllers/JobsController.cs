@@ -1,6 +1,9 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using System.Web.Http;
 using log4net;
+using R.Scheduler.Contracts.DataContracts;
 using R.Scheduler.Interfaces;
 using StructureMap;
 
@@ -18,11 +21,39 @@ namespace R.Scheduler.Controllers
 
         [AcceptVerbs("DELETE")]
         [Route("api/jobs")]
-        public void Delete(string jobName)
+        public QueryResponse Delete(string jobName)
         {
             Logger.InfoFormat("Entered JobsController.Delete(). jobName = {0}", jobName);
 
-            _schedulerCore.RemoveJob(jobName);
+            var response = new QueryResponse { Valid = true };
+
+            try
+            {
+                _schedulerCore.RemoveJob(jobName);
+            }
+            catch (Exception ex)
+            {
+                Logger.ErrorFormat("Error removing job  {0}. {1}", jobName, ex.Message);
+
+                string type = "Server";
+                if (ex is ArgumentException)
+                {
+                    type = "Sender";
+                }
+
+                response.Valid = false;
+                response.Errors = new List<Error>
+                {
+                    new Error
+                    {
+                        Code = "ErrorRemovingJob",
+                        Type = type,
+                        Message = string.Format("Error removing job {0}.", jobName)
+                    }
+                };
+            }
+
+            return response;
         }
     }
 }

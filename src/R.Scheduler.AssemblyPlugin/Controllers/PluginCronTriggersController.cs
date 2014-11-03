@@ -65,14 +65,23 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
             }
             catch (Exception ex)
             {
+                Logger.ErrorFormat("Error scheduling CronTrigger  {0}. {1}", model.TriggerName, ex.Message);
+
+                string type = "Server";
+                
+                if (ex is FormatException)
+                {
+                    type = "Sender";
+                }
+
                 response.Valid = false;
                 response.Errors = new List<Error>
                 {
                     new Error
                     {
                         Code = "ErrorSchedulingTrigger",
-                        Type = "Server",
-                        Message = string.Format("Error scheduling trigger {0}", ex.Message)
+                        Type = type,
+                        Message = string.Format("Error scheduling CronTrigger {0}", ex.Message)
                     }
                 };
             }

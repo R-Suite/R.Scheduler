@@ -29,7 +29,7 @@ namespace R.Scheduler.AssemblyPlugin
             if (!File.Exists(args[0]))
             {
                 Logger.ErrorFormat("Error registering plugin {0}. Invalid assembly path {1}", name, args[0]);
-                return;
+                throw new FileNotFoundException(string.Format("Invalid assembly path {0}", args[0]));
             }
             //todo: verify valid plugin.. reflection?
 

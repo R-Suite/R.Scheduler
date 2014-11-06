@@ -11,7 +11,7 @@ using StructureMap;
 
 namespace R.Scheduler.AssemblyPlugin.Controllers
 {
-    public class PluginSimpleTriggersController : ApiController
+    public class PluginSimpleTriggersController : BaseController
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         readonly IPluginStore _pluginRepository;
@@ -24,14 +24,14 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         }
 
         [AcceptVerbs("POST")]
-        [Route("api/plugins/{pluginName}/simpleTriggers")]
-        public QueryResponse Post(string pluginName, [FromBody]PluginSimpleTrigger model)
+        [Route("api/plugins/{id}/simpleTriggers")]
+        public QueryResponse Post(string id, [FromBody]PluginSimpleTrigger model)
         {
-            Logger.InfoFormat("Entered PluginSimpleTriggersController.Post(). PluginName = {0}", pluginName);
+            Logger.InfoFormat("Entered PluginSimpleTriggersController.Post(). PluginName = {0}", model.PluginName);
 
             var response = new QueryResponse { Valid = true};
 
-            var registeredPlugin = _pluginRepository.GetRegisteredPlugin(pluginName);
+            Plugin registeredPlugin = base.GetRegisteredPlugin(id);
 
             if (null == registeredPlugin)
             {
@@ -54,9 +54,9 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
                 _schedulerCore.ScheduleTrigger(new SimpleTrigger
                 {
                     Name = model.TriggerName,
-                    Group = !string.IsNullOrEmpty(model.TriggerGroup) ? model.TriggerGroup : pluginName + "_TriggerGroup",
-                    JobName = model.JobName,
-                    JobGroup = pluginName,
+                    Group = !string.IsNullOrEmpty(model.TriggerGroup) ? model.TriggerGroup : registeredPlugin.Id + "_Group",
+                    JobName = !string.IsNullOrEmpty(model.JobName) ? model.JobName : registeredPlugin.Id + "_JobName",
+                    JobGroup = registeredPlugin.Id.ToString(),
                     RepeatCount = model.RepeatCount,
                     RepeatInterval = model.RepeatInterval,
                     StartDateTime = model.StartDateTime,

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Web.Http;
 using log4net;
@@ -12,7 +13,7 @@ using StructureMap;
 
 namespace R.Scheduler.AssemblyPlugin.Controllers
 {
-    public class PluginsController : ApiController
+    public class PluginsController : BaseController
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         readonly IPluginStore _pluginRepository;
@@ -48,10 +49,9 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         {
             Logger.InfoFormat("Entered PluginsController.Execute(). name = {0}", model);
 
-            var response = new QueryResponse { Valid = true };
+            Plugin registeredPlugin = base.GetRegisteredPlugin(model);
 
-            var registeredPlugin = _pluginRepository.GetRegisteredPlugin(model);
-
+            var response = new QueryResponse {Valid = true};
             if (null == registeredPlugin)
             {
                 Logger.ErrorFormat("Error getting registered plugin {0}", model);
@@ -103,11 +103,13 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         {
             Logger.InfoFormat("Entered PluginsController.Deschedule(). name = {0}", model);
 
+            Plugin registeredPlugin = base.GetRegisteredPlugin(model);
+
             var response = new QueryResponse { Valid = true };
 
             try
             {
-                _schedulerCore.RemoveJobGroup(model);
+                _schedulerCore.RemoveJobGroup(registeredPlugin.Id.ToString());
             }
             catch (Exception ex)
             {
@@ -141,13 +143,19 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
             }
             catch (Exception ex)
             {
+                string type = "Server";
+                if (ex is FileNotFoundException)
+                {
+                    type = "Sender";
+                }
+
                 response.Valid = false;
                 response.Errors = new List<Error>
                 {
                     new Error
                     {
                         Code = "ErrorRegisteringPlugin",
-                        Type = "Server",
+                        Type = type,
                         Message = string.Format("Error: {0}", ex.Message)
                     }
                 };
@@ -192,20 +200,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         {
             Logger.InfoFormat("Entered PluginsController.Get(). id = {0}", id);
 
-            Plugin registeredPlugin = null;
-
-            // Try to get plugin by id
-            Guid guidId;
-            if (Guid.TryParse(id, out guidId))
-            {
-                registeredPlugin = _pluginRepository.GetRegisteredPlugin(guidId);
-            }
-
-            // Couldn't get it by id, try by name
-            if (null == registeredPlugin)
-            {
-                registeredPlugin = _pluginRepository.GetRegisteredPlugin(id);
-            }
+            Plugin registeredPlugin = base.GetRegisteredPlugin(id);
 
             // Still couldn't get, return null
             if (null == registeredPlugin)
@@ -221,7 +216,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
                 TriggerDetails = new List<TriggerDetails>()
             };
             
-            var quartzTriggers = _schedulerCore.GetTriggersOfJobGroup(registeredPlugin.Name);
+            var quartzTriggers = _schedulerCore.GetTriggersOfJobGroup(registeredPlugin.Id.ToString());
 
             foreach (ITrigger quartzTrigger in quartzTriggers)
             {
@@ -262,9 +257,11 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         {
             Logger.InfoFormat("Entered PluginsController.Delete(). id = {0}", id);
 
+            var registeredPlugin = base.GetRegisteredPlugin(id);
+
             var response = new QueryResponse { Valid = true };
 
-            _schedulerCore.RemoveJobGroup(id);
+            _schedulerCore.RemoveJobGroup(registeredPlugin.Id.ToString());
 
             int result = _pluginRepository.RemovePlugin(id);
 

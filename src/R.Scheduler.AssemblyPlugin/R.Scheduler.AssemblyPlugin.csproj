@@ -76,6 +76,7 @@
     <Compile Include="Contracts\DataContracts\PluginSimpleTrigger.cs" />
     <Compile Include="Contracts\Interfaces\BaseJobPlugin.cs" />
     <Compile Include="Contracts\Interfaces\IJobPlugin.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\PluginCronTriggersController.cs" />
     <Compile Include="Controllers\PluginsController.cs" />
     <Compile Include="Controllers\PluginSimpleTriggersController.cs" />

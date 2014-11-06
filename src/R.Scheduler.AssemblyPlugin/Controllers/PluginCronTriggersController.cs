@@ -4,34 +4,31 @@ using System.Reflection;
 using System.Web.Http;
 using log4net;
 using R.Scheduler.AssemblyPlugin.Contracts.DataContracts;
-using R.Scheduler.AssemblyPlugin.Interfaces;
 using R.Scheduler.Contracts.DataContracts;
 using R.Scheduler.Interfaces;
 using StructureMap;
 
 namespace R.Scheduler.AssemblyPlugin.Controllers
 {
-    public class PluginCronTriggersController : ApiController
+    public class PluginCronTriggersController : BaseController
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        readonly IPluginStore _pluginRepository;
         readonly ISchedulerCore _schedulerCore;
 
         public PluginCronTriggersController()
         {
-            _pluginRepository = ObjectFactory.GetInstance<IPluginStore>();
             _schedulerCore = ObjectFactory.GetInstance<ISchedulerCore>();
         }
 
         [AcceptVerbs("POST")]
-        [Route("api/plugins/{pluginName}/cronTriggers")]
-        public QueryResponse Post(string pluginName, [FromBody]PluginCronTrigger model)
+        [Route("api/plugins/{id}/cronTriggers")]
+        public QueryResponse Post(string id, [FromBody]PluginCronTrigger model)
         {
-            Logger.InfoFormat("Entered PluginCronTriggersController.Post(). PluginName = {0}", pluginName);
+            Logger.InfoFormat("Entered PluginCronTriggersController.Post(). PluginName = {0}", model.PluginName);
 
             var response = new QueryResponse { Valid = true };
 
-            var registeredPlugin = _pluginRepository.GetRegisteredPlugin(pluginName);
+            Plugin registeredPlugin = base.GetRegisteredPlugin(id);
 
             if (null == registeredPlugin)
             {
@@ -54,9 +51,9 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
                 _schedulerCore.ScheduleTrigger(new CronTrigger
                 {
                     Name = model.TriggerName,
-                    Group = !string.IsNullOrEmpty(model.TriggerGroup) ? model.TriggerGroup : pluginName + "_TriggerGroup",
-                    JobName = model.JobName,
-                    JobGroup = pluginName,
+                    Group = !string.IsNullOrEmpty(model.TriggerGroup) ? model.TriggerGroup : registeredPlugin.Id + "_Group",
+                    JobName = !string.IsNullOrEmpty(model.JobName) ? model.JobName : registeredPlugin.Id + "_JobName",
+                    JobGroup = registeredPlugin.Id.ToString(),
 
                     CronExpression = model.CronExpression,
                     StartDateTime = model.StartDateTime,

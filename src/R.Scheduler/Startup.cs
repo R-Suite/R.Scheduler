@@ -28,6 +28,7 @@ namespace R.Scheduler
             config.Formatters.XmlFormatter.SupportedMediaTypes.Remove(appXmlType);
 
             config.MapHttpAttributeRoutes();
+            config.EnsureInitialized(); 
 
             appBuilder.UseWebApi(config);
         } 

@@ -25,6 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JobTypes", "JobTypes", "{6C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.TestHost", "R.Scheduler.TestHost\R.Scheduler.TestHost.csproj", "{F8F159E1-50E1-4755-BBDE-945794E11431}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.PipesAndFilters", "R.Scheduler.PipesAndFilters\R.Scheduler.PipesAndFilters.csproj", "{AD04C7C4-4C7B-43C6-B13C-84C95BBB22C8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{F8F159E1-50E1-4755-BBDE-945794E11431}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8F159E1-50E1-4755-BBDE-945794E11431}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8F159E1-50E1-4755-BBDE-945794E11431}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD04C7C4-4C7B-43C6-B13C-84C95BBB22C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD04C7C4-4C7B-43C6-B13C-84C95BBB22C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD04C7C4-4C7B-43C6-B13C-84C95BBB22C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD04C7C4-4C7B-43C6-B13C-84C95BBB22C8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -74,5 +80,6 @@ Global
 		{3805AD73-D4CF-4762-81D5-C745FDFB97FA} = {ACF74C8F-7012-44A7-A924-4F87D805F93F}
 		{A338A7FE-D041-41C3-9CDD-5E35171961DD} = {6C0687DC-4023-4803-8690-197C9274A5C0}
 		{F8F159E1-50E1-4755-BBDE-945794E11431} = {6E854787-A37D-422A-A0F3-C8707723EB4C}
+		{AD04C7C4-4C7B-43C6-B13C-84C95BBB22C8} = {6C0687DC-4023-4803-8690-197C9274A5C0}
 	EndGlobalSection
 EndGlobal

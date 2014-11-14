@@ -1,8 +1,8 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Reflection;
 using log4net;
 using R.Scheduler.AssemblyPlugin.Contracts.DataContracts;
-using R.Scheduler.AssemblyPlugin.Interfaces;
 using R.Scheduler.Interfaces;
 
 namespace R.Scheduler.AssemblyPlugin
@@ -10,10 +10,10 @@ namespace R.Scheduler.AssemblyPlugin
     public class PluginManager : IJobTypeManager
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly IPluginStore _pluginRepository;
+        readonly ICustomJobStore _pluginRepository;
         private readonly ISchedulerCore _schedulerCore;
 
-        public PluginManager(IPluginStore pluginRepository, ISchedulerCore schedulerCore)
+        public PluginManager(ICustomJobStore pluginRepository, ISchedulerCore schedulerCore)
         {
             _pluginRepository = pluginRepository;
             _schedulerCore = schedulerCore;
@@ -33,9 +33,9 @@ namespace R.Scheduler.AssemblyPlugin
             }
             //todo: verify valid plugin.. reflection?
 
-            _pluginRepository.RegisterPlugin(new Plugin
+            _pluginRepository.RegisterJob(new Plugin
             {
-                AssemblyPath = args[0],
+                Params = args[0],
                 Name = name,
             });
         }
@@ -44,17 +44,14 @@ namespace R.Scheduler.AssemblyPlugin
         /// Removes plugin and deletes all the related triggers/jobs.
         /// </summary>
         /// <param name="name"></param>
-        public void Remove(string name)
+        public void Remove(Guid id)
         {
+            var registeredPlugin = _pluginRepository.GetRegisteredJob(id);
+
             // plugin name is a job group
-            _schedulerCore.RemoveJobGroup(name);
+            _schedulerCore.RemoveJobGroup(registeredPlugin.Name);
 
-            int result = _pluginRepository.RemovePlugin(name);
-
-            if (result == 0)
-            {
-                Logger.WarnFormat("Error removing from data store. Plugin {0} not found", name);
-            }
+            _pluginRepository.Remove(id);
         }
     }
 }

@@ -48,6 +48,8 @@
     <Compile Include="BaseTrigger.cs" />
     <Compile Include="CronTrigger.cs" />
     <Compile Include="IConfiguration.cs" />
+    <Compile Include="ICustomJob.cs" />
+    <Compile Include="ICustomJobStore.cs" />
     <Compile Include="IJobTypeManager.cs" />
     <Compile Include="IJobTypeStartup.cs" />
     <Compile Include="ISchedulerCore.cs" />

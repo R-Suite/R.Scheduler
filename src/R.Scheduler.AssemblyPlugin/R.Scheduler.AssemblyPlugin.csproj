@@ -80,10 +80,6 @@
     <Compile Include="Controllers\PluginCronTriggersController.cs" />
     <Compile Include="Controllers\PluginsController.cs" />
     <Compile Include="Controllers\PluginSimpleTriggersController.cs" />
-    <Compile Include="Interfaces\IPluginStore.cs" />
-    <Compile Include="Persistance\InMemoryPluginStore.cs" />
-    <Compile Include="Persistance\PostgrePluginStore.cs" />
-    <Compile Include="Persistance\SqlServerPluginStore.cs" />
     <Compile Include="PluginAppDomainHelper.cs" />
     <Compile Include="PluginManager.cs" />
     <Compile Include="PluginRunner.cs" />
@@ -107,6 +103,10 @@
     <ProjectReference Include="..\R.Scheduler.Interfaces\R.Scheduler.Interfaces.csproj">
       <Project>{4010D63D-4BA3-4E41-9087-16CDD341FEBF}</Project>
       <Name>R.Scheduler.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\R.Scheduler.Persistance\R.Scheduler.Persistance.csproj">
+      <Project>{FBADF088-E56E-4862-9C1C-3FF81C4BD92B}</Project>
+      <Name>R.Scheduler.Persistance</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

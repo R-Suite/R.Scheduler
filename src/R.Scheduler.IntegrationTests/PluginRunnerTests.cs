@@ -7,11 +7,23 @@ using Xunit;
 
 namespace R.Scheduler.IntegrationTests
 {
+    /// <summary>
+    /// Execution of the FakeJobPlugin generates an empty control text file.
+    /// Presense of the file after each test indicates a successful execution.
+    /// 
+    /// </summary>
     public class PluginRunnerTests
     {
         private readonly Mock<IJobExecutionContext> _mockJobExecutionContext = new Mock<IJobExecutionContext>();
 
-        [Fact(Skip = "Job runner does not reference bus anymore.")]
+        public PluginRunnerTests()
+        {
+            // Delete the controle text file if already exists
+            File.Delete("FakeJobPlugin.txt");
+            Assert.False(File.Exists("FakeJobPlugin.txt"));
+        }
+
+        [Fact]
         public void TestExecuteMethodLoadsPluginFromPathAndExecutesIt()
         {
             // Arrange
@@ -26,9 +38,10 @@ namespace R.Scheduler.IntegrationTests
             pluginRunner.Execute(_mockJobExecutionContext.Object);
 
             // Assert
+            Assert.True(File.Exists("FakeJobPlugin.txt"));
         }
 
-        [Fact(Skip = "Job runner does not reference bus anymore.")]
+        [Fact]
         public void TestExecuteMethodReturnsWhenPluginPathIsMissingInJobDataMap()
         {
             // Arrange
@@ -41,6 +54,7 @@ namespace R.Scheduler.IntegrationTests
             pluginRunner.Execute(_mockJobExecutionContext.Object);
 
             // Assert
+            Assert.False(File.Exists("FakeJobPlugin.txt"));
         }
     }
 }

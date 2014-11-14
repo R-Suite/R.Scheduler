@@ -2,32 +2,33 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using R.Scheduler.AssemblyPlugin.Contracts.DataContracts;
-using R.Scheduler.AssemblyPlugin.Interfaces;
+using R.Scheduler.Interfaces;
 
-namespace R.Scheduler.AssemblyPlugin.Persistance
+namespace R.Scheduler.Persistance
 {
-    public class SqlServerPluginStore : IPluginStore
+    public class SqlServerStore : ICustomJobStore
     {
         private readonly string _connectionString;
 
-        public SqlServerPluginStore(string connectionString)
+        public SqlServerStore(string connectionString)
         {
             _connectionString = connectionString;
         }
 
-        public Plugin GetRegisteredPlugin(string pluginName)
+        public ICustomJob GetRegisteredJob(string name, string jobType)
         {
-            Plugin retval = null;
+            ICustomJob retval = null;
 
-            var sql = @"SELECT id, plugin_name, assembly_path FROM rsched_plugins WHERE plugin_name = @name;";
+            var sql = @"SELECT id, name, params, jobType FROM RSCHED_CUSTOM_JOBS WHERE name = @name AND jobType = @jobType;";
 
             var conn = new SqlConnection(_connectionString);
             conn.Open();
 
             var command = new SqlCommand(sql, conn);
             command.Parameters.Add(new SqlParameter("name", SqlDbType.VarChar));
-            command.Parameters[0].Value = pluginName;
+            command.Parameters.Add(new SqlParameter("jobType", SqlDbType.VarChar));
+            command.Parameters[0].Value = name;
+            command.Parameters[1].Value = jobType;
 
             try
             {
@@ -37,11 +38,12 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
                 {
                     while (reader.Read())
                     {
-                        retval = new Plugin
+                        retval = new CustomJob
                         {
                             Id = (Guid)reader["id"],
-                            Name = (string)reader["plugin_name"],
-                            AssemblyPath = (string)reader["assembly_path"],
+                            Name = (string)reader["pname"],
+                            Params = (string)reader["params"],
+                            JobType = (string)reader["jobType"]
                         };
                     }
                 }
@@ -54,11 +56,11 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
             return retval;
         }
 
-        public Plugin GetRegisteredPlugin(Guid id)
+        public ICustomJob GetRegisteredJob(Guid id)
         {
-            Plugin retval = null;
+            ICustomJob retval = null;
 
-            var sql = @"SELECT [id], [plugin_name], [assembly_path] FROM rsched_plugins WHERE [id] = @id;";
+            var sql = @"SELECT [id], [name], [params], [jobType] FROM RSCHED_CUSTOM_JOBS WHERE [id] = @id;";
 
             var conn = new SqlConnection(_connectionString);
             conn.Open();
@@ -74,11 +76,12 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
                 {
                     while (reader.Read())
                     {
-                        retval = new Plugin
+                        retval = new CustomJob
                         {
-                            Id = Guid.Parse(reader["id"].ToString()),
-                            Name = (string)reader["plugin_name"],
-                            AssemblyPath = (string)reader["assembly_path"],
+                            Id = (Guid)reader["id"],
+                            Name = (string)reader["pname"],
+                            Params = (string)reader["params"],
+                            JobType = (string)reader["jobType"]
                         };
                     }
                 }
@@ -91,15 +94,16 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
             return retval;
         }
 
-        public IList<Plugin> GetRegisteredPlugins()
+        public IList<ICustomJob> GetRegisteredJobs(string jobType)
         {
-            IList<Plugin> retval = new List<Plugin>();
+            IList<ICustomJob> retval = new List<ICustomJob>();
 
             var conn = new SqlConnection(_connectionString);
             conn.Open();
 
-            var sql = @"SELECT id, plugin_name, assembly_path FROM rsched_plugins";
+            var sql = @"SELECT [id], [name], [params], [jobType] FROM RSCHED_CUSTOM_JOBS WHERE [jobType] = @jobType;";
             var command = new SqlCommand(sql, conn);
+            command.Parameters.AddWithValue("@jobType", jobType);
 
             try
             {
@@ -109,11 +113,12 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
                 {
                     while (reader.Read())
                     {
-                        retval.Add(new Plugin
+                        retval.Add(new CustomJob
                         {
-                            Id = Guid.Parse(reader["id"].ToString()),
-                            Name = (string)reader["plugin_name"],
-                            AssemblyPath = (string)reader["assembly_path"],
+                            Id = (Guid)reader["id"],
+                            Name = (string)reader["pname"],
+                            Params = (string)reader["params"],
+                            JobType = (string)reader["jobType"]
                         });
                     }
                 }
@@ -126,13 +131,13 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
             return retval;
         }
 
-        public void RegisterPlugin(Plugin plugin)
+        public void RegisterJob(ICustomJob job)
         {
             var conn = new SqlConnection(_connectionString);
             conn.Open();
 
-            var sqlInsert = @"INSERT INTO rsched_plugins(id, plugin_name, assembly_path) VALUES (@id, @name, @assemblyPath);";
-            var sqlUpdate = @"UPDATE rsched_plugins SET assembly_path='@assemblyPath' WHERE plugin_name='@name'";
+            var sqlInsert = @"INSERT INTO RSCHED_CUSTOM_JOBS(id, name, params, jobType) VALUES (@id, @name, @params, @jobType);";
+            var sqlUpdate = @"UPDATE RSCHED_CUSTOM_JOBS SET params='@params' WHERE name='@name' AND jobType='@jobType'";
             var command = new SqlCommand(sqlUpdate, conn);
 
             try
@@ -142,8 +147,9 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
                     try
                     {
                         command.Parameters.AddWithValue("@id", Guid.NewGuid());
-                        command.Parameters.AddWithValue("@name", plugin.Name);
-                        command.Parameters.AddWithValue("@assemblyPath", plugin.AssemblyPath);
+                        command.Parameters.AddWithValue("@name", job.Name);
+                        command.Parameters.AddWithValue("@params", job.Params);
+                        command.Parameters.AddWithValue("@jobType", job.JobType);
 
                         command.Transaction = transaction;
 
@@ -170,12 +176,12 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
             }
         }
 
-        public void UpdatePluginName(Guid id, string name)
+        public void UpdateName(Guid id, string name)
         {
             var conn = new SqlConnection(_connectionString);
             conn.Open();
 
-            var sqlUpdate = @"UPDATE rsched_plugins SET plugin_name=@name WHERE id=@id";
+            var sqlUpdate = @"UPDATE RSCHED_CUSTOM_JOBS SET name=@name WHERE id=@id";
             var command = new SqlCommand(sqlUpdate, conn);
 
             try
@@ -206,15 +212,15 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
             }
         }
 
-        public int RemovePlugin(string pluginName)
+        public int Remove(Guid id)
         {
             var conn = new SqlConnection(_connectionString);
             conn.Open();
 
-            var sql = @"DELETE FROM rsched_plugins WHERE plugin_name=@name";
+            var sql = @"DELETE FROM RSCHED_CUSTOM_JOBS WHERE id=@id";
             var command = new SqlCommand(sql, conn);
-            command.Parameters.Add(new SqlParameter("name", SqlDbType.VarChar));
-            command.Parameters[0].Value = pluginName;
+            command.Parameters.Add(new SqlParameter("id", SqlDbType.VarChar));
+            command.Parameters[0].Value = id;
 
             try
             {
@@ -226,15 +232,24 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
             }
         }
 
-        public int RemoveAllPlugins()
+        public int RemoveAll(string jobType)
         {
-            throw new NotImplementedException();
-        }
+            var conn = new SqlConnection(_connectionString);
+            conn.Open();
 
-        public PluginDetails GetRegisteredPluginDetails(string pluginName)
-        {
-            throw new NotImplementedException();
-        }
+            var sql = @"DELETE FROM RSCHED_CUSTOM_JOBS WHERE jobType=@jobType";
+            var command = new SqlCommand(sql, conn);
+            command.Parameters.Add(new SqlParameter("jobType", SqlDbType.VarChar));
+            command.Parameters[0].Value = jobType;
 
+            try
+            {
+                return command.ExecuteNonQuery();
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
     }
 }

@@ -3,7 +3,7 @@ using System.Web.Http;
 using R.Scheduler.Interfaces;
 using StructureMap;
 
-namespace R.Scheduler.AssemblyPlugin.Controllers
+namespace R.Scheduler.PipesAndFilters.Controllers
 {
     public abstract class BaseController : ApiController
     {

@@ -22,13 +22,13 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
 
         [AcceptVerbs("POST")]
         [Route("api/plugins/{id}/cronTriggers")]
-        public QueryResponse Post(string id, [FromBody]PluginCronTrigger model)
+        public QueryResponse Post(string id, [FromBody]CustomJobCronTrigger model)
         {
-            Logger.InfoFormat("Entered PluginCronTriggersController.Post(). PluginName = {0}", model.PluginName);
+            Logger.InfoFormat("Entered PluginCronTriggersController.Post(). PluginName = {0}", model.Name);
 
             var response = new QueryResponse { Valid = true };
 
-            Plugin registeredPlugin = base.GetRegisteredPlugin(id);
+            ICustomJob registeredPlugin = base.GetRegisteredCustomJob(id, "AssemblyPlugin");
 
             if (null == registeredPlugin)
             {
@@ -39,7 +39,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
                     {
                         Code = "RegisteredPluginNotFound",
                         Type = "Sender",
-                        Message = string.Format("Error loading registered plugin {0}", model.PluginName)
+                        Message = string.Format("Error loading registered plugin {0}", model.Name)
                     }
                 };
 
@@ -57,7 +57,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
 
                     CronExpression = model.CronExpression,
                     StartDateTime = model.StartDateTime,
-                    DataMap = new Dictionary<string, object> { { "pluginPath", registeredPlugin.AssemblyPath } }
+                    DataMap = new Dictionary<string, object> { { "pluginPath", registeredPlugin.Params } }
                 }, typeof(PluginRunner));
             }
             catch (Exception ex)

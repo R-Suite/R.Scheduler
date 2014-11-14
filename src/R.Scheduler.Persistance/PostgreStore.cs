@@ -2,42 +2,39 @@
 using System.Collections.Generic;
 using Npgsql;
 using NpgsqlTypes;
-using R.Scheduler.AssemblyPlugin.Contracts.DataContracts;
-using R.Scheduler.AssemblyPlugin.Interfaces;
+using R.Scheduler.Interfaces;
 
-namespace R.Scheduler.AssemblyPlugin.Persistance
+namespace R.Scheduler.Persistance
 {
-    /// <summary>
-    /// Postgre implementation of IPluginStore
-    /// </summary>
-    public class PostgrePluginStore : IPluginStore
+    public class PostgreStore : ICustomJobStore
     {
         private readonly string _connectionString;
 
-        public PostgrePluginStore(string connectionString)
+        public PostgreStore(string connectionString)
         {
             _connectionString = connectionString;
         }
 
         /// <summary>
-        /// Get registered plugin
+        /// Get registered CustomJob by name
         /// </summary>
-        /// <param name="pluginName"></param>
+        /// <param name="name"></param>
+        /// <param name="jobType"></param>
         /// <returns></returns>
-        public Plugin GetRegisteredPlugin(string pluginName)
+        public ICustomJob GetRegisteredJob(string name, string jobType)
         {
-            Plugin retval = null;
+            ICustomJob retval = null;
 
             var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
 
-            var sql = @"SELECT id plugin_name, assembly_path FROM rsched_plugins WHERE plugin_name = :name;";
+            var sql = @"SELECT id, name, params, jobType FROM RSCHED_CUSTOM_JOBS WHERE name = :name;";
             var command = new NpgsqlCommand(sql, conn);
 
             try
             {
                 command.Parameters.Add(new NpgsqlParameter("name", NpgsqlDbType.Varchar));
-                command.Parameters[0].Value = pluginName;
+                command.Parameters[0].Value = name;
 
                 var reader = command.ExecuteReader();
 
@@ -45,11 +42,12 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
                 {
                     while (reader.Read())
                     {
-                        retval = new Plugin
+                        retval = new CustomJob
                         {
                             Id = Guid.Parse(reader["id"].ToString()),
-                            Name = (string)reader["plugin_name"],
-                            AssemblyPath = (string)reader["assembly_path"]
+                            Name = (string)reader["name"],
+                            Params = (string)reader["params"],
+                            JobType = (string)reader["jobType"]
                         };
                     }
                 }
@@ -63,18 +61,18 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
         }
 
         /// <summary>
-        /// Get registered plugin
+        /// Get registered CustomJob by id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Plugin GetRegisteredPlugin(Guid id)
+        public ICustomJob GetRegisteredJob(Guid id)
         {
-            Plugin retval = null;
+            ICustomJob retval = null;
 
             var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
 
-            var sql = @"SELECT id plugin_name, assembly_path FROM rsched_plugins WHERE id = :id;";
+            var sql = @"SELECT id, name, params, jobType FROM RSCHED_CUSTOM_JOBS WHERE id = :id;";
             var command = new NpgsqlCommand(sql, conn);
 
             try
@@ -88,11 +86,12 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
                 {
                     while (reader.Read())
                     {
-                        retval = new Plugin
+                        retval = new CustomJob
                         {
                             Id = Guid.Parse(reader["id"].ToString()),
-                            Name = (string)reader["plugin_name"],
-                            AssemblyPath = (string)reader["assembly_path"]
+                            Name = (string)reader["name"],
+                            Params = (string)reader["params"],
+                            JobType = (string)reader["jobType"]
                         };
                     }
                 }
@@ -104,33 +103,39 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
 
             return retval;
         }
+
         /// <summary>
-        /// Get all registered plugins
+        /// Get all registered CustomJobs
         /// </summary>
+        /// <param name="jobType"></param>
         /// <returns></returns>
-        public IList<Plugin> GetRegisteredPlugins()
+        public IList<ICustomJob> GetRegisteredJobs(string jobType)
         {
-            IList<Plugin> retval = new List<Plugin>();
+            IList<ICustomJob> retval = new List<ICustomJob>();
 
             var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
 
-            var sql = @"SELECT id, plugin_name, assembly_path FROM rsched_plugins";
+            var sql = @"SELECT id, name, params, jobType FROM RSCHED_CUSTOM_JOBS WHERE jobType = :jobType;";
             var command = new NpgsqlCommand(sql, conn);
 
             try
             {
+                command.Parameters.Add(new NpgsqlParameter("jobType", NpgsqlDbType.Varchar));
+                command.Parameters[0].Value = jobType;
+
                 var reader = command.ExecuteReader();
 
                 if (reader.HasRows)
                 {
                     while (reader.Read())
                     {
-                        retval.Add(new Plugin
+                        retval.Add(new CustomJob
                         {
-                            Id = (Guid) reader["id"] ,
-                            Name = (string) reader["plugin_name"],
-                            AssemblyPath = (string) reader["assembly_path"]
+                            Id = Guid.Parse(reader["id"].ToString()),
+                            Name = (string)reader["name"],
+                            Params = (string)reader["params"],
+                            JobType = (string)reader["jobType"]
                         });
                     }
                 }
@@ -144,16 +149,16 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
         }
 
         /// <summary>
-        /// Register new plugin, or update existing one.
+        /// Register new CustomJob, or update existing one.
         /// </summary>
-        /// <param name="plugin"></param>
-        public void RegisterPlugin(Plugin plugin)
+        /// <param name="job"></param>
+        public void RegisterJob(ICustomJob job)
         {
             var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
 
-            var sqlInsert = @"INSERT INTO rsched_plugins(id, plugin_name, assembly_path) VALUES (:id, :name, :assemblyPath);";
-            var sqlUpdate = @"UPDATE rsched_plugins SET assembly_path=:assemblyPath WHERE plugin_name=:name";
+            var sqlInsert = @"INSERT INTO RSCHED_CUSTOM_JOBS(id, name, params, jobType) VALUES (:id, :name, :params, :jobType);";
+            var sqlUpdate = @"UPDATE RSCHED_CUSTOM_JOBS SET params=:params WHERE name=:name";
             var command = new NpgsqlCommand(sqlUpdate, conn);
 
             try
@@ -164,10 +169,12 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
                     {
                         command.Parameters.Add(new NpgsqlParameter("id", NpgsqlDbType.Uuid));
                         command.Parameters.Add(new NpgsqlParameter("name", NpgsqlDbType.Varchar));
-                        command.Parameters.Add(new NpgsqlParameter("assemblyPath", NpgsqlDbType.Varchar));
+                        command.Parameters.Add(new NpgsqlParameter("params", NpgsqlDbType.Varchar));
+                        command.Parameters.Add(new NpgsqlParameter("jobType", NpgsqlDbType.Varchar));
                         command.Parameters[0].Value = Guid.NewGuid();
-                        command.Parameters[1].Value = plugin.Name;
-                        command.Parameters[2].Value = plugin.AssemblyPath;
+                        command.Parameters[1].Value = job.Name;
+                        command.Parameters[2].Value = job.Params;
+                        command.Parameters[3].Value = job.JobType;
 
                         int rowsAffected = command.ExecuteNonQuery();
 
@@ -188,21 +195,21 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
             }
             finally
             {
-              conn.Close() ;
+                conn.Close();
             }
         }
 
         /// <summary>
-        /// Update plugin name. (Assembly path cannot be updated once registered)
+        /// Update CustomJob name. (Params cannot be updated once registered)
         /// </summary>
         /// <param name="id"></param>
         /// <param name="name"></param>
-        public void UpdatePluginName(Guid id, string name)
+        public void UpdateName(Guid id, string name)
         {
             var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
 
-            var sqlUpdate = @"UPDATE rsched_plugins SET plugin_name=:name WHERE id=:id";
+            var sqlUpdate = @"UPDATE RSCHED_CUSTOM_JOBS SET name=:name WHERE id=:id";
             var command = new NpgsqlCommand(sqlUpdate, conn);
 
             try
@@ -236,19 +243,19 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
         }
 
         /// <summary>
-        /// Removes registered plugin from db
+        /// Remove registered CustomJob from db
         /// </summary>
-        /// <param name="pluginName"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        public int RemovePlugin(string pluginName)
+        public int Remove(Guid id)
         {
             var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
 
-            var sql = @"DELETE FROM rsched_plugins WHERE plugin_name=:name";
+            var sql = @"DELETE FROM RSCHED_CUSTOM_JOBS WHERE id=:id";
             var command = new NpgsqlCommand(sql, conn);
-            command.Parameters.Add(new NpgsqlParameter("name", NpgsqlDbType.Varchar));
-            command.Parameters[0].Value = pluginName;
+            command.Parameters.Add(new NpgsqlParameter("id", NpgsqlDbType.Uuid));
+            command.Parameters[0].Value = id;
 
             try
             {
@@ -260,14 +267,29 @@ namespace R.Scheduler.AssemblyPlugin.Persistance
             }
         }
 
-        public int RemoveAllPlugins()
+        /// <summary>
+        /// Remove registered CustomJobs of type <paramref name="jobType"/> from db
+        /// </summary>
+        /// <param name="jobType"></param>
+        /// <returns></returns>
+        public int RemoveAll(string jobType)
         {
-            throw new NotImplementedException();
-        }
+            var conn = new NpgsqlConnection(_connectionString);
+            conn.Open();
 
-        public PluginDetails GetRegisteredPluginDetails(string pluginName)
-        {
-            throw new NotImplementedException();
+            var sql = @"DELETE FROM RSCHED_CUSTOM_JOBS WHERE jobType=:jobType";
+            var command = new NpgsqlCommand(sql, conn);
+            command.Parameters.Add(new NpgsqlParameter("id", NpgsqlDbType.Varchar));
+            command.Parameters[0].Value = jobType;
+
+            try
+            {
+                return command.ExecuteNonQuery();
+            }
+            finally
+            {
+                conn.Close();
+            }
         }
     }
 }

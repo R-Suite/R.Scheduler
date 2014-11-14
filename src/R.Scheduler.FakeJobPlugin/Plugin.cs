@@ -1,4 +1,6 @@
-﻿using R.Scheduler.AssemblyPlugin.Contracts.Interfaces;
+﻿using System;
+using System.IO;
+using R.Scheduler.AssemblyPlugin.Contracts.Interfaces;
 
 namespace R.Scheduler.FakeJobPlugin
 {
@@ -11,6 +13,10 @@ namespace R.Scheduler.FakeJobPlugin
 
         public override void Execute()
         {
+            using (var writer = new StreamWriter("FakeJobPlugin.txt", append:false))
+            {
+                writer.Write(DateTime.UtcNow);
+            }
         }
     }
 }

@@ -1,9 +1,9 @@
 ﻿using System;
 using R.Scheduler.Interfaces;
 
-namespace R.Scheduler.AssemblyPlugin.Contracts.DataContracts
+namespace R.Scheduler.Persistance
 {
-    public class Plugin : ICustomJob
+    public class CustomJob : ICustomJob
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

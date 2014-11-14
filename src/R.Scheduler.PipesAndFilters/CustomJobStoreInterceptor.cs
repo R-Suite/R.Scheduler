@@ -5,13 +5,13 @@ using R.Scheduler.Persistance;
 using StructureMap;
 using StructureMap.Interceptors;
 
-namespace R.Scheduler.AssemblyPlugin
+namespace R.Scheduler.PipesAndFilters
 {
-    public class PluginStoreInterceptor : TypeInterceptor
+    public class CustomJobStoreInterceptor : TypeInterceptor
     {
         private readonly IConfiguration _config;
 
-        public PluginStoreInterceptor(IConfiguration config)
+        public CustomJobStoreInterceptor(IConfiguration config)
         {
             _config = config;
         }

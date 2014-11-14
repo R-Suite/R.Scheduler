@@ -7,39 +7,40 @@ using R.Scheduler.Contracts.DataContracts;
 using R.Scheduler.Interfaces;
 using StructureMap;
 
-namespace R.Scheduler.AssemblyPlugin.Controllers
+namespace R.Scheduler.PipesAndFilters.Controllers
 {
-    public class PluginSimpleTriggersController : BaseController
+    public class PafSimpleTriggersController : BaseController
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         readonly ISchedulerCore _schedulerCore;
-        private const string JobType = "AssemblyPlugin";
 
-        public PluginSimpleTriggersController()
+        public PafSimpleTriggersController()
         {
             _schedulerCore = ObjectFactory.GetInstance<ISchedulerCore>();
         }
 
         [AcceptVerbs("POST")]
-        [Route("api/plugins/{id}/simpleTriggers")]
+        [Route("api/pipesandfilters/{id}/simpleTriggers")]
         public QueryResponse Post(string id, [FromBody]CustomJobSimpleTrigger model)
         {
-            Logger.InfoFormat("Entered PluginSimpleTriggersController.Post(). PluginName = {0}", model.Name);
+            Logger.InfoFormat("Entered PafSimpleTriggersController.Post(). PluginName = {0}", model.Name);
+
+            const string jobType = "PipesAndFilters";
 
             var response = new QueryResponse { Valid = true};
 
-            var registeredPlugin = base.GetRegisteredCustomJob(id, JobType);
+            ICustomJob registeredCustomJob = base.GetRegisteredCustomJob(id, jobType);
 
-            if (null == registeredPlugin)
+            if (null == registeredCustomJob)
             {
                 response.Valid = false;
                 response.Errors = new List<Error>
                 {
                     new Error
                     {
-                        Code = "RegisteredPluginNotFound",
+                        Code = "RegisteredCustomJobNotFound",
                         Type = "Sender",
-                        Message = string.Format("Error loading registered plugin {0}", model.Name)
+                        Message = string.Format("Error loading registered  {0} Job {1}", jobType, model.Name)
                     }
                 };
 
@@ -51,14 +52,14 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
                 _schedulerCore.ScheduleTrigger(new SimpleTrigger
                 {
                     Name = model.TriggerName,
-                    Group = !string.IsNullOrEmpty(model.TriggerGroup) ? model.TriggerGroup : registeredPlugin.Id + "_Group",
-                    JobName = !string.IsNullOrEmpty(model.JobName) ? model.JobName : registeredPlugin.Id + "_JobName",
-                    JobGroup = registeredPlugin.Id.ToString(),
+                    Group = !string.IsNullOrEmpty(model.TriggerGroup) ? model.TriggerGroup : registeredCustomJob.Id + "_Group",
+                    JobName = !string.IsNullOrEmpty(model.JobName) ? model.JobName : registeredCustomJob.Id + "_JobName",
+                    JobGroup = registeredCustomJob.Id.ToString(),
                     RepeatCount = model.RepeatCount,
                     RepeatInterval = model.RepeatInterval,
                     StartDateTime = model.StartDateTime,
-                    DataMap = new Dictionary<string, object> { { "pluginPath", registeredPlugin.Params } }
-                }, typeof(PluginRunner));
+                    DataMap = new Dictionary<string, object> { { "jobDefinitionPath", registeredCustomJob.Params } }
+                }, typeof(JobRunner));
             }
             catch (Exception ex)
             {

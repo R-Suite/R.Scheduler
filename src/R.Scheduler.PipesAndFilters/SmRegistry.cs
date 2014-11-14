@@ -2,7 +2,7 @@
 using R.Scheduler.Persistance;
 using StructureMap.Configuration.DSL;
 
-namespace R.Scheduler.AssemblyPlugin
+namespace R.Scheduler.PipesAndFilters
 {
     public class SmRegistry : Registry
     {
@@ -10,7 +10,6 @@ namespace R.Scheduler.AssemblyPlugin
         {
             For<ICustomJobStore>().Use<InMemoryStore>();// default that my be overriden (using inteceptor) to use data store selected in Scheduler Configuration
             For<IJobTypeStartup>().Use<Startup>();
-            For<IJobTypeManager>().Use<PluginManager>();
         }
     }
 }

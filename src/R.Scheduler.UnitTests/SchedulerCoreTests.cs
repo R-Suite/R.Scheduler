@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Moq;
 using Quartz;
 using R.Scheduler.AssemblyPlugin.Contracts.DataContracts;
-using R.Scheduler.AssemblyPlugin.Interfaces;
 using R.Scheduler.Interfaces;
 using Xunit;
 
@@ -12,13 +11,13 @@ namespace R.Scheduler.UnitTests
     public class SchedulerCoreTests
     {
         private readonly Mock<IScheduler> _mockScheduler = new Mock<IScheduler>();
-        private readonly Mock<IPluginStore> _mockPluginStore = new Mock<IPluginStore>();
+        private readonly Mock<ICustomJobStore> _mockPluginStore = new Mock<ICustomJobStore>();
 
         [Fact]
         public void ShouldScheduleJobWithSimpleTriggerWhenCalledExecutePlugin()
         {
             // Arrange
-            _mockPluginStore.Setup(x => x.GetRegisteredPlugin("TestPlugin")).Returns(new Plugin { Name = "Test", AssemblyPath = @"TestPath.dll" });
+            _mockPluginStore.Setup(x => x.GetRegisteredJob("TestPlugin", "JobType1")).Returns(new Plugin { Name = "Test", Params = @"TestPath.dll" });
 
             ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object);
 

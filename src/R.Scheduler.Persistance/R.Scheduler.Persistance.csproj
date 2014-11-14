@@ -4,13 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C2F4994F-DB81-4779-8490-89250561F0D7}</ProjectGuid>
+    <ProjectGuid>{FBADF088-E56E-4862-9C1C-3FF81C4BD92B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>R.Scheduler.Contracts</RootNamespace>
-    <AssemblyName>R.Scheduler.Contracts</AssemblyName>
+    <RootNamespace>R.Scheduler.Persistance</RootNamespace>
+    <AssemblyName>R.Scheduler.Persistance</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,8 +31,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Mono.Security">
+      <HintPath>..\packages\Npgsql.2.1.3\lib\net45\Mono.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Npgsql">
+      <HintPath>..\packages\Npgsql.2.1.3\lib\net45\Npgsql.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -39,19 +47,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataContracts\CustomJobCronTrigger.cs" />
-    <Compile Include="DataContracts\CustomJobSimpleTrigger.cs" />
-    <Compile Include="DataContracts\Error.cs" />
-    <Compile Include="DataContracts\QueryResponse.cs" />
-    <Compile Include="DataContracts\TriggerDetails.cs" />
+    <Compile Include="CustomJob.cs" />
+    <Compile Include="InMemoryStore.cs" />
+    <Compile Include="PostgreStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqlServerStore.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="R.Scheduler.Contracts.nuspec">
-      <SubType>Designer</SubType>
-    </None>
+    <ProjectReference Include="..\R.Scheduler.Interfaces\R.Scheduler.Interfaces.csproj">
+      <Project>{4010D63D-4BA3-4E41-9087-16CDD341FEBF}</Project>
+      <Name>R.Scheduler.Interfaces</Name>
+    </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

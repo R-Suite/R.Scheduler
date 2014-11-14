@@ -6,7 +6,6 @@ using System.Web.Http;
 using log4net;
 using Quartz;
 using R.Scheduler.AssemblyPlugin.Contracts.DataContracts;
-using R.Scheduler.AssemblyPlugin.Interfaces;
 using R.Scheduler.Contracts.DataContracts;
 using R.Scheduler.Interfaces;
 using StructureMap;
@@ -16,13 +15,14 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
     public class PluginsController : BaseController
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        readonly IPluginStore _pluginRepository;
+        readonly ICustomJobStore _pluginRepository;
         readonly ISchedulerCore _schedulerCore;
         readonly IJobTypeManager _pluginManager;
+        private const string JobType = "AssemblyPlugin";
 
         public PluginsController()
         {
-            _pluginRepository = ObjectFactory.GetInstance<IPluginStore>();
+            _pluginRepository = ObjectFactory.GetInstance<ICustomJobStore>();
             _schedulerCore = ObjectFactory.GetInstance<ISchedulerCore>();
             _pluginManager = ObjectFactory.GetInstance<IJobTypeManager>();
         }
@@ -33,9 +33,9 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         {
             Logger.Info("Entered PluginsController.Get().");
 
-            var registeredPlugins = _pluginRepository.GetRegisteredPlugins();
+            var registeredPlugins = _pluginRepository.GetRegisteredJobs(JobType);
 
-            return registeredPlugins;
+            return (IEnumerable<Plugin>) registeredPlugins;
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         {
             Logger.InfoFormat("Entered PluginsController.Execute(). name = {0}", model);
 
-            Plugin registeredPlugin = base.GetRegisteredPlugin(model);
+            ICustomJob registeredPlugin = base.GetRegisteredCustomJob(model, JobType);
 
             var response = new QueryResponse {Valid = true};
             if (null == registeredPlugin)
@@ -69,7 +69,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
                 return response;
             }
 
-            var dataMap = new Dictionary<string, object> {{"pluginPath", registeredPlugin.AssemblyPath}};
+            var dataMap = new Dictionary<string, object> {{"pluginPath", registeredPlugin.Params}};
 
             try
             {
@@ -103,7 +103,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         {
             Logger.InfoFormat("Entered PluginsController.Deschedule(). name = {0}", model);
 
-            Plugin registeredPlugin = base.GetRegisteredPlugin(model);
+            ICustomJob registeredPlugin = base.GetRegisteredCustomJob(model, JobType);
 
             var response = new QueryResponse { Valid = true };
 
@@ -139,7 +139,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
 
             try
             {
-                _pluginManager.Register(model.Name, model.AssemblyPath);
+                _pluginManager.Register(model.Name, model.Params);
             }
             catch (Exception ex)
             {
@@ -175,7 +175,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
 
             try
             {
-                _pluginRepository.UpdatePluginName(new Guid(id), model.Name);
+                _pluginRepository.UpdateName(new Guid(id), model.Name);
             }
             catch (Exception ex)
             {
@@ -200,7 +200,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         {
             Logger.InfoFormat("Entered PluginsController.Get(). id = {0}", id);
 
-            Plugin registeredPlugin = base.GetRegisteredPlugin(id);
+            ICustomJob registeredPlugin = base.GetRegisteredCustomJob(id, JobType);
 
             // Still couldn't get, return null
             if (null == registeredPlugin)
@@ -212,7 +212,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
             var retval = new PluginDetails
             {
                 Name = registeredPlugin.Name,
-                AssemblyPath = registeredPlugin.AssemblyPath,
+                AssemblyPath = registeredPlugin.Params,
                 TriggerDetails = new List<TriggerDetails>()
             };
             
@@ -257,13 +257,13 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         {
             Logger.InfoFormat("Entered PluginsController.Delete(). id = {0}", id);
 
-            var registeredPlugin = base.GetRegisteredPlugin(id);
+            var registeredPlugin = base.GetRegisteredCustomJob(id, JobType);
 
             var response = new QueryResponse { Valid = true };
 
             _schedulerCore.RemoveJobGroup(registeredPlugin.Id.ToString());
 
-            int result = _pluginRepository.RemovePlugin(id);
+            int result = _pluginRepository.Remove(registeredPlugin.Id);
 
             if (result == 0)
             {

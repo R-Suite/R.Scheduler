@@ -28,7 +28,7 @@ namespace R.Scheduler.Persistance
             var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
 
-            var sql = @"SELECT id, name, params, jobType FROM RSCHED_CUSTOM_JOBS WHERE name = :name;";
+            var sql = @"SELECT id, name, params, job_type FROM rsched_custom_jobs WHERE name = :name;";
             var command = new NpgsqlCommand(sql, conn);
 
             try
@@ -47,7 +47,7 @@ namespace R.Scheduler.Persistance
                             Id = Guid.Parse(reader["id"].ToString()),
                             Name = (string)reader["name"],
                             Params = (string)reader["params"],
-                            JobType = (string)reader["jobType"]
+                            JobType = (string)reader["job_type"]
                         };
                     }
                 }
@@ -72,7 +72,7 @@ namespace R.Scheduler.Persistance
             var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
 
-            var sql = @"SELECT id, name, params, jobType FROM RSCHED_CUSTOM_JOBS WHERE id = :id;";
+            var sql = @"SELECT id, name, params, job_type FROM rsched_custom_jobs WHERE id = :id;";
             var command = new NpgsqlCommand(sql, conn);
 
             try
@@ -91,7 +91,7 @@ namespace R.Scheduler.Persistance
                             Id = Guid.Parse(reader["id"].ToString()),
                             Name = (string)reader["name"],
                             Params = (string)reader["params"],
-                            JobType = (string)reader["jobType"]
+                            JobType = (string)reader["job_type"]
                         };
                     }
                 }
@@ -116,12 +116,12 @@ namespace R.Scheduler.Persistance
             var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
 
-            var sql = @"SELECT id, name, params, jobType FROM RSCHED_CUSTOM_JOBS WHERE jobType = :jobType;";
+            var sql = @"SELECT id, name, params, job_type FROM rsched_custom_jobs WHERE job_type = :job_type;";
             var command = new NpgsqlCommand(sql, conn);
 
             try
             {
-                command.Parameters.Add(new NpgsqlParameter("jobType", NpgsqlDbType.Varchar));
+                command.Parameters.Add(new NpgsqlParameter("job_type", NpgsqlDbType.Varchar));
                 command.Parameters[0].Value = jobType;
 
                 var reader = command.ExecuteReader();
@@ -135,7 +135,7 @@ namespace R.Scheduler.Persistance
                             Id = Guid.Parse(reader["id"].ToString()),
                             Name = (string)reader["name"],
                             Params = (string)reader["params"],
-                            JobType = (string)reader["jobType"]
+                            JobType = (string)reader["job_type"]
                         });
                     }
                 }
@@ -157,8 +157,8 @@ namespace R.Scheduler.Persistance
             var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
 
-            var sqlInsert = @"INSERT INTO RSCHED_CUSTOM_JOBS(id, name, params, jobType) VALUES (:id, :name, :params, :jobType);";
-            var sqlUpdate = @"UPDATE RSCHED_CUSTOM_JOBS SET params=:params WHERE name=:name";
+            var sqlInsert = @"INSERT INTO rsched_custom_jobs(id, name, params, job_type) VALUES (:id, :name, :params, :job_type);";
+            var sqlUpdate = @"UPDATE rsched_custom_jobs SET params=:params WHERE name=:name";
             var command = new NpgsqlCommand(sqlUpdate, conn);
 
             try
@@ -170,7 +170,7 @@ namespace R.Scheduler.Persistance
                         command.Parameters.Add(new NpgsqlParameter("id", NpgsqlDbType.Uuid));
                         command.Parameters.Add(new NpgsqlParameter("name", NpgsqlDbType.Varchar));
                         command.Parameters.Add(new NpgsqlParameter("params", NpgsqlDbType.Varchar));
-                        command.Parameters.Add(new NpgsqlParameter("jobType", NpgsqlDbType.Varchar));
+                        command.Parameters.Add(new NpgsqlParameter("job_type", NpgsqlDbType.Varchar));
                         command.Parameters[0].Value = Guid.NewGuid();
                         command.Parameters[1].Value = job.Name;
                         command.Parameters[2].Value = job.Params;
@@ -209,7 +209,7 @@ namespace R.Scheduler.Persistance
             var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
 
-            var sqlUpdate = @"UPDATE RSCHED_CUSTOM_JOBS SET name=:name WHERE id=:id";
+            var sqlUpdate = @"UPDATE rsched_custom_jobs SET name=:name WHERE id=:id";
             var command = new NpgsqlCommand(sqlUpdate, conn);
 
             try
@@ -252,7 +252,7 @@ namespace R.Scheduler.Persistance
             var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
 
-            var sql = @"DELETE FROM RSCHED_CUSTOM_JOBS WHERE id=:id";
+            var sql = @"DELETE FROM rsched_custom_jobs WHERE id=:id";
             var command = new NpgsqlCommand(sql, conn);
             command.Parameters.Add(new NpgsqlParameter("id", NpgsqlDbType.Uuid));
             command.Parameters[0].Value = id;
@@ -277,7 +277,7 @@ namespace R.Scheduler.Persistance
             var conn = new NpgsqlConnection(_connectionString);
             conn.Open();
 
-            var sql = @"DELETE FROM RSCHED_CUSTOM_JOBS WHERE jobType=:jobType";
+            var sql = @"DELETE FROM rsched_custom_jobs WHERE job_type=:job_type";
             var command = new NpgsqlCommand(sql, conn);
             command.Parameters.Add(new NpgsqlParameter("id", NpgsqlDbType.Varchar));
             command.Parameters[0].Value = jobType;

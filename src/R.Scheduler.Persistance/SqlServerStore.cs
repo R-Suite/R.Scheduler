@@ -19,7 +19,7 @@ namespace R.Scheduler.Persistance
         {
             ICustomJob retval = null;
 
-            var sql = @"SELECT id, name, params, jobType FROM RSCHED_CUSTOM_JOBS WHERE name = @name AND jobType = @jobType;";
+            var sql = @"SELECT [ID], [NAME], [PARAMS], [JOB_TYPE] FROM RSCHED_CUSTOM_JOBS WHERE NAME = @name AND JOB_TYPE = @jobType;";
 
             var conn = new SqlConnection(_connectionString);
             conn.Open();
@@ -40,10 +40,10 @@ namespace R.Scheduler.Persistance
                     {
                         retval = new CustomJob
                         {
-                            Id = (Guid)reader["id"],
-                            Name = (string)reader["pname"],
-                            Params = (string)reader["params"],
-                            JobType = (string)reader["jobType"]
+                            Id = (Guid)reader["ID"],
+                            Name = (string)reader["NAME"],
+                            Params = (string)reader["PARAMS"],
+                            JobType = (string)reader["JOB_TYPE"]
                         };
                     }
                 }
@@ -60,7 +60,7 @@ namespace R.Scheduler.Persistance
         {
             ICustomJob retval = null;
 
-            var sql = @"SELECT [id], [name], [params], [jobType] FROM RSCHED_CUSTOM_JOBS WHERE [id] = @id;";
+            var sql = @"SELECT [ID], [NAME], [PARAMS], [JOB_TYPE] FROM RSCHED_CUSTOM_JOBS WHERE [ID] = @id;";
 
             var conn = new SqlConnection(_connectionString);
             conn.Open();
@@ -78,10 +78,10 @@ namespace R.Scheduler.Persistance
                     {
                         retval = new CustomJob
                         {
-                            Id = (Guid)reader["id"],
-                            Name = (string)reader["pname"],
-                            Params = (string)reader["params"],
-                            JobType = (string)reader["jobType"]
+                            Id = (Guid)reader["ID"],
+                            Name = (string)reader["NAME"],
+                            Params = (string)reader["PARAMS"],
+                            JobType = (string)reader["JOB_TYPE"]
                         };
                     }
                 }
@@ -101,7 +101,7 @@ namespace R.Scheduler.Persistance
             var conn = new SqlConnection(_connectionString);
             conn.Open();
 
-            var sql = @"SELECT [id], [name], [params], [jobType] FROM RSCHED_CUSTOM_JOBS WHERE [jobType] = @jobType;";
+            var sql = @"SELECT [ID], [NAME], [PARAMS], [JOB_TYPE] FROM RSCHED_CUSTOM_JOBS WHERE [jobType] = @jobType;";
             var command = new SqlCommand(sql, conn);
             command.Parameters.AddWithValue("@jobType", jobType);
 
@@ -136,8 +136,8 @@ namespace R.Scheduler.Persistance
             var conn = new SqlConnection(_connectionString);
             conn.Open();
 
-            var sqlInsert = @"INSERT INTO RSCHED_CUSTOM_JOBS(id, name, params, jobType) VALUES (@id, @name, @params, @jobType);";
-            var sqlUpdate = @"UPDATE RSCHED_CUSTOM_JOBS SET params='@params' WHERE name='@name' AND jobType='@jobType'";
+            var sqlInsert = @"INSERT INTO RSCHED_CUSTOM_JOBS(ID, NAME, PARAMS, JOB_TYPE) VALUES (@id, @name, @params, @jobType);";
+            var sqlUpdate = @"UPDATE RSCHED_CUSTOM_JOBS SET PARAMS='@params' WHERE NAME='@name' AND JOB_TYPE='@jobType'";
             var command = new SqlCommand(sqlUpdate, conn);
 
             try
@@ -181,7 +181,7 @@ namespace R.Scheduler.Persistance
             var conn = new SqlConnection(_connectionString);
             conn.Open();
 
-            var sqlUpdate = @"UPDATE RSCHED_CUSTOM_JOBS SET name=@name WHERE id=@id";
+            var sqlUpdate = @"UPDATE RSCHED_CUSTOM_JOBS SET NAME=@name WHERE ID=@id";
             var command = new SqlCommand(sqlUpdate, conn);
 
             try
@@ -217,9 +217,9 @@ namespace R.Scheduler.Persistance
             var conn = new SqlConnection(_connectionString);
             conn.Open();
 
-            var sql = @"DELETE FROM RSCHED_CUSTOM_JOBS WHERE id=@id";
+            var sql = @"DELETE FROM RSCHED_CUSTOM_JOBS WHERE ID=@id";
             var command = new SqlCommand(sql, conn);
-            command.Parameters.Add(new SqlParameter("id", SqlDbType.VarChar));
+            command.Parameters.Add(new SqlParameter("ID", SqlDbType.VarChar));
             command.Parameters[0].Value = id;
 
             try
@@ -237,7 +237,7 @@ namespace R.Scheduler.Persistance
             var conn = new SqlConnection(_connectionString);
             conn.Open();
 
-            var sql = @"DELETE FROM RSCHED_CUSTOM_JOBS WHERE jobType=@jobType";
+            var sql = @"DELETE FROM RSCHED_CUSTOM_JOBS WHERE JOB_TYPE=@jobType";
             var command = new SqlCommand(sql, conn);
             command.Parameters.Add(new SqlParameter("jobType", SqlDbType.VarChar));
             command.Parameters[0].Value = jobType;

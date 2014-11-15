@@ -1,13 +1,11 @@
 ﻿using System;
-using R.Scheduler.Interfaces;
 
 namespace R.Scheduler.AssemblyPlugin.Contracts.DataContracts
 {
-    public class Plugin : ICustomJob
+    public class Plugin
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public string Params { get; set; }
-        public string JobType { get; set; }
+        public string AssemblyPath { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Web.Http;
 using log4net;
@@ -33,9 +34,17 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         {
             Logger.Info("Entered PluginsController.Get().");
 
-            var registeredPlugins = _pluginRepository.GetRegisteredJobs(JobType);
+            IList<ICustomJob> registeredPlugins = _pluginRepository.GetRegisteredJobs(JobType);
 
-            return (IEnumerable<Plugin>) registeredPlugins;
+            return
+                registeredPlugins.Select(
+                    registeredPlugin =>
+                        new Plugin
+                        {
+                            Name = registeredPlugin.Name,
+                            AssemblyPath = registeredPlugin.Params,
+                            Id = registeredPlugin.Id
+                        }).ToList();
         }
 
         /// <summary>
@@ -139,7 +148,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
 
             try
             {
-                _pluginManager.Register(model.Name, model.Params);
+                _pluginManager.Register(model.Name, model.AssemblyPath);
             }
             catch (Exception ex)
             {

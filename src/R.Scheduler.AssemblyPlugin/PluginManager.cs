@@ -2,8 +2,8 @@
 using System.IO;
 using System.Reflection;
 using log4net;
-using R.Scheduler.AssemblyPlugin.Contracts.DataContracts;
 using R.Scheduler.Interfaces;
+using R.Scheduler.Persistance;
 
 namespace R.Scheduler.AssemblyPlugin
 {
@@ -33,17 +33,17 @@ namespace R.Scheduler.AssemblyPlugin
             }
             //todo: verify valid plugin.. reflection?
 
-            _pluginRepository.RegisterJob(new Plugin
+            _pluginRepository.RegisterJob(new CustomJob
             {
                 Params = args[0],
                 Name = name,
+                JobType = "AssemblyPlugin"
             });
         }
 
         /// <summary>
         /// Removes plugin and deletes all the related triggers/jobs.
         /// </summary>
-        /// <param name="name"></param>
         public void Remove(Guid id)
         {
             var registeredPlugin = _pluginRepository.GetRegisteredJob(id);

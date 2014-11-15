@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>R.Scheduler.AssemblyPlugin</id>
-    <version>0.0.3</version>
+    <version>0.0.5</version>
     <title>R.Scheduler.AssemblyPlugin</title>
     <authors>Jakub Pachansky</authors>
     <owners>Jakub Pachansky,Tim Watson</owners>
@@ -16,6 +16,7 @@
   <files>
     <file src="bin\Release\R.Scheduler.AssemblyPlugin.dll" target="lib\net40\R.Scheduler.AssemblyPlugin.dll" />
     <file src="bin\Release\R.Scheduler.Interfaces.dll" target="lib\net40\R.Scheduler.Interfaces.dll" />
+    <file src="bin\Release\R.Scheduler.Persistance.dll" target="lib\net40\R.Scheduler.Persistance.dll" />
   </files>
 </package>
 

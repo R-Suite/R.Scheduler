@@ -104,7 +104,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         /// <summary>
         /// Removes all triggers.
         /// </summary>
-        /// <param name="model">Pluin name</param>
+        /// <param name="model">Plugin name</param>
         /// <returns></returns>
         [AcceptVerbs("POST")]
         [Route("api/plugins/deschedule")]

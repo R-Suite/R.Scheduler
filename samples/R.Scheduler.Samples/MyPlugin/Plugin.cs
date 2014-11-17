@@ -1,7 +1,7 @@
 ﻿using System;
-using R.Scheduler.Contracts.Interfaces;
+using R.Scheduler.AssemblyPlugin.Contracts.Interfaces;
 
-namespace R.Scheduler.MyPlugin
+namespace MyPlugin
 {
     public class Plugin : BaseJobPlugin
     {

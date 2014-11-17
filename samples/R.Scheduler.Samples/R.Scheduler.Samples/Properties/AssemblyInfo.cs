@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("R.Scheduler.MyPlugin")]
+[assembly: AssemblyTitle("R.Scheduler.Samples")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("R.Scheduler.MyPlugin")]
+[assembly: AssemblyProduct("R.Scheduler.Samples")]
 [assembly: AssemblyCopyright("Copyright © Microsoft 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("c0e16628-dbe6-4032-ba6a-c2e3408780cf")]
+[assembly: Guid("fbff449a-51d7-4422-a7fe-cca789433604")]
 
 // Version information for an assembly consists of the following four values:
 //

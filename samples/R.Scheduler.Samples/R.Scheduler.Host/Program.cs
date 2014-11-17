@@ -1,6 +1,6 @@
 ﻿using System;
 using Quartz;
-using R.Scheduler.Contracts;
+using R.Scheduler.Interfaces;
 
 namespace R.Scheduler.Host
 {
@@ -15,7 +15,7 @@ namespace R.Scheduler.Host
                 config.PersistanceStoreType = PersistanceStoreType.InMemory;
             });
 
-            IScheduler sched = Scheduler.Instance();
+            IScheduler sched = R.Scheduler.Scheduler.Instance();
             sched.Start();
         }
     }

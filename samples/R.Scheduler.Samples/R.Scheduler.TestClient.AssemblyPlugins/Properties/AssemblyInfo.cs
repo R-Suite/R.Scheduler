@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("R.Scheduler.TestClient")]
+[assembly: AssemblyTitle("R.Scheduler.TestClient.AssemblyPlugins")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("R.Scheduler.TestClient")]
+[assembly: AssemblyProduct("R.Scheduler.TestClient.AssemblyPlugins")]
 [assembly: AssemblyCopyright("Copyright © Microsoft 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("cdd79ee8-0b3e-421d-be07-0ec7f17f772c")]
+[assembly: Guid("4a43a99a-9cf7-4fa8-8353-e8b931704268")]
 
 // Version information for an assembly consists of the following four values:
 //

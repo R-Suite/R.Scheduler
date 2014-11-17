@@ -101,7 +101,7 @@ namespace R.Scheduler.Persistance
             var conn = new SqlConnection(_connectionString);
             conn.Open();
 
-            var sql = @"SELECT [ID], [NAME], [PARAMS], [JOB_TYPE] FROM RSCHED_CUSTOM_JOBS WHERE [jobType] = @jobType;";
+            var sql = @"SELECT [ID], [NAME], [PARAMS], [JOB_TYPE] FROM RSCHED_CUSTOM_JOBS WHERE [JOB_TYPE] = @jobType;";
             var command = new SqlCommand(sql, conn);
             command.Parameters.AddWithValue("@jobType", jobType);
 
@@ -115,10 +115,10 @@ namespace R.Scheduler.Persistance
                     {
                         retval.Add(new CustomJob
                         {
-                            Id = (Guid)reader["id"],
-                            Name = (string)reader["pname"],
-                            Params = (string)reader["params"],
-                            JobType = (string)reader["jobType"]
+                            Id = (Guid)reader["ID"],
+                            Name = (string)reader["NAME"],
+                            Params = (string)reader["PARAMS"],
+                            JobType = (string)reader["JOB_TYPE"]
                         });
                     }
                 }

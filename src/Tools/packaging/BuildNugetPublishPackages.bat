@@ -1,4 +1,4 @@
-SET OUTDIR=C:\GIT\RSuite\R.Scheduler\src\
+SET OUTDIR=C:\GitHub\R.Scheduler\src\
 
 @ECHO === === === === === === === ===
 
@@ -13,7 +13,7 @@ NuGet pack "%OUTDIR%R.Scheduler.AssemblyPlugin\R.Scheduler.AssemblyPlugin.nuspec
 
 ::nuget.exe push R.Scheduler.0.0.8.nupkg
 ::nuget.exe push R.Scheduler.Contracts.0.0.3.nupkg
-nuget.exe push R.Scheduler.AssemblyPlugin.0.0.5.nupkg
+nuget.exe push R.Scheduler.AssemblyPlugin.0.0.6.nupkg
 
            
 @ECHO === === === === === === === ===

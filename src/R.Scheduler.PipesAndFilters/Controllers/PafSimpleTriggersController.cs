@@ -4,12 +4,13 @@ using System.Reflection;
 using System.Web.Http;
 using log4net;
 using R.Scheduler.Contracts.DataContracts;
+using R.Scheduler.Controllers;
 using R.Scheduler.Interfaces;
 using StructureMap;
 
 namespace R.Scheduler.PipesAndFilters.Controllers
 {
-    public class PafSimpleTriggersController : BaseController
+    public class PafSimpleTriggersController : BaseCustomJobController
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         readonly ISchedulerCore _schedulerCore;

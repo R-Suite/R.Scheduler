@@ -71,9 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Contracts\DataContracts\Plugin.cs" />
-    <Compile Include="Contracts\DataContracts\PluginCronTrigger.cs" />
     <Compile Include="Contracts\DataContracts\PluginDetails.cs" />
-    <Compile Include="Contracts\DataContracts\PluginSimpleTrigger.cs" />
     <Compile Include="Contracts\Interfaces\BaseJobPlugin.cs" />
     <Compile Include="Contracts\Interfaces\IJobPlugin.cs" />
     <Compile Include="Controllers\BaseController.cs" />

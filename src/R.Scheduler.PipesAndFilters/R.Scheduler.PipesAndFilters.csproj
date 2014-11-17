@@ -70,8 +70,10 @@
     <Compile Include="Config\PipesAndFiltersConfigurationSection.cs" />
     <Compile Include="Config\StartParamCollection.cs" />
     <Compile Include="Config\StartParamElement.cs" />
-    <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Contracts\PafTransformation.cs" />
+    <Compile Include="Contracts\PafTransformationDetails.cs" />
     <Compile Include="Controllers\PafSimpleTriggersController.cs" />
+    <Compile Include="Controllers\PafTransformationsController.cs" />
     <Compile Include="CustomJobStoreInterceptor.cs" />
     <Compile Include="FiltersAssemblyLoader.cs" />
     <Compile Include="Interfaces\IFilter.cs" />
@@ -80,6 +82,7 @@
     <Compile Include="Interfaces\IPipeLine.cs" />
     <Compile Include="Config\JobConfigurationManager.cs" />
     <Compile Include="JobRunner.cs" />
+    <Compile Include="PafTransformationManager.cs" />
     <Compile Include="PipeLine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SmRegistry.cs" />
@@ -104,6 +107,10 @@
     <ProjectReference Include="..\R.Scheduler.Persistance\R.Scheduler.Persistance.csproj">
       <Project>{FBADF088-E56E-4862-9C1C-3FF81C4BD92B}</Project>
       <Name>R.Scheduler.Persistance</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\R.Scheduler\R.Scheduler.csproj">
+      <Project>{59E14D25-72BD-4E1F-A224-B8A6F5179B90}</Project>
+      <Name>R.Scheduler</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

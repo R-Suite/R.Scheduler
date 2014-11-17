@@ -9,7 +9,7 @@ namespace R.Scheduler.PipesAndFilters.Config
     internal sealed class JobConfigurationManager : IJobConfigurationManager
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private Configuration _config;
+        private System.Configuration.Configuration _config;
 
         public T GetFilters<T>(string jobDefinitionPath) where T : ConfigurationSection
         {

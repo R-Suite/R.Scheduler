@@ -122,9 +122,18 @@ namespace R.Scheduler.PipesAndFilters.Controllers
         [Route("api/pipesandfilters/{id}/simpleTriggers")]
         public QueryResponse Post(string id, [FromBody]CustomJobSimpleTrigger model)
         {
-            Logger.InfoFormat("Entered PafTransformationsController.Post(). PluginName = {0}", model.Name);
+            Logger.InfoFormat("Entered PafTransformationsController.Post(). Name = {0}", model.Name);
 
             return CreateCustomJobSimpleTrigger(id, model, JobType, "jobDefinitionPath", typeof(JobRunner));
+        }
+
+        [AcceptVerbs("POST")]
+        [Route("api/pipesandfilters/{id}/cronTriggers")]
+        public QueryResponse Post(string id, [FromBody]CustomJobCronTrigger model)
+        {
+            Logger.InfoFormat("Entered PafTransformationsController.Post(). Name = {0}", model.Name);
+
+            return CreateCustomJobCronTrigger(id, model, JobType, "jobDefinitionPath", typeof(JobRunner));
         }
     }
 }

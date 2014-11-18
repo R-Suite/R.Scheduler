@@ -289,5 +289,64 @@ namespace R.Scheduler.Controllers
 
             return response;
         }
+
+        protected QueryResponse CreateCustomJobCronTrigger(string id, CustomJobCronTrigger model, string jobType, string dataMapParamKey, Type jobRunnerType)
+        {
+            var response = new QueryResponse { Valid = true };
+
+            ICustomJob registeredPlugin = GetRegisteredCustomJob(id, jobType);
+
+            if (null == registeredPlugin)
+            {
+                response.Valid = false;
+                response.Errors = new List<Error>
+                {
+                    new Error
+                    {
+                        Code = "RegisteredCustomJobNotFound",
+                        Type = "Sender",
+                        Message = string.Format("Error loading registered CustomJob {0}", model.Name)
+                    }
+                };
+
+                return response;
+            }
+
+            try
+            {
+                _schedulerCore.ScheduleTrigger(new CronTrigger
+                {
+                    Name = model.TriggerName,
+                    Group = !string.IsNullOrEmpty(model.TriggerGroup) ? model.TriggerGroup : registeredPlugin.Id + "_Group",
+                    JobName = !string.IsNullOrEmpty(model.JobName) ? model.JobName : registeredPlugin.Id + "_JobName",
+                    JobGroup = registeredPlugin.Id.ToString(),
+                    CronExpression = model.CronExpression,
+                    StartDateTime = model.StartDateTime,
+                    DataMap = new Dictionary<string, object> { { dataMapParamKey, registeredPlugin.Params } }
+                }, jobRunnerType);
+            }
+            catch (Exception ex)
+            {
+                string type = "Server";
+
+                if (ex is FormatException)
+                {
+                    type = "Sender";
+                }
+
+                response.Valid = false;
+                response.Errors = new List<Error>
+                {
+                    new Error
+                    {
+                        Code = "ErrorSchedulingTrigger",
+                        Type = type,
+                        Message = string.Format("Error scheduling CronTrigger {0}", ex.Message)
+                    }
+                };
+            }
+
+            return response;
+        }
     }
 }

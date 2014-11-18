@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Web.Http;
+using Quartz;
 using R.Scheduler.Contracts.DataContracts;
 using R.Scheduler.Interfaces;
 using StructureMap;
@@ -11,11 +13,13 @@ namespace R.Scheduler.Controllers
     {
         private readonly ICustomJobStore _repository;
         readonly ISchedulerCore _schedulerCore;
+        readonly IJobTypeManager _jobTypeManager;
 
         protected BaseCustomJobController()
         {
             _repository = ObjectFactory.GetInstance<ICustomJobStore>();
             _schedulerCore = ObjectFactory.GetInstance<ISchedulerCore>();
+            _jobTypeManager = ObjectFactory.GetInstance<IJobTypeManager>();
         }
 
         protected ICustomJob GetRegisteredCustomJob(string id, string jobType)
@@ -81,5 +85,209 @@ namespace R.Scheduler.Controllers
             return response;
         }
 
+        protected QueryResponse DescheduleCustomJob(string model, string jobType)
+        {
+            ICustomJob registeredJob = GetRegisteredCustomJob(model, jobType);
+
+            var response = new QueryResponse { Valid = true };
+
+            try
+            {
+                _schedulerCore.RemoveJobGroup(registeredJob.Id.ToString());
+            }
+            catch (Exception ex)
+            {
+                response.Valid = false;
+                response.Errors = new List<Error>
+                {
+                    new Error
+                    {
+                        Code = "ErrorRemovingJobGroup",
+                        Type = "Server",
+                        Message = string.Format("Error:{0}", ex.Message)
+                    }
+                };
+            }
+
+            return response;
+        }
+
+        protected QueryResponse RegisterCustomJob(ICustomJob model)
+        {
+            var response = new QueryResponse { Valid = true };
+
+            try
+            {
+                _jobTypeManager.Register(model.Name, model.Params);
+            }
+            catch (Exception ex)
+            {
+                string type = "Server";
+                if (ex is FileNotFoundException)
+                {
+                    type = "Sender";
+                }
+
+                response.Valid = false;
+                response.Errors = new List<Error>
+                {
+                    new Error
+                    {
+                        Code = "ErrorRegisteringCustomJob",
+                        Type = type,
+                        Message = string.Format("Error: {0}", ex.Message)
+                    }
+                };
+            }
+
+            return response;
+        }
+
+        protected QueryResponse UpdateCustomJob(string id, ICustomJob model)
+        {
+            var response = new QueryResponse { Valid = true };
+
+            try
+            {
+                _repository.UpdateName(new Guid(id), model.Name);
+            }
+            catch (Exception ex)
+            {
+                response.Valid = false;
+                response.Errors = new List<Error>
+                {
+                    new Error
+                    {
+                        Code = "ErrorUpdatingCustomJob",
+                        Type = "Server",
+                        Message = string.Format("Error: {0}", ex.Message)
+                    }
+                };
+            }
+            return response;
+        }
+
+        protected IList<TriggerDetails> GetCustomJobTriggerDetails(ICustomJob registeredJob)
+        {
+            var quartzTriggers = _schedulerCore.GetTriggersOfJobGroup(registeredJob.Id.ToString());
+
+            IList<TriggerDetails> triggerDetails = new List<TriggerDetails>();
+
+            foreach (ITrigger quartzTrigger in quartzTriggers)
+            {
+                var triggerType = string.Empty;
+                if (quartzTrigger is ICronTrigger)
+                {
+                    triggerType = "Cron";
+                }
+                if (quartzTrigger is ISimpleTrigger)
+                {
+                    triggerType = "Simple";
+                }
+                var nextFireTimeUtc = quartzTrigger.GetNextFireTimeUtc();
+                var previousFireTimeUtc = quartzTrigger.GetPreviousFireTimeUtc();
+                triggerDetails.Add(new TriggerDetails
+                {
+                    Name = quartzTrigger.Key.Name,
+                    Group = quartzTrigger.Key.Group,
+                    JobName = quartzTrigger.JobKey.Name,
+                    JobGroup = quartzTrigger.JobKey.Group,
+                    Description = quartzTrigger.Description,
+                    StartTimeUtc = quartzTrigger.StartTimeUtc.UtcDateTime,
+                    EndTimeUtc =
+                        (quartzTrigger.EndTimeUtc.HasValue) ? quartzTrigger.EndTimeUtc.Value.UtcDateTime : (DateTime?)null,
+                    NextFireTimeUtc = (nextFireTimeUtc.HasValue) ? nextFireTimeUtc.Value.UtcDateTime : (DateTime?)null,
+                    PreviousFireTimeUtc =
+                        (previousFireTimeUtc.HasValue) ? previousFireTimeUtc.Value.UtcDateTime : (DateTime?)null,
+                    FinalFireTimeUtc =
+                        (quartzTrigger.FinalFireTimeUtc.HasValue)
+                            ? quartzTrigger.FinalFireTimeUtc.Value.UtcDateTime
+                            : (DateTime?)null,
+                    Type = triggerType
+                });
+            }
+
+            return triggerDetails;
+        }
+
+        protected QueryResponse DeleteCustomJob(string id, string jobType)
+        {
+            var registeredJob = GetRegisteredCustomJob(id, jobType);
+
+            var response = new QueryResponse { Valid = true };
+
+            _schedulerCore.RemoveJobGroup(registeredJob.Id.ToString());
+
+            int result = _repository.Remove(registeredJob.Id);
+
+            if (result == 0)
+            {
+                response.Valid = false;
+                response.Errors = new List<Error>
+                {
+                    new Error
+                    {
+                        Code = "RegisteredCustomJobNotFound",
+                        Type = "Sender",
+                        Message = string.Format("{0} not found", id)
+                    }
+                };
+            }
+
+            return response;
+        }
+
+        protected QueryResponse CreateCustomJobSimpleTrigger(string id, CustomJobSimpleTrigger model, string jobType, string dataMapParamKey, Type jobRunnerType)
+        {
+            var response = new QueryResponse { Valid = true };
+
+            ICustomJob registeredCustomJob = GetRegisteredCustomJob(id, jobType);
+
+            if (null == registeredCustomJob)
+            {
+                response.Valid = false;
+                response.Errors = new List<Error>
+                {
+                    new Error
+                    {
+                        Code = "RegisteredCustomJobNotFound",
+                        Type = "Sender",
+                        Message = string.Format("Error loading registered  {0} Job {1}", jobType, model.Name)
+                    }
+                };
+
+                return response;
+            }
+
+            try
+            {
+                _schedulerCore.ScheduleTrigger(new SimpleTrigger
+                {
+                    Name = model.TriggerName,
+                    Group = !string.IsNullOrEmpty(model.TriggerGroup) ? model.TriggerGroup : registeredCustomJob.Id + "_Group",
+                    JobName = !string.IsNullOrEmpty(model.JobName) ? model.JobName : registeredCustomJob.Id + "_JobName",
+                    JobGroup = registeredCustomJob.Id.ToString(),
+                    RepeatCount = model.RepeatCount,
+                    RepeatInterval = model.RepeatInterval,
+                    StartDateTime = model.StartDateTime,
+                    DataMap = new Dictionary<string, object> { { dataMapParamKey, registeredCustomJob.Params } }
+                }, jobRunnerType);
+            }
+            catch (Exception ex)
+            {
+                response.Valid = false;
+                response.Errors = new List<Error>
+                {
+                    new Error
+                    {
+                        Code = "ErrorSchedulingTrigger",
+                        Type = "Server",
+                        Message = string.Format("Error scheduling trigger {0}", ex.Message)
+                    }
+                };
+            }
+
+            return response;
+        }
     }
 }

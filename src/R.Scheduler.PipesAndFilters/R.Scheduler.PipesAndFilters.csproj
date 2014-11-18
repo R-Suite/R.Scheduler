@@ -72,7 +72,6 @@
     <Compile Include="Config\StartParamElement.cs" />
     <Compile Include="Contracts\PafTransformation.cs" />
     <Compile Include="Contracts\PafTransformationDetails.cs" />
-    <Compile Include="Controllers\PafSimpleTriggersController.cs" />
     <Compile Include="Controllers\PafTransformationsController.cs" />
     <Compile Include="CustomJobStoreInterceptor.cs" />
     <Compile Include="FiltersAssemblyLoader.cs" />

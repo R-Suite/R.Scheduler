@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Web.Http;
 using log4net;
-using R.Scheduler.Contracts.DataContracts;
+using R.Scheduler.Contracts.Model;
 using R.Scheduler.Interfaces;
 using StructureMap;
 

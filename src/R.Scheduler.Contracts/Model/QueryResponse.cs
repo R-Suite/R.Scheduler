@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace R.Scheduler.Contracts.DataContracts
+namespace R.Scheduler.Contracts.Model
 {
     public class QueryResponse
     {

@@ -47,10 +47,6 @@
       <Project>{C2F4994F-DB81-4779-8490-89250561F0D7}</Project>
       <Name>R.Scheduler.Contracts</Name>
     </ProjectReference>
-    <ProjectReference Include="..\R.Scheduler.AssemblyPlugin\R.Scheduler.AssemblyPlugin.csproj">
-      <Project>{A338A7FE-D041-41C3-9CDD-5E35171961DD}</Project>
-      <Name>R.Scheduler.AssemblyPlugin</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

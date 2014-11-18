@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace R.Scheduler.Contracts.DataContracts
+namespace R.Scheduler.Contracts.Model
 {
     public class TriggerDetails
     {

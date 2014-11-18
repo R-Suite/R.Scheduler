@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace R.Scheduler.PipesAndFilters.Contracts
+namespace R.Scheduler.Contracts.JobTypes.PipesAndFilters.Model
 {
     public class PafTransformation
     {

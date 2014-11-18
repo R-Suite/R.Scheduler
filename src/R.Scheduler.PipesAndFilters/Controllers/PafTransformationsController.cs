@@ -3,11 +3,11 @@ using System.Linq;
 using System.Reflection;
 using System.Web.Http;
 using log4net;
-using R.Scheduler.Contracts.DataContracts;
+using R.Scheduler.Contracts.JobTypes.PipesAndFilters.Model;
+using R.Scheduler.Contracts.Model;
 using R.Scheduler.Controllers;
 using R.Scheduler.Interfaces;
 using R.Scheduler.Persistance;
-using R.Scheduler.PipesAndFilters.Contracts;
 using StructureMap;
 
 namespace R.Scheduler.PipesAndFilters.Controllers

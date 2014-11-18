@@ -1,5 +1,5 @@
 ﻿using System;
-using R.Scheduler.AssemblyPlugin.Contracts.Interfaces;
+using R.Scheduler.Contracts.JobTypes.AssemblyPlugin;
 
 namespace MyPlugin
 {

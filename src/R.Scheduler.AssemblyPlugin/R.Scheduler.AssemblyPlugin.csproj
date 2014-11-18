@@ -70,14 +70,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Contracts\DataContracts\Plugin.cs" />
-    <Compile Include="Contracts\DataContracts\PluginDetails.cs" />
-    <Compile Include="Contracts\Interfaces\BaseJobPlugin.cs" />
-    <Compile Include="Contracts\Interfaces\IJobPlugin.cs" />
-    <Compile Include="Controllers\BaseController.cs" />
-    <Compile Include="Controllers\PluginCronTriggersController.cs" />
     <Compile Include="Controllers\PluginsController.cs" />
-    <Compile Include="Controllers\PluginSimpleTriggersController.cs" />
     <Compile Include="PluginAppDomainHelper.cs" />
     <Compile Include="PluginManager.cs" />
     <Compile Include="PluginRunner.cs" />
@@ -105,6 +98,10 @@
     <ProjectReference Include="..\R.Scheduler.Persistance\R.Scheduler.Persistance.csproj">
       <Project>{FBADF088-E56E-4862-9C1C-3FF81C4BD92B}</Project>
       <Name>R.Scheduler.Persistance</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\R.Scheduler\R.Scheduler.csproj">
+      <Project>{59E14D25-72BD-4E1F-A224-B8A6F5179B90}</Project>
+      <Name>R.Scheduler</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

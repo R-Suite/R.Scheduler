@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace R.Scheduler.AssemblyPlugin.Contracts.DataContracts
+namespace R.Scheduler.Contracts.JobTypes.AssemblyPlugin.Model
 {
     public class Plugin
     {

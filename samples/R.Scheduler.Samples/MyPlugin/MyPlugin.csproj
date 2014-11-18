@@ -30,14 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="R.Scheduler.AssemblyPlugin">
-      <HintPath>..\packages\R.Scheduler.AssemblyPlugin.0.0.6\lib\net40\R.Scheduler.AssemblyPlugin.dll</HintPath>
-    </Reference>
-    <Reference Include="R.Scheduler.Interfaces">
-      <HintPath>..\packages\R.Scheduler.AssemblyPlugin.0.0.6\lib\net40\R.Scheduler.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="R.Scheduler.Persistance">
-      <HintPath>..\packages\R.Scheduler.AssemblyPlugin.0.0.6\lib\net40\R.Scheduler.Persistance.dll</HintPath>
+    <Reference Include="R.Scheduler.Contracts">
+      <HintPath>..\packages\R.Scheduler.Contracts.0.0.4\lib\net40\R.Scheduler.Contracts.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

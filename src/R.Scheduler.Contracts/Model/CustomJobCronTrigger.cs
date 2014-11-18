@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace R.Scheduler.Contracts.DataContracts
+namespace R.Scheduler.Contracts.Model
 {
-    public class CustomJobSimpleTrigger
+    public class CustomJobCronTrigger
     {
         public string Name { get; set; }
 
@@ -12,7 +12,6 @@ namespace R.Scheduler.Contracts.DataContracts
         public string JobName { get; set; }
 
         public DateTime StartDateTime { get; set; }
-        public int RepeatCount { get; set; }
-        public TimeSpan RepeatInterval { get; set; }
+        public string CronExpression { get; set; }
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web.Http;
 using Quartz;
-using R.Scheduler.Contracts.DataContracts;
+using R.Scheduler.Contracts.Model;
 using R.Scheduler.Interfaces;
 using StructureMap;
 

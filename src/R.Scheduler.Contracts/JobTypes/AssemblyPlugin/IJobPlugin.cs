@@ -1,4 +1,4 @@
-﻿namespace R.Scheduler.AssemblyPlugin.Contracts.Interfaces
+﻿namespace R.Scheduler.Contracts.JobTypes.AssemblyPlugin
 {
     public interface IJobPlugin
     {

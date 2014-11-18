@@ -1,31 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Web.Http;
 using log4net;
-using Quartz;
-using R.Scheduler.AssemblyPlugin.Contracts.DataContracts;
-using R.Scheduler.Contracts.DataContracts;
+using R.Scheduler.Contracts.JobTypes.AssemblyPlugin.Model;
+using R.Scheduler.Contracts.Model;
+using R.Scheduler.Controllers;
 using R.Scheduler.Interfaces;
+using R.Scheduler.Persistance;
 using StructureMap;
 
 namespace R.Scheduler.AssemblyPlugin.Controllers
 {
-    public class PluginsController : BaseController
+    public class PluginsController : BaseCustomJobController
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        readonly ICustomJobStore _pluginRepository;
-        readonly ISchedulerCore _schedulerCore;
-        readonly IJobTypeManager _pluginManager;
+        readonly ICustomJobStore _repository;
         private const string JobType = "AssemblyPlugin";
 
         public PluginsController()
         {
-            _pluginRepository = ObjectFactory.GetInstance<ICustomJobStore>();
-            _schedulerCore = ObjectFactory.GetInstance<ISchedulerCore>();
-            _pluginManager = ObjectFactory.GetInstance<IJobTypeManager>();
+            _repository = ObjectFactory.GetInstance<ICustomJobStore>();
         }
 
         // GET api/values 
@@ -34,17 +29,15 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         {
             Logger.Info("Entered PluginsController.Get().");
 
-            IList<ICustomJob> registeredPlugins = _pluginRepository.GetRegisteredJobs(JobType);
+            IList<ICustomJob> registeredPlugins = _repository.GetRegisteredJobs(JobType);
 
-            return
-                registeredPlugins.Select(
-                    registeredPlugin =>
-                        new Plugin
-                        {
-                            Name = registeredPlugin.Name,
-                            AssemblyPath = registeredPlugin.Params,
-                            Id = registeredPlugin.Id
-                        }).ToList();
+            return registeredPlugins.Select(registeredPlugin =>
+                                                                new Plugin
+                                                                {
+                                                                    Name = registeredPlugin.Name,
+                                                                    AssemblyPath = registeredPlugin.Params,
+                                                                    Id = registeredPlugin.Id
+                                                                }).ToList();
         }
 
         /// <summary>
@@ -58,47 +51,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         {
             Logger.InfoFormat("Entered PluginsController.Execute(). name = {0}", model);
 
-            ICustomJob registeredPlugin = base.GetRegisteredCustomJob(model, JobType);
-
-            var response = new QueryResponse {Valid = true};
-            if (null == registeredPlugin)
-            {
-                Logger.ErrorFormat("Error getting registered plugin {0}", model);
-                response.Valid = false;
-                response.Errors = new List<Error>
-                {
-                    new Error
-                    {
-                        Code = "RegisteredPluginNotFound",
-                        Type = "Sender",
-                        Message = string.Format("Plugin {0} not found", model)
-                    }
-                };
-
-                return response;
-            }
-
-            var dataMap = new Dictionary<string, object> {{"pluginPath", registeredPlugin.Params}};
-
-            try
-            {
-                _schedulerCore.ExecuteJob(typeof (PluginRunner), dataMap);
-            }
-            catch (Exception ex)
-            {
-                response.Valid = false;
-                response.Errors = new List<Error>
-                {
-                    new Error
-                    {
-                        Code = "ErrorTriggeringPlugin",
-                        Type = "Server",
-                        Message = string.Format("Error: {0}", ex.Message)
-                    }
-                };
-            }
-
-            return response;
+            return ExecuteCustomJob(model, JobType, "pluginPath", typeof(PluginRunner));
         }
 
         /// <summary>
@@ -112,107 +65,35 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         {
             Logger.InfoFormat("Entered PluginsController.Deschedule(). name = {0}", model);
 
-            ICustomJob registeredPlugin = base.GetRegisteredCustomJob(model, JobType);
-
-            var response = new QueryResponse { Valid = true };
-
-            try
-            {
-                _schedulerCore.RemoveJobGroup(registeredPlugin.Id.ToString());
-            }
-            catch (Exception ex)
-            {
-                response.Valid = false;
-                response.Errors = new List<Error>
-                {
-                    new Error
-                    {
-                        Code = "ErrorRemovingJobGroup",
-                        Type = "Server",
-                        Message = string.Format("Error:{0}", ex.Message)
-                    }
-                };
-            }
-
-            return response;
+            return DescheduleCustomJob(model, JobType);
         }
 
-        // POST api/plugins 
         [AcceptVerbs("POST")]
         [Route("api/plugins")]
         public QueryResponse Post([FromBody]Plugin model)
         {
             Logger.InfoFormat("Entered PluginsController.Post(). name = {0}", model.Name);
 
-            var response = new QueryResponse { Valid = true };
-
-            try
-            {
-                _pluginManager.Register(model.Name, model.AssemblyPath);
-            }
-            catch (Exception ex)
-            {
-                string type = "Server";
-                if (ex is FileNotFoundException)
-                {
-                    type = "Sender";
-                }
-
-                response.Valid = false;
-                response.Errors = new List<Error>
-                {
-                    new Error
-                    {
-                        Code = "ErrorRegisteringPlugin",
-                        Type = type,
-                        Message = string.Format("Error: {0}", ex.Message)
-                    }
-                };
-            }
-
-            return response;
+            return RegisterCustomJob(new CustomJob { Name = model.Name, Params = model.AssemblyPath, JobType = JobType });
         }
 
-        // PUT api/plugins/{id}
         [AcceptVerbs("PUT")]
         [Route("api/plugins/{id}")]
         public QueryResponse Put(string id, [FromBody]Plugin model)
         {
             Logger.InfoFormat("Entered PluginsController.Put(). name = {0}", model.Name);
 
-            var response = new QueryResponse { Valid = true };
-
-            try
-            {
-                _pluginRepository.UpdateName(new Guid(id), model.Name);
-            }
-            catch (Exception ex)
-            {
-                response.Valid = false;
-                response.Errors = new List<Error>
-                {
-                    new Error
-                    {
-                        Code = "ErrorUpdatingPlugin",
-                        Type = "Server",
-                        Message = string.Format("Error: {0}", ex.Message)
-                    }
-                };
-            }
-
-            return response;
+            return UpdateCustomJob(id, new CustomJob { Name = model.Name });
         }
 
-        // GET api/values 
         [Route("api/plugins/{id}")]
         public PluginDetails Get(string id)
         {
             Logger.InfoFormat("Entered PluginsController.Get(). id = {0}", id);
 
-            ICustomJob registeredPlugin = base.GetRegisteredCustomJob(id, JobType);
+            ICustomJob registeredJob = base.GetRegisteredCustomJob(id, JobType);
 
-            // Still couldn't get, return null
-            if (null == registeredPlugin)
+            if (null == registeredJob)
             {
                 Logger.ErrorFormat("Error getting registered plugin {0}", id);
                 return null;
@@ -220,77 +101,41 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
 
             var retval = new PluginDetails
             {
-                Name = registeredPlugin.Name,
-                AssemblyPath = registeredPlugin.Params,
+                Name = registeredJob.Name,
+                AssemblyPath = registeredJob.Params,
                 TriggerDetails = new List<TriggerDetails>()
             };
-            
-            var quartzTriggers = _schedulerCore.GetTriggersOfJobGroup(registeredPlugin.Id.ToString());
 
-            foreach (ITrigger quartzTrigger in quartzTriggers)
-            {
-                var triggerType = string.Empty;
-                if (quartzTrigger is ICronTrigger)
-                {
-                    triggerType = "Cron";
-                }
-                if (quartzTrigger is ISimpleTrigger)
-                {
-                    triggerType = "Simple";
-                }
-                var nextFireTimeUtc = quartzTrigger.GetNextFireTimeUtc();
-                var previousFireTimeUtc = quartzTrigger.GetPreviousFireTimeUtc();
-                retval.TriggerDetails.Add(new TriggerDetails
-                {
-                    Name = quartzTrigger.Key.Name,
-                    Group = quartzTrigger.Key.Group,
-                    JobName = quartzTrigger.JobKey.Name,
-                    JobGroup = quartzTrigger.JobKey.Group,
-                    Description = quartzTrigger.Description,
-                    StartTimeUtc = quartzTrigger.StartTimeUtc.UtcDateTime,
-                    EndTimeUtc = (quartzTrigger.EndTimeUtc.HasValue) ? quartzTrigger.EndTimeUtc.Value.UtcDateTime : (DateTime?)null,
-                    NextFireTimeUtc = (nextFireTimeUtc.HasValue) ? nextFireTimeUtc.Value.UtcDateTime : (DateTime?)null,
-                    PreviousFireTimeUtc = (previousFireTimeUtc.HasValue) ? previousFireTimeUtc.Value.UtcDateTime : (DateTime?)null,
-                    FinalFireTimeUtc = (quartzTrigger.FinalFireTimeUtc.HasValue) ? quartzTrigger.FinalFireTimeUtc.Value.UtcDateTime : (DateTime?)null,
-                    Type = triggerType
-                });
-            }
+            retval.TriggerDetails = GetCustomJobTriggerDetails(registeredJob);
 
             return retval;
         }
 
-        // DELETE api/plugins/id 
         [AcceptVerbs("DELETE")]
         [Route("api/plugins")]
         public QueryResponse Delete(string id)
         {
             Logger.InfoFormat("Entered PluginsController.Delete(). id = {0}", id);
 
-            var registeredPlugin = base.GetRegisteredCustomJob(id, JobType);
+            return DeleteCustomJob(id, JobType);
+        }
 
-            var response = new QueryResponse { Valid = true };
+        [AcceptVerbs("POST")]
+        [Route("api/plugins/{id}/simpleTriggers")]
+        public QueryResponse Post(string id, [FromBody]CustomJobSimpleTrigger model)
+        {
+            Logger.InfoFormat("Entered PluginsController.Post(). Name = {0}", model.Name);
 
-            _schedulerCore.RemoveJobGroup(registeredPlugin.Id.ToString());
+            return CreateCustomJobSimpleTrigger(id, model, JobType, "pluginPath", typeof(PluginRunner));
+        }
 
-            int result = _pluginRepository.Remove(registeredPlugin.Id);
+        [AcceptVerbs("POST")]
+        [Route("api/plugins/{id}/cronTriggers")]
+        public QueryResponse Post(string id, [FromBody]CustomJobCronTrigger model)
+        {
+            Logger.InfoFormat("Entered PluginsController.Post(). Name = {0}", model.Name);
 
-            if (result == 0)
-            {
-                Logger.WarnFormat("Error removing from data store. Plugin {0} not found", id);
-
-                response.Valid = false;
-                response.Errors = new List<Error>
-                {
-                    new Error
-                    {
-                        Code = "RegisteredPluginNotFound",
-                        Type = "Sender",
-                        Message = string.Format("Plugin {0} not found", id)
-                    }
-                };
-            }
-
-            return response;
+            return CreateCustomJobCronTrigger(id, model, JobType, "pluginPath", typeof(PluginRunner));
         }
     } 
 }

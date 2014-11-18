@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using R.Scheduler.AssemblyPlugin.Contracts.Interfaces;
+using R.Scheduler.Contracts.JobTypes.AssemblyPlugin;
 
 namespace R.Scheduler.FakeJobPlugin
 {

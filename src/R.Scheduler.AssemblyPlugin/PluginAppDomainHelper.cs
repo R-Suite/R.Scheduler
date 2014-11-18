@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using R.Scheduler.AssemblyPlugin.Contracts.Interfaces;
+using R.Scheduler.Contracts.JobTypes.AssemblyPlugin;
 
 namespace R.Scheduler.AssemblyPlugin
 {

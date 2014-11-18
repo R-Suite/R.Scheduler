@@ -3,7 +3,7 @@ using System.IO;
 using System.Reflection;
 using log4net;
 using Quartz;
-using R.Scheduler.AssemblyPlugin.Contracts.Interfaces;
+using R.Scheduler.Contracts.JobTypes.AssemblyPlugin;
 
 namespace R.Scheduler.AssemblyPlugin
 {

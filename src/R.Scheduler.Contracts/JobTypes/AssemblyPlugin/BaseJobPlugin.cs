@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace R.Scheduler.AssemblyPlugin.Contracts.Interfaces
+namespace R.Scheduler.Contracts.JobTypes.AssemblyPlugin
 {
     public abstract class BaseJobPlugin : MarshalByRefObject, IJobPlugin
     {

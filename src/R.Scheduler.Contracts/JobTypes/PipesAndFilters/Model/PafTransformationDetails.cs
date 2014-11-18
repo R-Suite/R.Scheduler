@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using R.Scheduler.Contracts.DataContracts;
+using R.Scheduler.Contracts.Model;
 
-namespace R.Scheduler.PipesAndFilters.Contracts
+namespace R.Scheduler.Contracts.JobTypes.PipesAndFilters.Model
 {
     public class PafTransformationDetails
     {

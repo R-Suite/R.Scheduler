@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using R.Scheduler.Contracts.DataContracts;
+using R.Scheduler.Contracts.Model;
 
-namespace R.Scheduler.AssemblyPlugin.Contracts.DataContracts
+namespace R.Scheduler.Contracts.JobTypes.AssemblyPlugin.Model
 {
     public class PluginDetails
     {

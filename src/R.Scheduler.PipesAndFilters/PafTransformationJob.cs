@@ -8,7 +8,7 @@ using R.Scheduler.PipesAndFilters.Interfaces;
 
 namespace R.Scheduler.PipesAndFilters
 {
-    public class JobRunner : IJob
+    public class PafTransformationJob : IJob
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -16,7 +16,7 @@ namespace R.Scheduler.PipesAndFilters
         private readonly IFiltersAssemblyLoader _assemblyLoader;
         private readonly IJobConfigurationManager _jobConfigurationManager;
 
-        public JobRunner()
+        public PafTransformationJob()
         {
             _jobConfigurationManager = new JobConfigurationManager();
             _pipeLine = new PipeLine<string>();
@@ -29,7 +29,7 @@ namespace R.Scheduler.PipesAndFilters
 
             string jobDefinitionPath = dataMap.GetString("jobDefinitionPath");
 
-            Logger.Info("Entering R.Scheduler.PipesAndFilters.JobRunner.Execute(). jobDefinitionPath=" + jobDefinitionPath);
+            Logger.Info("Entering R.Scheduler.PipesAndFilters.PafTransformationJob.Execute(). jobDefinitionPath=" + jobDefinitionPath);
 
             if (string.IsNullOrEmpty(jobDefinitionPath) || !File.Exists(jobDefinitionPath))
             {

@@ -73,7 +73,7 @@
     <Compile Include="Controllers\PluginsController.cs" />
     <Compile Include="PluginAppDomainHelper.cs" />
     <Compile Include="PluginManager.cs" />
-    <Compile Include="PluginRunner.cs" />
+    <Compile Include="AssemblyPluginJob.cs" />
     <Compile Include="PluginStoreInterceptor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SmRegistry.cs" />

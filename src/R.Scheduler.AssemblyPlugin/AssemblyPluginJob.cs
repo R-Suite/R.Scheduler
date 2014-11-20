@@ -10,14 +10,14 @@ namespace R.Scheduler.AssemblyPlugin
     /// <summary>
     /// PluginRunner loads and executes JobPlugins within a separate AppDomain.
     /// </summary>
-    public class PluginRunner : IJob
+    public class AssemblyPluginJob : IJob
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         /// Ctor used by Scheduler engine
         /// </summary>
-        public PluginRunner()
+        public AssemblyPluginJob()
         {
             Logger.Info("Entering PluginRunner.ctor().");
         }

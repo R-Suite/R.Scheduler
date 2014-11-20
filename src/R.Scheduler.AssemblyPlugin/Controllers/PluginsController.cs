@@ -16,7 +16,6 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         readonly ICustomJobStore _repository;
-        private const string JobType = "AssemblyPlugin";
 
         public PluginsController()
         {
@@ -29,7 +28,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         {
             Logger.Info("Entered PluginsController.Get().");
 
-            IList<ICustomJob> registeredPlugins = _repository.GetRegisteredJobs(JobType);
+            IList<ICustomJob> registeredPlugins = _repository.GetRegisteredJobs(typeof(AssemblyPluginJob).FullName);
 
             return registeredPlugins.Select(registeredPlugin =>
                                                                 new Plugin
@@ -51,7 +50,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         {
             Logger.InfoFormat("Entered PluginsController.Execute(). name = {0}", model);
 
-            return ExecuteCustomJob(model, JobType, "pluginPath", typeof(PluginRunner));
+            return ExecuteCustomJob(model, "pluginPath", typeof(AssemblyPluginJob));
         }
 
         /// <summary>
@@ -65,7 +64,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         {
             Logger.InfoFormat("Entered PluginsController.Deschedule(). name = {0}", model);
 
-            return DescheduleCustomJob(model, JobType);
+            return DescheduleCustomJob(model, typeof(AssemblyPluginJob));
         }
 
         [AcceptVerbs("POST")]
@@ -74,7 +73,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         {
             Logger.InfoFormat("Entered PluginsController.Post(). name = {0}", model.Name);
 
-            return RegisterCustomJob(new CustomJob { Name = model.Name, Params = model.AssemblyPath, JobType = JobType });
+            return RegisterCustomJob(new CustomJob { Name = model.Name, Params = model.AssemblyPath, JobType = typeof(AssemblyPluginJob).Name });
         }
 
         [AcceptVerbs("PUT")]
@@ -91,7 +90,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         {
             Logger.InfoFormat("Entered PluginsController.Get(). id = {0}", id);
 
-            ICustomJob registeredJob = base.GetRegisteredCustomJob(id, JobType);
+            ICustomJob registeredJob = base.GetRegisteredCustomJob(id, typeof(AssemblyPluginJob).Name);
 
             if (null == registeredJob)
             {
@@ -106,7 +105,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
                 TriggerDetails = new List<TriggerDetails>()
             };
 
-            retval.TriggerDetails = GetCustomJobTriggerDetails(registeredJob);
+            retval.TriggerDetails = GetCustomJobTriggerDetails(typeof(AssemblyPluginJob));
 
             return retval;
         }
@@ -117,25 +116,25 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         {
             Logger.InfoFormat("Entered PluginsController.Delete(). id = {0}", id);
 
-            return DeleteCustomJob(id, JobType);
+            return DeleteCustomJob(id, typeof(AssemblyPluginJob));
         }
 
         [AcceptVerbs("POST")]
         [Route("api/plugins/{id}/simpleTriggers")]
         public QueryResponse Post(string id, [FromBody]CustomJobSimpleTrigger model)
         {
-            Logger.InfoFormat("Entered PluginsController.Post(). Name = {0}", model.Name);
+            Logger.InfoFormat("Entered PluginsController.Post(). Name = {0}", model.TriggerName);
 
-            return CreateCustomJobSimpleTrigger(id, model, JobType, "pluginPath", typeof(PluginRunner));
+            return CreateCustomJobSimpleTrigger(id, model, "pluginPath", typeof(AssemblyPluginJob));
         }
 
         [AcceptVerbs("POST")]
         [Route("api/plugins/{id}/cronTriggers")]
         public QueryResponse Post(string id, [FromBody]CustomJobCronTrigger model)
         {
-            Logger.InfoFormat("Entered PluginsController.Post(). Name = {0}", model.Name);
+            Logger.InfoFormat("Entered PluginsController.Post(). Name = {0}", model.TriggerName);
 
-            return CreateCustomJobCronTrigger(id, model, JobType, "pluginPath", typeof(PluginRunner));
+            return CreateCustomJobCronTrigger(id, model, "pluginPath", typeof(AssemblyPluginJob));
         }
     } 
 }

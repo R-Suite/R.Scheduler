@@ -78,7 +78,7 @@
     <Compile Include="Interfaces\IJobConfigurationManager.cs" />
     <Compile Include="Interfaces\IPipeLine.cs" />
     <Compile Include="Config\JobConfigurationManager.cs" />
-    <Compile Include="JobRunner.cs" />
+    <Compile Include="PafTransformationJob.cs" />
     <Compile Include="PafTransformationManager.cs" />
     <Compile Include="PipeLine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -16,7 +16,6 @@ namespace R.Scheduler.PipesAndFilters.Controllers
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         readonly ICustomJobStore _repository;
-        private const string JobType = "PaF";
 
         public PafTransformationsController()
         {
@@ -28,7 +27,7 @@ namespace R.Scheduler.PipesAndFilters.Controllers
         {
             Logger.Info("Entered PafTransformationsController.Get().");
 
-            IList<ICustomJob> registeredJobs = _repository.GetRegisteredJobs(JobType);
+            IList<ICustomJob> registeredJobs = _repository.GetRegisteredJobs(typeof(PafTransformationJob).Name);
 
             return registeredJobs.Select(registeredJob =>   new PafTransformation
                                                             {
@@ -49,7 +48,7 @@ namespace R.Scheduler.PipesAndFilters.Controllers
         {
             Logger.InfoFormat("Entered PafTransformationsController.Execute(). name = {0}", model);
 
-            return ExecuteCustomJob(model, JobType, "jobDefinitionPath", typeof(JobRunner));
+            return ExecuteCustomJob(model, "jobDefinitionPath", typeof(PafTransformationJob));
         }
 
         /// <summary>
@@ -63,7 +62,7 @@ namespace R.Scheduler.PipesAndFilters.Controllers
         {
             Logger.InfoFormat("Entered PafTransformationsController.Deschedule(). name = {0}", model);
 
-            return DescheduleCustomJob(model, JobType);
+            return DescheduleCustomJob(model, typeof(PafTransformationJob));
         }
 
         [AcceptVerbs("POST")]
@@ -72,7 +71,7 @@ namespace R.Scheduler.PipesAndFilters.Controllers
         {
             Logger.InfoFormat("Entered PafTransformationsController.Post(). name = {0}", model.Name);
 
-            return RegisterCustomJob(new CustomJob { Name = model.Name, Params = model.JobDefinitionPath, JobType = JobType });
+            return RegisterCustomJob(new CustomJob { Name = model.Name, Params = model.JobDefinitionPath, JobType = typeof(PafTransformationJob).Name });
         }
 
         [AcceptVerbs("PUT")]
@@ -89,7 +88,7 @@ namespace R.Scheduler.PipesAndFilters.Controllers
         {
             Logger.InfoFormat("Entered PafTransformationsController.Get(). id = {0}", id);
 
-            ICustomJob registeredJob = base.GetRegisteredCustomJob(id, JobType);
+            ICustomJob registeredJob = base.GetRegisteredCustomJob(id, typeof(PafTransformationJob).Name);
 
             if (null == registeredJob)
             {
@@ -104,7 +103,7 @@ namespace R.Scheduler.PipesAndFilters.Controllers
                 TriggerDetails = new List<TriggerDetails>()
             };
 
-            retval.TriggerDetails = GetCustomJobTriggerDetails(registeredJob);
+            retval.TriggerDetails = GetCustomJobTriggerDetails(typeof(PafTransformationJob));
 
             return retval;
         }
@@ -115,25 +114,25 @@ namespace R.Scheduler.PipesAndFilters.Controllers
         {
             Logger.InfoFormat("Entered PafTransformationsController.Delete(). id = {0}", id);
 
-            return DeleteCustomJob(id, JobType);
+            return DeleteCustomJob(id, typeof(PafTransformationJob));
         }
 
         [AcceptVerbs("POST")]
         [Route("api/pipesandfilters/{id}/simpleTriggers")]
         public QueryResponse Post(string id, [FromBody]CustomJobSimpleTrigger model)
         {
-            Logger.InfoFormat("Entered PafTransformationsController.Post(). Name = {0}", model.Name);
+            Logger.InfoFormat("Entered PafTransformationsController.Post(). Name = {0}", model.TriggerName);
 
-            return CreateCustomJobSimpleTrigger(id, model, JobType, "jobDefinitionPath", typeof(JobRunner));
+            return CreateCustomJobSimpleTrigger(id, model, "jobDefinitionPath", typeof(PafTransformationJob));
         }
 
         [AcceptVerbs("POST")]
         [Route("api/pipesandfilters/{id}/cronTriggers")]
         public QueryResponse Post(string id, [FromBody]CustomJobCronTrigger model)
         {
-            Logger.InfoFormat("Entered PafTransformationsController.Post(). Name = {0}", model.Name);
+            Logger.InfoFormat("Entered PafTransformationsController.Post(). Name = {0}", model.TriggerName);
 
-            return CreateCustomJobCronTrigger(id, model, JobType, "jobDefinitionPath", typeof(JobRunner));
+            return CreateCustomJobCronTrigger(id, model, "jobDefinitionPath", typeof(PafTransformationJob));
         }
     }
 }

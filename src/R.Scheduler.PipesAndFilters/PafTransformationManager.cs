@@ -38,7 +38,7 @@ namespace R.Scheduler.PipesAndFilters
             {
                 Params = args[0],
                 Name = name,
-                JobType = "PaF"
+                JobType = typeof(PafTransformationJob).Name
             });
         }
 
@@ -47,10 +47,7 @@ namespace R.Scheduler.PipesAndFilters
         /// </summary>
         public void Remove(Guid id)
         {
-            var registeredPlugin = _repository.GetRegisteredJob(id);
-
-            // plugin name is a job group
-            _schedulerCore.RemoveJobGroup(registeredPlugin.Name);
+            _schedulerCore.RemoveTriggersOfJobType(typeof(PafTransformationJob));
 
             _repository.Remove(id);
         }

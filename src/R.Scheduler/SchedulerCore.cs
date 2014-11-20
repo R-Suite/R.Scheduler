@@ -14,7 +14,6 @@ namespace R.Scheduler
     /// </summary>
     public class SchedulerCore : ISchedulerCore
     {
-        private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly IScheduler _scheduler;
 
         public SchedulerCore(IScheduler scheduler)
@@ -52,15 +51,6 @@ namespace R.Scheduler
                 .Build();
 
             _scheduler.ScheduleJob(jobDetail, trigger);
-        }
-
-        public void RemoveJobGroup(string groupName)
-        {
-            if (string.IsNullOrEmpty(groupName))
-                throw new ArgumentException("groupName is null or empty.");
-
-            Quartz.Collection.ISet<JobKey> jobKeys = _scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(groupName));
-            _scheduler.DeleteJobs(jobKeys.ToList());
         }
 
         public void RemoveJob(string jobName, string jobGroup = null)
@@ -175,18 +165,38 @@ namespace R.Scheduler
             }
         }
 
-        public IList<ITrigger> GetTriggersOfJobGroup(string groupName)
+        public IList<ITrigger> GetTriggersOfJobType(Type jobType)
         {
             var retval = new List<ITrigger>();
 
-            Quartz.Collection.ISet<JobKey> jobKeys = _scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(groupName));
+            Quartz.Collection.ISet<JobKey> jobKeys = _scheduler.GetJobKeys(GroupMatcher<JobKey>.AnyGroup());
 
             foreach (var jobKey in jobKeys)
             {
-                retval.AddRange(_scheduler.GetTriggersOfJob(jobKey));
+                IJobDetail jobDetails = _scheduler.GetJobDetail(jobKey);
+
+                if (jobDetails.JobType == jobType)
+                {
+                    retval.AddRange(_scheduler.GetTriggersOfJob(jobDetails.Key));
+                }
             }
 
             return retval;
+        }
+
+        public void RemoveTriggersOfJobType(Type jobType)
+        {
+            Quartz.Collection.ISet<JobKey> jobKeys = _scheduler.GetJobKeys(GroupMatcher<JobKey>.AnyGroup());
+
+            foreach (var jobKey in jobKeys)
+            {
+                IJobDetail jobDetails = _scheduler.GetJobDetail(jobKey);
+
+                if (jobDetails.JobType == jobType)
+                {
+                    _scheduler.DeleteJob(jobDetails.Key);
+                }
+            }
         }
     }
 }

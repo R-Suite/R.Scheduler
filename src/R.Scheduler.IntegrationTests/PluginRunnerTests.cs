@@ -27,7 +27,7 @@ namespace R.Scheduler.IntegrationTests
         public void TestExecuteMethodLoadsPluginFromPathAndExecutesIt()
         {
             // Arrange
-            var pluginRunner = new PluginRunner();
+            var pluginRunner = new AssemblyPluginJob();
 
             string currentDirectory = Directory.GetCurrentDirectory();
             IJobDetail jobDetail = new JobDetailImpl("jobsettings", typeof(IJob));
@@ -45,7 +45,7 @@ namespace R.Scheduler.IntegrationTests
         public void TestExecuteMethodReturnsWhenPluginPathIsMissingInJobDataMap()
         {
             // Arrange
-            var pluginRunner = new PluginRunner();
+            var pluginRunner = new AssemblyPluginJob();
 
             IJobDetail jobDetail = new JobDetailImpl("jobsettings", typeof(IJob));
             _mockJobExecutionContext.SetupGet(p => p.JobDetail).Returns(jobDetail);

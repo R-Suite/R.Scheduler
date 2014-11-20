@@ -42,9 +42,9 @@ namespace R.Scheduler.Controllers
             return registeredJob;
         }
 
-        protected QueryResponse ExecuteCustomJob(string model, string jobType, string dataMapParamKey, Type jobRunnerType)
+        protected QueryResponse ExecuteCustomJob(string model, string dataMapParamKey, Type jobType)
         {
-            ICustomJob registeredJob = GetRegisteredCustomJob(model, jobType);
+            ICustomJob registeredJob = GetRegisteredCustomJob(model, jobType.Name);
 
             var response = new QueryResponse { Valid = true };
             if (null == registeredJob)
@@ -67,7 +67,7 @@ namespace R.Scheduler.Controllers
 
             try
             {
-                _schedulerCore.ExecuteJob(jobRunnerType, dataMap);
+                _schedulerCore.ExecuteJob(jobType, dataMap);
             }
             catch (Exception ex)
             {
@@ -85,15 +85,13 @@ namespace R.Scheduler.Controllers
             return response;
         }
 
-        protected QueryResponse DescheduleCustomJob(string model, string jobType)
+        protected QueryResponse DescheduleCustomJob(string model, Type jobType)
         {
-            ICustomJob registeredJob = GetRegisteredCustomJob(model, jobType);
-
             var response = new QueryResponse { Valid = true };
 
             try
             {
-                _schedulerCore.RemoveJobGroup(registeredJob.Id.ToString());
+                _schedulerCore.RemoveTriggersOfJobType(jobType);
             }
             catch (Exception ex)
             {
@@ -102,7 +100,7 @@ namespace R.Scheduler.Controllers
                 {
                     new Error
                     {
-                        Code = "ErrorRemovingJobGroup",
+                        Code = "ErrorRemovingTriggersOfJobType",
                         Type = "Server",
                         Message = string.Format("Error:{0}", ex.Message)
                     }
@@ -167,9 +165,9 @@ namespace R.Scheduler.Controllers
             return response;
         }
 
-        protected IList<TriggerDetails> GetCustomJobTriggerDetails(ICustomJob registeredJob)
+        protected IList<TriggerDetails> GetCustomJobTriggerDetails(Type jobType)
         {
-            var quartzTriggers = _schedulerCore.GetTriggersOfJobGroup(registeredJob.Id.ToString());
+            var quartzTriggers = _schedulerCore.GetTriggersOfJobType(jobType);
 
             IList<TriggerDetails> triggerDetails = new List<TriggerDetails>();
 
@@ -210,13 +208,13 @@ namespace R.Scheduler.Controllers
             return triggerDetails;
         }
 
-        protected QueryResponse DeleteCustomJob(string id, string jobType)
+        protected QueryResponse DeleteCustomJob(string id, Type jobType)
         {
-            var registeredJob = GetRegisteredCustomJob(id, jobType);
+            var registeredJob = GetRegisteredCustomJob(id, jobType.Name);
 
             var response = new QueryResponse { Valid = true };
 
-            _schedulerCore.RemoveJobGroup(registeredJob.Id.ToString());
+            _schedulerCore.RemoveTriggersOfJobType(jobType);
 
             int result = _repository.Remove(registeredJob.Id);
 
@@ -237,11 +235,11 @@ namespace R.Scheduler.Controllers
             return response;
         }
 
-        protected QueryResponse CreateCustomJobSimpleTrigger(string id, CustomJobSimpleTrigger model, string jobType, string dataMapParamKey, Type jobRunnerType)
+        protected QueryResponse CreateCustomJobSimpleTrigger(string id, CustomJobSimpleTrigger model, string dataMapParamKey, Type jobType)
         {
             var response = new QueryResponse { Valid = true };
 
-            ICustomJob registeredCustomJob = GetRegisteredCustomJob(id, jobType);
+            ICustomJob registeredCustomJob = GetRegisteredCustomJob(id, jobType.Name);
 
             if (null == registeredCustomJob)
             {
@@ -252,7 +250,7 @@ namespace R.Scheduler.Controllers
                     {
                         Code = "RegisteredCustomJobNotFound",
                         Type = "Sender",
-                        Message = string.Format("Error loading registered  {0} Job {1}", jobType, model.Name)
+                        Message = string.Format("Error loading registered  {0} Job {1}", jobType.Name, model.TriggerName)
                     }
                 };
 
@@ -266,12 +264,12 @@ namespace R.Scheduler.Controllers
                     Name = model.TriggerName,
                     Group = !string.IsNullOrEmpty(model.TriggerGroup) ? model.TriggerGroup : registeredCustomJob.Id + "_Group",
                     JobName = !string.IsNullOrEmpty(model.JobName) ? model.JobName : registeredCustomJob.Id + "_JobName",
-                    JobGroup = registeredCustomJob.Id.ToString(),
+                    JobGroup = !string.IsNullOrEmpty(model.JobGroup) ? model.JobGroup : registeredCustomJob.Id + "_JobGroup",
                     RepeatCount = model.RepeatCount,
                     RepeatInterval = model.RepeatInterval,
                     StartDateTime = model.StartDateTime,
                     DataMap = new Dictionary<string, object> { { dataMapParamKey, registeredCustomJob.Params } }
-                }, jobRunnerType);
+                }, jobType);
             }
             catch (Exception ex)
             {
@@ -290,11 +288,11 @@ namespace R.Scheduler.Controllers
             return response;
         }
 
-        protected QueryResponse CreateCustomJobCronTrigger(string id, CustomJobCronTrigger model, string jobType, string dataMapParamKey, Type jobRunnerType)
+        protected QueryResponse CreateCustomJobCronTrigger(string id, CustomJobCronTrigger model, string dataMapParamKey, Type jobType)
         {
             var response = new QueryResponse { Valid = true };
 
-            ICustomJob registeredPlugin = GetRegisteredCustomJob(id, jobType);
+            ICustomJob registeredPlugin = GetRegisteredCustomJob(id, jobType.Name);
 
             if (null == registeredPlugin)
             {
@@ -305,7 +303,7 @@ namespace R.Scheduler.Controllers
                     {
                         Code = "RegisteredCustomJobNotFound",
                         Type = "Sender",
-                        Message = string.Format("Error loading registered CustomJob {0}", model.Name)
+                        Message = string.Format("Error loading registered CustomJob {0}", model.TriggerName)
                     }
                 };
 
@@ -319,11 +317,11 @@ namespace R.Scheduler.Controllers
                     Name = model.TriggerName,
                     Group = !string.IsNullOrEmpty(model.TriggerGroup) ? model.TriggerGroup : registeredPlugin.Id + "_Group",
                     JobName = !string.IsNullOrEmpty(model.JobName) ? model.JobName : registeredPlugin.Id + "_JobName",
-                    JobGroup = registeredPlugin.Id.ToString(),
+                    JobGroup = !string.IsNullOrEmpty(model.JobGroup) ? model.JobGroup : registeredPlugin.Id + "_JobGroup",
                     CronExpression = model.CronExpression,
                     StartDateTime = model.StartDateTime,
                     DataMap = new Dictionary<string, object> { { dataMapParamKey, registeredPlugin.Params } }
-                }, jobRunnerType);
+                }, jobType);
             }
             catch (Exception ex)
             {

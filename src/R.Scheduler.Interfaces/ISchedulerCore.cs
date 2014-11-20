@@ -8,8 +8,6 @@ namespace R.Scheduler.Interfaces
     {
         void ExecuteJob(Type jobType, Dictionary<string, object> dataMap);
 
-        void RemoveJobGroup(string groupName);
-
         void RemoveJob(string jobName, string jobGroup = null);
 
         void RemoveTriggerGroup(string groupName);
@@ -18,6 +16,8 @@ namespace R.Scheduler.Interfaces
 
         void ScheduleTrigger(BaseTrigger myTrigger, Type jobType);
 
-        IList<ITrigger> GetTriggersOfJobGroup(string groupName);
+        IList<ITrigger> GetTriggersOfJobType(Type jobType);
+
+        void RemoveTriggersOfJobType(Type jobType);
     }
 }

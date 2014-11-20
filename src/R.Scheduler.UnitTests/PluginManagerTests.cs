@@ -26,8 +26,8 @@ namespace R.Scheduler.UnitTests
         {
             // Arrange
             Guid id = Guid.NewGuid();
-            _mockSchedulerCore.Setup(x => x.RemoveTriggersOfJobType(typeof(AssemblyPluginJob)));
-            _mockPluginStore.Setup(x => x.GetRegisteredJob(id)).Returns(new TestCutomJob { Name = "TestPlugin"});
+            _mockSchedulerCore.Setup(x => x.RemoveJobGroup(id.ToString()));
+            _mockPluginStore.Setup(x => x.GetRegisteredJob(id)).Returns(new TestCutomJob { Id = id });
 
             IJobTypeManager pluginManager = new PluginManager(_mockPluginStore.Object, _mockSchedulerCore.Object);
 
@@ -36,7 +36,7 @@ namespace R.Scheduler.UnitTests
 
             // Assert
             _mockPluginStore.Verify(i => i.Remove(id), Times.Once());
-            _mockSchedulerCore.Verify(x => x.RemoveTriggersOfJobType(typeof(AssemblyPluginJob)));
+            _mockSchedulerCore.Verify(x => x.RemoveJobGroup(id.ToString()));
         }
 
         [Fact]

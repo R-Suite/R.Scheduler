@@ -103,7 +103,7 @@ namespace R.Scheduler.PipesAndFilters.Controllers
                 TriggerDetails = new List<TriggerDetails>()
             };
 
-            retval.TriggerDetails = GetCustomJobTriggerDetails(typeof(PafTransformationJob));
+            retval.TriggerDetails = GetCustomJobTriggerDetails(registeredJob);
 
             return retval;
         }

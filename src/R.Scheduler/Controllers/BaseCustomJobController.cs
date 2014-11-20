@@ -87,11 +87,13 @@ namespace R.Scheduler.Controllers
 
         protected QueryResponse DescheduleCustomJob(string model, Type jobType)
         {
+            ICustomJob registeredJob = GetRegisteredCustomJob(model, jobType.Name);
+
             var response = new QueryResponse { Valid = true };
 
             try
             {
-                _schedulerCore.RemoveTriggersOfJobType(jobType);
+                _schedulerCore.RemoveJobGroup(registeredJob.Id.ToString());
             }
             catch (Exception ex)
             {
@@ -100,7 +102,7 @@ namespace R.Scheduler.Controllers
                 {
                     new Error
                     {
-                        Code = "ErrorRemovingTriggersOfJobType",
+                        Code = "ErrorRemovingJobGroup",
                         Type = "Server",
                         Message = string.Format("Error:{0}", ex.Message)
                     }
@@ -165,9 +167,9 @@ namespace R.Scheduler.Controllers
             return response;
         }
 
-        protected IList<TriggerDetails> GetCustomJobTriggerDetails(Type jobType)
+        protected IList<TriggerDetails> GetCustomJobTriggerDetails(ICustomJob registeredJob)
         {
-            var quartzTriggers = _schedulerCore.GetTriggersOfJobType(jobType);
+            var quartzTriggers = _schedulerCore.GetTriggersOfJobGroup(registeredJob.Id.ToString());
 
             IList<TriggerDetails> triggerDetails = new List<TriggerDetails>();
 
@@ -214,7 +216,7 @@ namespace R.Scheduler.Controllers
 
             var response = new QueryResponse { Valid = true };
 
-            _schedulerCore.RemoveTriggersOfJobType(jobType);
+            _schedulerCore.RemoveJobGroup(registeredJob.Id.ToString());
 
             int result = _repository.Remove(registeredJob.Id);
 

@@ -28,7 +28,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         {
             Logger.Info("Entered PluginsController.Get().");
 
-            IList<ICustomJob> registeredPlugins = _repository.GetRegisteredJobs(typeof(AssemblyPluginJob).FullName);
+            IList<ICustomJob> registeredPlugins = _repository.GetRegisteredJobs(typeof(AssemblyPluginJob).Name);
 
             return registeredPlugins.Select(registeredPlugin =>
                                                                 new Plugin
@@ -105,7 +105,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
                 TriggerDetails = new List<TriggerDetails>()
             };
 
-            retval.TriggerDetails = GetCustomJobTriggerDetails(typeof(AssemblyPluginJob));
+            retval.TriggerDetails = GetCustomJobTriggerDetails(registeredJob);
 
             return retval;
         }

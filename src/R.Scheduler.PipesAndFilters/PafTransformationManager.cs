@@ -47,7 +47,9 @@ namespace R.Scheduler.PipesAndFilters
         /// </summary>
         public void Remove(Guid id)
         {
-            _schedulerCore.RemoveTriggersOfJobType(typeof(PafTransformationJob));
+            var registeredPlugin = _repository.GetRegisteredJob(id);
+
+            _schedulerCore.RemoveJobGroup(registeredPlugin.Id.ToString());
 
             _repository.Remove(id);
         }

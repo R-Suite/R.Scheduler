@@ -14,7 +14,6 @@ namespace R.Scheduler
     /// </summary>
     public class SchedulerCore : ISchedulerCore
     {
-        private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly IScheduler _scheduler;
 
         public SchedulerCore(IScheduler scheduler)
@@ -175,7 +174,7 @@ namespace R.Scheduler
             }
         }
 
-        public IList<ITrigger> GetTriggersOfJobGroup(string groupName)
+        public IEnumerable<ITrigger> GetTriggersOfJobGroup(string groupName)
         {
             var retval = new List<ITrigger>();
 

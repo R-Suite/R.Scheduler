@@ -46,7 +46,9 @@ namespace R.Scheduler.AssemblyPlugin
         /// </summary>
         public void Remove(Guid id)
         {
-            _schedulerCore.RemoveTriggersOfJobType(typeof(AssemblyPluginJob));
+            var registeredPlugin = _pluginRepository.GetRegisteredJob(id);
+
+            _schedulerCore.RemoveJobGroup(registeredPlugin.Id.ToString());
 
             _pluginRepository.Remove(id);
         }

@@ -56,25 +56,20 @@
     <Reference Include="Quartz">
       <HintPath>..\packages\Quartz.2.2.4\lib\net40\Quartz.dll</HintPath>
     </Reference>
-    <Reference Include="R.Scheduler, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\R.Scheduler.AssemblyPlugin.0.0.7\lib\net40\R.Scheduler.dll</HintPath>
+    <Reference Include="R.Scheduler">
+      <HintPath>..\packages\R.Scheduler.AssemblyPlugin.0.0.10\lib\net40\R.Scheduler.dll</HintPath>
     </Reference>
-    <Reference Include="R.Scheduler.AssemblyPlugin, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\R.Scheduler.AssemblyPlugin.0.0.7\lib\net40\R.Scheduler.AssemblyPlugin.dll</HintPath>
+    <Reference Include="R.Scheduler.AssemblyPlugin">
+      <HintPath>..\packages\R.Scheduler.AssemblyPlugin.0.0.10\lib\net40\R.Scheduler.AssemblyPlugin.dll</HintPath>
     </Reference>
-    <Reference Include="R.Scheduler.Contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\R.Scheduler.Contracts.0.0.4\lib\net40\R.Scheduler.Contracts.dll</HintPath>
+    <Reference Include="R.Scheduler.Contracts">
+      <HintPath>..\packages\R.Scheduler.Contracts.0.0.6\lib\net40\R.Scheduler.Contracts.dll</HintPath>
     </Reference>
-    <Reference Include="R.Scheduler.Interfaces, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\R.Scheduler.AssemblyPlugin.0.0.7\lib\net40\R.Scheduler.Interfaces.dll</HintPath>
+    <Reference Include="R.Scheduler.Interfaces">
+      <HintPath>..\packages\R.Scheduler.AssemblyPlugin.0.0.10\lib\net40\R.Scheduler.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="R.Scheduler.Persistance, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\R.Scheduler.AssemblyPlugin.0.0.7\lib\net40\R.Scheduler.Persistance.dll</HintPath>
+    <Reference Include="R.Scheduler.Persistance">
+      <HintPath>..\packages\R.Scheduler.AssemblyPlugin.0.0.10\lib\net40\R.Scheduler.Persistance.dll</HintPath>
     </Reference>
     <Reference Include="StructureMap">
       <HintPath>..\packages\structuremap.2.6.4.1\lib\net40\StructureMap.dll</HintPath>

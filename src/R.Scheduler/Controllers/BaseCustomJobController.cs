@@ -264,7 +264,7 @@ namespace R.Scheduler.Controllers
                     Name = model.TriggerName,
                     Group = !string.IsNullOrEmpty(model.TriggerGroup) ? model.TriggerGroup : registeredCustomJob.Id + "_Group",
                     JobName = !string.IsNullOrEmpty(model.JobName) ? model.JobName : registeredCustomJob.Id + "_JobName",
-                    JobGroup = !string.IsNullOrEmpty(model.JobGroup) ? model.JobGroup : registeredCustomJob.Id + "_JobGroup",
+                    JobGroup = registeredCustomJob.Id.ToString(),
                     RepeatCount = model.RepeatCount,
                     RepeatInterval = model.RepeatInterval,
                     StartDateTime = model.StartDateTime,
@@ -317,7 +317,7 @@ namespace R.Scheduler.Controllers
                     Name = model.TriggerName,
                     Group = !string.IsNullOrEmpty(model.TriggerGroup) ? model.TriggerGroup : registeredPlugin.Id + "_Group",
                     JobName = !string.IsNullOrEmpty(model.JobName) ? model.JobName : registeredPlugin.Id + "_JobName",
-                    JobGroup = !string.IsNullOrEmpty(model.JobGroup) ? model.JobGroup : registeredPlugin.Id + "_JobGroup",
+                    JobGroup = registeredPlugin.Id.ToString(),
                     CronExpression = model.CronExpression,
                     StartDateTime = model.StartDateTime,
                     DataMap = new Dictionary<string, object> { { dataMapParamKey, registeredPlugin.Params } }

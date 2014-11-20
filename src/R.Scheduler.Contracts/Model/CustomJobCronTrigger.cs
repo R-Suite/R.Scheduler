@@ -8,7 +8,6 @@ namespace R.Scheduler.Contracts.Model
         public string TriggerGroup { get; set; }
 
         public string JobName { get; set; }
-        public string JobGroup { get; set; }
 
         public DateTime StartDateTime { get; set; }
         public string CronExpression { get; set; }

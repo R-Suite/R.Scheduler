@@ -21,6 +21,60 @@ namespace R.Scheduler
             _scheduler = scheduler;
         }
 
+        public IEnumerable<IJobDetail> GetJobDetails(Type jobType = null)
+        {
+            IList<IJobDetail> jobDetails = new List<IJobDetail>();
+            IList<string> jobGroups = _scheduler.GetJobGroupNames();
+
+            foreach (string group in jobGroups)
+            {
+                var groupMatcher = GroupMatcher<JobKey>.GroupContains(group);
+                var jobKeys = _scheduler.GetJobKeys(groupMatcher);
+                foreach (var jobKey in jobKeys)
+                {
+                    var detail = _scheduler.GetJobDetail(jobKey);
+
+                    if (null == jobType)
+                    {
+                        jobDetails.Add(detail);
+                    }
+                    else
+                    {
+                        if (jobType == detail.JobType)
+                        {
+                            jobDetails.Add(detail);
+                        }
+                    }
+                }
+            }
+
+            return jobDetails;
+        }
+
+        public IJobDetail GetJobDetail(string jobName, string groupName = null)
+        {
+            var jobKey = new JobKey(jobName, groupName);
+            return _scheduler.GetJobDetail(jobKey);
+        }
+
+        public void ExecuteJob(string jobName, string groupName)
+        {
+            var jobKey = new JobKey(jobName, groupName);
+            _scheduler.TriggerJob(jobKey);
+        }
+
+        public void RemoveJobTriggers(string jobName, string groupName)
+        {
+            var jobKey = new JobKey(jobName, groupName);
+
+            IList<ITrigger> triggers = _scheduler.GetTriggersOfJob(jobKey);
+
+            foreach (var trigger in triggers)
+            {
+                _scheduler.UnscheduleJob(trigger.Key);
+            }
+        }
+
         public void ExecuteJob(Type jobType, Dictionary<string, object> dataMap)
         {
             // Set default values
@@ -188,39 +242,5 @@ namespace R.Scheduler
             return retval;
         }
 
-        public IList<ITrigger> GetTriggersOfJobType(Type jobType)
-        {
-            var retval = new List<ITrigger>();
-
-            Quartz.Collection.ISet<JobKey> jobKeys = _scheduler.GetJobKeys(GroupMatcher<JobKey>.AnyGroup());
-
-            foreach (var jobKey in jobKeys)
-            {
-                IJobDetail jobDetails = _scheduler.GetJobDetail(jobKey);
-
-                if (jobDetails.JobType == jobType)
-                {
-                    retval.AddRange(_scheduler.GetTriggersOfJob(jobDetails.Key));
-                }
-            }
-
-            return retval;
-        }
-
-        public void RemoveTriggersOfJobType(Type jobType)
-        {
-            Quartz.Collection.ISet<JobKey> jobKeys = _scheduler.GetJobKeys(GroupMatcher<JobKey>.AnyGroup());
-
-            foreach (var jobKey in jobKeys)
-            {
-                IJobDetail jobDetails = _scheduler.GetJobDetail(jobKey);
-
-                if (jobDetails.JobType == jobType)
-                {
-                    _scheduler.DeleteJob(jobDetails.Key);
-                }
-            }
-            
-        }
     }
 }

@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Web.Http;
 using log4net;
 using Newtonsoft.Json;
+using Quartz;
 using Quartz.Job;
 using R.Scheduler.Contracts.JobTypes.Email.Model;
 using R.Scheduler.Contracts.Model;
@@ -16,11 +18,11 @@ namespace R.Scheduler.Email.Controllers
     public class EmailsController : BaseCustomJobController
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        readonly ICustomJobStore _repository;
+        readonly ISchedulerCore _schedulerCore;
 
-        public EmailsController()
+        protected EmailsController()
         {
-            _repository = ObjectFactory.GetInstance<ICustomJobStore>();
+            _schedulerCore = ObjectFactory.GetInstance<ISchedulerCore>();
         }
 
         // GET api/values 
@@ -29,12 +31,12 @@ namespace R.Scheduler.Email.Controllers
         {
             Logger.Info("Entered EmailsController.Get().");
 
-            IList<ICustomJob> registeredJobs = _repository.GetRegisteredJobs(typeof(SendMailJob).Name);
+            var jobDetails = _schedulerCore.GetJobDetails(typeof(SendMailJob));
 
             var retval = new List<EmailJob>();
-            foreach (var registeredJob in registeredJobs)
+            foreach (var detail in jobDetails)
             {
-                var emailJob = JsonConvert.DeserializeObject<EmailJob>(registeredJob.Params);
+                var emailJob = GetEmailJobFromDataMap(detail);
                 retval.Add(emailJob);
             }
 
@@ -44,32 +46,71 @@ namespace R.Scheduler.Email.Controllers
         /// <summary>
         /// Schedules a temporary job for an immediate execution
         /// </summary>
-        /// <param name="model"></param>
+        /// <param name="jobName"></param>
+        /// <param name="jobGroup"></param>
         /// <returns></returns>
         [AcceptVerbs("POST")]
         [Route("api/emails/execute")]
-        public QueryResponse Execute([FromBody]string model)
+        public QueryResponse Execute([FromBody]string jobName, [FromBody]string jobGroup)
         {
-            Logger.InfoFormat("Entered EmailsController.Execute(). name = {0}", model);
+            Logger.InfoFormat("Entered EmailsController.Execute(). jobName = {0}", jobName);
 
-            ICustomJob registeredJob = GetRegisteredCustomJob(model, typeof(SendMailJob).Name);
-            var dataMap = GetDataMap(registeredJob);
+            var response = new QueryResponse { Valid = true };
 
-            return ExecuteCustomJob(model, dataMap, typeof(SendMailJob));
+            try
+            {
+                _schedulerCore.ExecuteJob(jobName, jobGroup);
+            }
+            catch (Exception ex)
+            {
+                response.Valid = false;
+                response.Errors = new List<Error>
+                {
+                    new Error
+                    {
+                        Code = "ErrorTriggeringCustomJob",
+                        Type = "Server",
+                        Message = string.Format("Error: {0}", ex.Message)
+                    }
+                };
+            }
+
+            return response;
         }
 
         /// <summary>
         /// Removes all triggers.
         /// </summary>
-        /// <param name="model">Plugin name</param>
+        /// <param name="jobName"></param>
+        /// <param name="jobGroup"></param>
         /// <returns></returns>
         [AcceptVerbs("POST")]
         [Route("api/emails/deschedule")]
-        public QueryResponse Deschedule([FromBody]string model)
+        public QueryResponse Deschedule([FromBody]string jobName, [FromBody]string jobGroup)
         {
-            Logger.InfoFormat("Entered EmailsController.Deschedule(). name = {0}", model);
+            Logger.InfoFormat("Entered EmailsController.Deschedule(). name = {0}", jobName);
 
-            return DescheduleCustomJob(model, typeof(SendMailJob));
+            var response = new QueryResponse { Valid = true };
+
+            try
+            {
+                _schedulerCore.RemoveJobTriggers(jobName, jobGroup);
+            }
+            catch (Exception ex)
+            {
+                response.Valid = false;
+                response.Errors = new List<Error>
+                {
+                    new Error
+                    {
+                        Code = "ErrorRemovingJobTriggers",
+                        Type = "Server",
+                        Message = string.Format("Error: {0}", ex.Message)
+                    }
+                };
+            }
+
+            return response;
         }
 
         [AcceptVerbs("POST")]
@@ -165,6 +206,24 @@ namespace R.Scheduler.Email.Controllers
             dataMap.Add("message", emailJob.Body);
             dataMap.Add("encoding", emailJob.Encoding);
             return dataMap;
-        }    
+        }
+
+        private static EmailJob GetEmailJobFromDataMap(IJobDetail detail)
+        {
+            var emailJob = new EmailJob();
+            emailJob.Body = detail.JobDataMap.GetString("message");
+            emailJob.SmtpHost = detail.JobDataMap.GetString("smtp_host");
+            emailJob.SmtpPort = detail.JobDataMap.GetString("smtp_port");
+            emailJob.Username = detail.JobDataMap.GetString("smtp_username");
+            emailJob.Password = detail.JobDataMap.GetString("smtp_password");
+            emailJob.Recipient = detail.JobDataMap.GetString("recipient");
+            emailJob.CcRecipient = detail.JobDataMap.GetString("cc_recipient");
+            emailJob.Sender = detail.JobDataMap.GetString("sender");
+            emailJob.ReplyTo = detail.JobDataMap.GetString("reply_to");
+            emailJob.Subject = detail.JobDataMap.GetString("subject");
+            emailJob.Body = detail.JobDataMap.GetString("message");
+            emailJob.Encoding = detail.JobDataMap.GetString("encoding");
+            return emailJob;
+        }
     }
 }

@@ -6,6 +6,15 @@ namespace R.Scheduler.Interfaces
 {
     public interface ISchedulerCore
     {
+        IEnumerable<IJobDetail> GetJobDetails(Type jobType = null);
+
+        IJobDetail GetJobDetail(string jobName, string groupName = null);
+
+        void ExecuteJob(string jobName, string groupName);
+
+        void RemoveJobTriggers(string jobName, string groupName);
+
+
         void ExecuteJob(Type jobType, Dictionary<string, object> dataMap);
 
         void RemoveJob(string jobName, string jobGroup = null);

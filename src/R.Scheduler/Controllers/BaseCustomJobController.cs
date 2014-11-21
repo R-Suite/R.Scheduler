@@ -46,6 +46,15 @@ namespace R.Scheduler.Controllers
         {
             ICustomJob registeredJob = GetRegisteredCustomJob(model, jobType.Name);
 
+            var dataMap = new Dictionary<string, object> { { dataMapParamKey, registeredJob.Params } };
+
+            return ExecuteCustomJob(model, dataMap, jobType);
+        }
+
+        protected QueryResponse ExecuteCustomJob(string model, Dictionary<string, object> dataMap, Type jobType)
+        {
+            ICustomJob registeredJob = GetRegisteredCustomJob(model, jobType.Name);
+
             var response = new QueryResponse { Valid = true };
             if (null == registeredJob)
             {
@@ -62,8 +71,6 @@ namespace R.Scheduler.Controllers
 
                 return response;
             }
-
-            var dataMap = new Dictionary<string, object> { { dataMapParamKey, registeredJob.Params } };
 
             try
             {
@@ -239,6 +246,15 @@ namespace R.Scheduler.Controllers
 
         protected QueryResponse CreateCustomJobSimpleTrigger(string id, CustomJobSimpleTrigger model, string dataMapParamKey, Type jobType)
         {
+            ICustomJob registeredJob = GetRegisteredCustomJob(id, jobType.Name);
+
+            var dataMap = new Dictionary<string, object> { { dataMapParamKey, registeredJob.Params } };
+
+            return CreateCustomJobSimpleTrigger(id, model, dataMap, jobType);
+        }
+
+        protected QueryResponse CreateCustomJobSimpleTrigger(string id, CustomJobSimpleTrigger model, Dictionary<string, object> dataMap, Type jobType)
+        {
             var response = new QueryResponse { Valid = true };
 
             ICustomJob registeredCustomJob = GetRegisteredCustomJob(id, jobType.Name);
@@ -270,7 +286,7 @@ namespace R.Scheduler.Controllers
                     RepeatCount = model.RepeatCount,
                     RepeatInterval = model.RepeatInterval,
                     StartDateTime = model.StartDateTime,
-                    DataMap = new Dictionary<string, object> { { dataMapParamKey, registeredCustomJob.Params } }
+                    DataMap = dataMap
                 }, jobType);
             }
             catch (Exception ex)
@@ -291,6 +307,15 @@ namespace R.Scheduler.Controllers
         }
 
         protected QueryResponse CreateCustomJobCronTrigger(string id, CustomJobCronTrigger model, string dataMapParamKey, Type jobType)
+        {
+            ICustomJob registeredJob = GetRegisteredCustomJob(id, jobType.Name);
+
+            var dataMap = new Dictionary<string, object> { { dataMapParamKey, registeredJob.Params } };
+
+            return CreateCustomJobCronTrigger(id, model, dataMap, jobType);
+        }
+
+        protected QueryResponse CreateCustomJobCronTrigger(string id, CustomJobCronTrigger model, Dictionary<string, object> dataMap, Type jobType)
         {
             var response = new QueryResponse { Valid = true };
 
@@ -322,7 +347,7 @@ namespace R.Scheduler.Controllers
                     JobGroup = registeredPlugin.Id.ToString(),
                     CronExpression = model.CronExpression,
                     StartDateTime = model.StartDateTime,
-                    DataMap = new Dictionary<string, object> { { dataMapParamKey, registeredPlugin.Params } }
+                    DataMap = dataMap
                 }, jobType);
             }
             catch (Exception ex)

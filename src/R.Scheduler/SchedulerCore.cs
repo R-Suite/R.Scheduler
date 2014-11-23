@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using log4net;
 using Quartz;
+using Quartz.Impl;
 using Quartz.Impl.Matchers;
 using R.Scheduler.Interfaces;
 
@@ -15,6 +16,8 @@ namespace R.Scheduler
     public class SchedulerCore : ISchedulerCore
     {
         private readonly IScheduler _scheduler;
+
+        public string SchedulerName { get { return _scheduler.SchedulerName; } }
 
         public SchedulerCore(IScheduler scheduler)
         {
@@ -49,12 +52,6 @@ namespace R.Scheduler
             }
 
             return jobDetails;
-        }
-
-        public IJobDetail GetJobDetail(string jobName, string groupName = null)
-        {
-            var jobKey = new JobKey(jobName, groupName);
-            return _scheduler.GetJobDetail(jobKey);
         }
 
         public void ExecuteJob(string jobName, string groupName)
@@ -107,6 +104,12 @@ namespace R.Scheduler
             _scheduler.ScheduleJob(jobDetail, trigger);
         }
 
+        public void CreateJob(string jobName, string groupName, Type jobType)
+        {
+            IJobDetail jobDetail = new JobDetailImpl(jobName, groupName, jobType);
+            _scheduler.AddJob(jobDetail, true);
+        }
+
         public void RemoveJobGroup(string groupName)
         {
             if (string.IsNullOrEmpty(groupName))
@@ -114,6 +117,7 @@ namespace R.Scheduler
 
             Quartz.Collection.ISet<JobKey> jobKeys = _scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(groupName));
             _scheduler.DeleteJobs(jobKeys.ToList());
+
         }
 
         public void RemoveJob(string jobName, string jobGroup = null)
@@ -228,6 +232,67 @@ namespace R.Scheduler
             }
         }
 
+        public void ScheduleTrigger(BaseTrigger myTrigger)
+        {
+            // Set default values
+            DateTimeOffset startAt = (DateTime.MinValue != myTrigger.StartDateTime) ? myTrigger.StartDateTime : DateTime.UtcNow;
+
+            // Check if jobDetail already exists
+            var jobKey = new JobKey(myTrigger.JobName, myTrigger.JobGroup);
+
+            IJobDetail jobDetail = _scheduler.GetJobDetail(jobKey);
+
+            // If jobDetail does not exist, throw
+            if (null == jobDetail)
+            {
+                throw new Exception(string.Format("Job does not exist. Name = {0}, Group = {1}", myTrigger.JobName, myTrigger.JobGroup));
+            }
+
+            var cronTrigger = myTrigger as CronTrigger;
+            if (cronTrigger != null)
+            {
+                var trigger = (ICronTrigger)TriggerBuilder.Create()
+                    .WithIdentity(myTrigger.Name, myTrigger.Group)
+                    .ForJob(jobDetail)
+                    .WithCronSchedule(cronTrigger.CronExpression)
+                    .StartAt(startAt)
+                    .Build();
+
+                // Schedule Job
+                if (_scheduler.CheckExists(jobKey))
+                {
+                    _scheduler.ScheduleJob(trigger);
+                }
+                else
+                {
+                    _scheduler.ScheduleJob(jobDetail, trigger);
+                }
+            }
+
+            var simpleTrigger = myTrigger as SimpleTrigger;
+            if (simpleTrigger != null)
+            {
+                var trigger = (ISimpleTrigger)TriggerBuilder.Create()
+                    .WithIdentity(myTrigger.Name, myTrigger.Group)
+                    .ForJob(jobDetail)
+                    .StartAt(startAt)
+                    .WithSimpleSchedule(x => x
+                        .WithInterval(simpleTrigger.RepeatInterval)
+                        .WithRepeatCount(simpleTrigger.RepeatCount))
+                    .Build();
+
+                // Schedule Job
+                if (_scheduler.CheckExists(jobKey))
+                {
+                    _scheduler.ScheduleJob(trigger);
+                }
+                else
+                {
+                    _scheduler.ScheduleJob(jobDetail, trigger);
+                }
+            }
+        }
+
         public IEnumerable<ITrigger> GetTriggersOfJobGroup(string groupName)
         {
             var retval = new List<ITrigger>();
@@ -242,5 +307,9 @@ namespace R.Scheduler
             return retval;
         }
 
+        public IEnumerable<ITrigger> GetTriggersOfJob(string jobName, string groupName = null)
+        {
+            return _scheduler.GetTriggersOfJob(new JobKey(jobName, groupName));
+        }
     }
 }

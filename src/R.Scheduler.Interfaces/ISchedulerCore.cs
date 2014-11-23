@@ -6,11 +6,13 @@ namespace R.Scheduler.Interfaces
 {
     public interface ISchedulerCore
     {
+        string SchedulerName { get; }
+
         IEnumerable<IJobDetail> GetJobDetails(Type jobType = null);
 
-        IJobDetail GetJobDetail(string jobName, string groupName = null);
-
         void ExecuteJob(string jobName, string groupName);
+
+        void CreateJob(string jobName, string groupName, Type jobType);
 
         void RemoveJobTriggers(string jobName, string groupName);
 
@@ -27,6 +29,10 @@ namespace R.Scheduler.Interfaces
 
         void ScheduleTrigger(BaseTrigger myTrigger, Type jobType);
 
+        void ScheduleTrigger(BaseTrigger myTrigger);
+
         IEnumerable<ITrigger> GetTriggersOfJobGroup(string groupName);
+
+        IEnumerable<ITrigger> GetTriggersOfJob(string jobName, string groupName = null);
     }
 }

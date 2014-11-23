@@ -43,6 +43,7 @@
     <Compile Include="JobTypes\AssemblyPlugin\Model\Plugin.cs" />
     <Compile Include="JobTypes\AssemblyPlugin\Model\PluginDetails.cs" />
     <Compile Include="JobTypes\AssemblyPlugin\IJobPlugin.cs" />
+    <Compile Include="JobTypes\BaseJob.cs" />
     <Compile Include="JobTypes\Email\Model\EmailJob.cs" />
     <Compile Include="JobTypes\Email\Model\EmailJobDetails.cs" />
     <Compile Include="JobTypes\PipesAndFilters\Model\PafTransformation.cs" />

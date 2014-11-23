@@ -42,30 +42,6 @@ namespace R.Scheduler.Controllers
             return registeredJob;
         }
 
-        protected QueryResponse ExecuteCustomJob(Dictionary<string, object> dataMap, Type jobType)
-        {
-            var response = new QueryResponse { Valid = true };
-
-            try
-            {
-                _schedulerCore.ExecuteJob(jobType, dataMap);
-            }
-            catch (Exception ex)
-            {
-                response.Valid = false;
-                response.Errors = new List<Error>
-                {
-                    new Error
-                    {
-                        Code = "ErrorTriggeringCustomJob",
-                        Type = "Server",
-                        Message = string.Format("Error: {0}", ex.Message)
-                    }
-                };
-            }
-            return response;
-        }
-
         protected QueryResponse ExecuteCustomJob(string model, string dataMapParamKey, Type jobType)
         {
             ICustomJob registeredJob = GetRegisteredCustomJob(model, jobType.Name);

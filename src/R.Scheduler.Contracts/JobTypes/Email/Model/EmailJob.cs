@@ -1,11 +1,7 @@
-﻿using System;
-
-namespace R.Scheduler.Contracts.JobTypes.Email.Model
+﻿namespace R.Scheduler.Contracts.JobTypes.Email.Model
 {
-    public class EmailJob
+    public class EmailJob : BaseJob
     {
-        public Guid Id { get; set; }
-        public string Name { get; set; } 
         public string CcRecipient { get; set; }
         public string Encoding { get; set; }
         public string Body { get; set; }

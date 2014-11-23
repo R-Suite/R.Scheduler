@@ -4,23 +4,21 @@ using System.Linq;
 using System.Reflection;
 using System.Web.Http;
 using log4net;
-using Newtonsoft.Json;
 using Quartz;
 using Quartz.Job;
 using R.Scheduler.Contracts.JobTypes.Email.Model;
 using R.Scheduler.Contracts.Model;
-using R.Scheduler.Controllers;
 using R.Scheduler.Interfaces;
 using StructureMap;
 
-namespace R.Scheduler.Email.Controllers
+namespace R.Scheduler.Controllers
 {
-    public class EmailsController : BaseCustomJobController
+    class SendEmailJobsController : BaseCustomJobController
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         readonly ISchedulerCore _schedulerCore;
 
-        protected EmailsController()
+        protected SendEmailJobsController()
         {
             _schedulerCore = ObjectFactory.GetInstance<ISchedulerCore>();
         }
@@ -306,43 +304,6 @@ namespace R.Scheduler.Email.Controllers
             }
 
             return response;
-        }
-
-        private static Dictionary<string, object> GetDataMap(ICustomJob registeredJob)
-        {
-            var emailJob = JsonConvert.DeserializeObject<EmailJob>(registeredJob.Params);
-
-            var dataMap = new Dictionary<string, object>();
-            dataMap.Add("smtp_host", emailJob.SmtpHost);
-            dataMap.Add("smtp_port", emailJob.SmtpPort);
-            dataMap.Add("smtp_username", emailJob.Username);
-            dataMap.Add("smtp_password", emailJob.Password);
-            dataMap.Add("recipient", emailJob.Recipient);
-            dataMap.Add("cc_recipient", emailJob.CcRecipient);
-            dataMap.Add("sender", emailJob.Sender);
-            dataMap.Add("reply_to", emailJob.ReplyTo);
-            dataMap.Add("subject", emailJob.Subject);
-            dataMap.Add("message", emailJob.Body);
-            dataMap.Add("encoding", emailJob.Encoding);
-            return dataMap;
-        }
-
-        private static EmailJob GetEmailJobFromDataMap(IJobDetail detail)
-        {
-            var emailJob = new EmailJob();
-            emailJob.Body = detail.JobDataMap.GetString("message");
-            emailJob.SmtpHost = detail.JobDataMap.GetString("smtp_host");
-            emailJob.SmtpPort = detail.JobDataMap.GetString("smtp_port");
-            emailJob.Username = detail.JobDataMap.GetString("smtp_username");
-            emailJob.Password = detail.JobDataMap.GetString("smtp_password");
-            emailJob.Recipient = detail.JobDataMap.GetString("recipient");
-            emailJob.CcRecipient = detail.JobDataMap.GetString("cc_recipient");
-            emailJob.Sender = detail.JobDataMap.GetString("sender");
-            emailJob.ReplyTo = detail.JobDataMap.GetString("reply_to");
-            emailJob.Subject = detail.JobDataMap.GetString("subject");
-            emailJob.Body = detail.JobDataMap.GetString("message");
-            emailJob.Encoding = detail.JobDataMap.GetString("encoding");
-            return emailJob;
         }
     }
 }

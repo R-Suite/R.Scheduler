@@ -7,6 +7,7 @@ namespace R.Scheduler.Persistance
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
+        public string Group { get; set; }
         public string Params { get; set; }
         public string JobType { get; set; }
     }

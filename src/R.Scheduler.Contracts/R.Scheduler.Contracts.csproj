@@ -40,12 +40,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="JobTypes\AssemblyPlugin\BaseJobPlugin.cs" />
+    <Compile Include="JobTypes\AssemblyPlugin\Model\PluginJob.cs" />
     <Compile Include="JobTypes\AssemblyPlugin\Model\Plugin.cs" />
     <Compile Include="JobTypes\AssemblyPlugin\Model\PluginDetails.cs" />
     <Compile Include="JobTypes\AssemblyPlugin\IJobPlugin.cs" />
     <Compile Include="JobTypes\BaseJob.cs" />
     <Compile Include="JobTypes\Email\Model\EmailJob.cs" />
-    <Compile Include="JobTypes\Email\Model\EmailJobDetails.cs" />
     <Compile Include="JobTypes\PipesAndFilters\Model\PafTransformation.cs" />
     <Compile Include="JobTypes\PipesAndFilters\Model\PafTransformationDetails.cs" />
     <Compile Include="Model\CustomJobCronTrigger.cs" />

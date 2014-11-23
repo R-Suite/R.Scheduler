@@ -70,6 +70,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\AssemblyPluginsController.cs" />
     <Compile Include="Controllers\PluginsController.cs" />
     <Compile Include="PluginAppDomainHelper.cs" />
     <Compile Include="PluginManager.cs" />

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using log4net;
 using Quartz;
 using Quartz.Impl;
 using Quartz.Impl.Matchers;
@@ -56,7 +54,11 @@ namespace R.Scheduler
 
         public void ExecuteJob(string jobName, string groupName)
         {
+            groupName = (!string.IsNullOrEmpty(groupName)) ? groupName : JobKey.DefaultGroup;
+
             var jobKey = new JobKey(jobName, groupName);
+
+            IJobDetail jobDetail = _scheduler.GetJobDetail(jobKey);
             _scheduler.TriggerJob(jobKey);
         }
 
@@ -104,9 +106,15 @@ namespace R.Scheduler
             _scheduler.ScheduleJob(jobDetail, trigger);
         }
 
-        public void CreateJob(string jobName, string groupName, Type jobType)
+        public void CreateJob(string jobName, string groupName, Type jobType, Dictionary<string, object> dataMap )
         {
-            IJobDetail jobDetail = new JobDetailImpl(jobName, groupName, jobType);
+            groupName = (!string.IsNullOrEmpty(groupName)) ? groupName : JobKey.DefaultGroup;
+
+            IJobDetail jobDetail = new JobDetailImpl(jobName, groupName, jobType, true, false);
+            foreach (var mapItem in dataMap)
+            {
+                jobDetail.JobDataMap.Add(mapItem.Key, mapItem.Value);
+            }
             _scheduler.AddJob(jobDetail, true);
         }
 

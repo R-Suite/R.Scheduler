@@ -12,7 +12,7 @@ namespace R.Scheduler.Interfaces
 
         void ExecuteJob(string jobName, string groupName);
 
-        void CreateJob(string jobName, string groupName, Type jobType);
+        void CreateJob(string jobName, string groupName, Type jobType, Dictionary<string, object> dataMap);
 
         void RemoveJobTriggers(string jobName, string groupName);
 

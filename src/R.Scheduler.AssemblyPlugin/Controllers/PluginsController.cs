@@ -12,6 +12,7 @@ using StructureMap;
 
 namespace R.Scheduler.AssemblyPlugin.Controllers
 {
+    /*
     public class PluginsController : BaseCustomJobController
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -23,21 +24,21 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         }
 
         // GET api/values 
-        [Route("api/plugins")]
-        public IEnumerable<Plugin> Get()
-        {
-            Logger.Info("Entered PluginsController.Get().");
+        //[Route("api/plugins")]
+        //public IEnumerable<Plugin> Get()
+        //{
+        //    Logger.Info("Entered PluginsController.Get().");
 
-            IList<ICustomJob> registeredPlugins = _repository.GetRegisteredJobs(typeof(AssemblyPluginJob).Name);
+        //    IList<ICustomJob> registeredPlugins = _repository.GetRegisteredJobs(typeof(AssemblyPluginJob).Name);
 
-            return registeredPlugins.Select(registeredPlugin =>
-                                                                new Plugin
-                                                                {
-                                                                    Name = registeredPlugin.Name,
-                                                                    AssemblyPath = registeredPlugin.Params,
-                                                                    Id = registeredPlugin.Id
-                                                                }).ToList();
-        }
+        //    return registeredPlugins.Select(registeredPlugin =>
+        //                                                        new Plugin
+        //                                                        {
+        //                                                            Name = registeredPlugin.Name,
+        //                                                            AssemblyPath = registeredPlugin.Params,
+        //                                                            Id = registeredPlugin.Id
+        //                                                        }).ToList();
+        //}
 
         /// <summary>
         /// Schedules a temporary job for an immediate execution
@@ -67,14 +68,14 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
             return DescheduleCustomJob(model, typeof(AssemblyPluginJob));
         }
 
-        [AcceptVerbs("POST")]
-        [Route("api/plugins")]
-        public QueryResponse Post([FromBody]Plugin model)
-        {
-            Logger.InfoFormat("Entered PluginsController.Post(). name = {0}", model.Name);
+        //[AcceptVerbs("POST")]
+        //[Route("api/plugins")]
+        //public QueryResponse Post([FromBody]Plugin model)
+        //{
+        //    Logger.InfoFormat("Entered PluginsController.Post(). name = {0}", model.Name);
 
-            return RegisterCustomJob(new CustomJob { Name = model.Name, Params = model.AssemblyPath, JobType = typeof(AssemblyPluginJob).Name });
-        }
+        //    return RegisterCustomJob(new CustomJob { Name = model.Name, Params = model.AssemblyPath, JobType = typeof(AssemblyPluginJob).Name });
+        //}
 
         [AcceptVerbs("PUT")]
         [Route("api/plugins/{id}")]
@@ -119,22 +120,23 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
             return DeleteCustomJob(id, typeof(AssemblyPluginJob));
         }
 
-        [AcceptVerbs("POST")]
-        [Route("api/plugins/{id}/simpleTriggers")]
-        public QueryResponse Post(string id, [FromBody]CustomJobSimpleTrigger model)
-        {
-            Logger.InfoFormat("Entered PluginsController.Post(). Name = {0}", model.TriggerName);
+        //[AcceptVerbs("POST")]
+        //[Route("api/plugins/{id}/simpleTriggers")]
+        //public QueryResponse Post(string id, [FromBody]CustomJobSimpleTrigger model)
+        //{
+        //    Logger.InfoFormat("Entered PluginsController.Post(). Name = {0}", model.TriggerName);
 
-            return CreateCustomJobSimpleTrigger(id, model, "pluginPath", typeof(AssemblyPluginJob));
-        }
+        //    return CreateCustomJobSimpleTrigger(id, model, "pluginPath", typeof(AssemblyPluginJob));
+        //}
 
-        [AcceptVerbs("POST")]
-        [Route("api/plugins/{id}/cronTriggers")]
-        public QueryResponse Post(string id, [FromBody]CustomJobCronTrigger model)
-        {
-            Logger.InfoFormat("Entered PluginsController.Post(). Name = {0}", model.TriggerName);
+        //[AcceptVerbs("POST")]
+        //[Route("api/plugins/{id}/cronTriggers")]
+        //public QueryResponse Post(string id, [FromBody]CustomJobCronTrigger model)
+        //{
+        //    Logger.InfoFormat("Entered PluginsController.Post(). Name = {0}", model.TriggerName);
 
-            return CreateCustomJobCronTrigger(id, model, "pluginPath", typeof(AssemblyPluginJob));
-        }
+        //    return CreateCustomJobCronTrigger(id, model, "pluginPath", typeof(AssemblyPluginJob));
+        //}
     } 
+     */
 }

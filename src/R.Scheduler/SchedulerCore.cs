@@ -64,6 +64,8 @@ namespace R.Scheduler
 
         public void RemoveJobTriggers(string jobName, string groupName)
         {
+            groupName = (!string.IsNullOrEmpty(groupName)) ? groupName : JobKey.DefaultGroup;
+
             var jobKey = new JobKey(jobName, groupName);
 
             IList<ITrigger> triggers = _scheduler.GetTriggersOfJob(jobKey);
@@ -245,6 +247,9 @@ namespace R.Scheduler
             // Set default values
             DateTimeOffset startAt = (DateTime.MinValue != myTrigger.StartDateTime) ? myTrigger.StartDateTime : DateTime.UtcNow;
 
+            // Set default trigger group
+            myTrigger.Group = (!string.IsNullOrEmpty(myTrigger.Group)) ? myTrigger.Group : TriggerKey.DefaultGroup;
+
             // Check if jobDetail already exists
             var jobKey = new JobKey(myTrigger.JobName, myTrigger.JobGroup);
 
@@ -301,11 +306,11 @@ namespace R.Scheduler
             }
         }
 
-        public IEnumerable<ITrigger> GetTriggersOfJobGroup(string groupName)
+        public IEnumerable<ITrigger> GetTriggersOfJobGroup(string jobGroup)
         {
             var retval = new List<ITrigger>();
 
-            Quartz.Collection.ISet<JobKey> jobKeys = _scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(groupName));
+            Quartz.Collection.ISet<JobKey> jobKeys = _scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(jobGroup));
 
             foreach (var jobKey in jobKeys)
             {
@@ -315,9 +320,12 @@ namespace R.Scheduler
             return retval;
         }
 
-        public IEnumerable<ITrigger> GetTriggersOfJob(string jobName, string groupName = null)
+        public IEnumerable<ITrigger> GetTriggersOfJob(string jobName, string jobGroup = null)
         {
-            return _scheduler.GetTriggersOfJob(new JobKey(jobName, groupName));
+            // Set default trigger group
+            jobGroup = (!string.IsNullOrEmpty(jobGroup)) ? jobGroup : JobKey.DefaultGroup;
+
+            return _scheduler.GetTriggersOfJob(new JobKey(jobName, jobGroup));
         }
     }
 }

@@ -31,8 +31,8 @@ namespace R.Scheduler.Interfaces
 
         void ScheduleTrigger(BaseTrigger myTrigger);
 
-        IEnumerable<ITrigger> GetTriggersOfJobGroup(string groupName);
+        IEnumerable<ITrigger> GetTriggersOfJobGroup(string jobGroup);
 
-        IEnumerable<ITrigger> GetTriggersOfJob(string jobName, string groupName = null);
+        IEnumerable<ITrigger> GetTriggersOfJob(string jobName, string jobGroup = null);
     }
 }

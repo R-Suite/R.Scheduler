@@ -41,8 +41,6 @@
   <ItemGroup>
     <Compile Include="JobTypes\AssemblyPlugin\BaseJobPlugin.cs" />
     <Compile Include="JobTypes\AssemblyPlugin\Model\PluginJob.cs" />
-    <Compile Include="JobTypes\AssemblyPlugin\Model\Plugin.cs" />
-    <Compile Include="JobTypes\AssemblyPlugin\Model\PluginDetails.cs" />
     <Compile Include="JobTypes\AssemblyPlugin\IJobPlugin.cs" />
     <Compile Include="JobTypes\BaseJob.cs" />
     <Compile Include="JobTypes\Email\Model\EmailJob.cs" />

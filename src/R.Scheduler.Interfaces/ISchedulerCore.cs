@@ -16,14 +16,11 @@ namespace R.Scheduler.Interfaces
 
         void RemoveJobTriggers(string jobName, string groupName);
 
-
         void ExecuteJob(Type jobType, Dictionary<string, object> dataMap);
 
         void RemoveJob(string jobName, string jobGroup = null);
 
         void RemoveJobGroup(string groupName);
-
-        void RemoveTriggerGroup(string groupName);
 
         void RemoveTrigger(string triggerName, string groupName = null);
 

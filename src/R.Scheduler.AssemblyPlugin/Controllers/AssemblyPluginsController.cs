@@ -23,13 +23,13 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
             _schedulerCore = ObjectFactory.GetInstance<ISchedulerCore>();
         }
 
-        // GET api/values 
+        [AcceptVerbs("GET")]
         [Route("api/plugins")]
         public IEnumerable<PluginJob> Get()
         {
             Logger.Info("Entered AssemblyPluginsController.Get().");
 
-            var jobDetails = _schedulerCore.GetJobDetails(typeof (AssemblyPluginJob));
+            var jobDetails = _schedulerCore.GetJobDetails(typeof(AssemblyPluginJob));
 
             return jobDetails.Select(jobDetail =>
                                                     new PluginJob
@@ -40,41 +40,6 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
                                                         AssemblyPath = jobDetail.JobDataMap.GetString("pluginPath"),
                                                     }).ToList();
 
-        }
-
-        /// <summary>
-        /// Schedules a temporary job for an immediate execution
-        /// </summary>
-        /// <param name="jobName"></param>
-        /// <param name="jobGroup"></param>
-        /// <returns></returns>
-        [AcceptVerbs("POST")]
-        [Route("api/plugins/{jobName}/{jobGroup?}")]
-        public QueryResponse Execute(string jobName, string jobGroup = null)
-        {
-            Logger.InfoFormat("Entered AssemblyPluginsController.Execute(). jobName = {0}, jobName = {1}", jobName, jobGroup);
-
-            var response = new QueryResponse { Valid = true };
-
-            try
-            {
-                _schedulerCore.ExecuteJob(jobName, jobGroup);
-            }
-            catch (Exception ex)
-            {
-                response.Valid = false;
-                response.Errors = new List<Error>
-                {
-                    new Error
-                    {
-                        Code = "ErrorExecutingJob",
-                        Type = "Server",
-                        Message = string.Format("Error: {0}", ex.Message)
-                    }
-                };
-            }
-
-            return response;
         }
 
         [AcceptVerbs("POST")]
@@ -177,7 +142,6 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
 
             return response;
         }
-
 
         [AcceptVerbs("POST")]
         [Route("api/plugins/cronTriggers")]

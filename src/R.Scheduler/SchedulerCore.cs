@@ -130,41 +130,52 @@ namespace R.Scheduler
 
         }
 
+        /// <summary>
+        /// Remove job and all associated triggers.
+        /// Assume JobKey.DefaultGroup if jobGroup not provided.
+        /// </summary>
+        /// <param name="jobName"></param>
+        /// <param name="jobGroup"></param>
         public void RemoveJob(string jobName, string jobGroup = null)
         {
             if (string.IsNullOrEmpty(jobName))
                 throw new ArgumentException("jobName is null or empty.");
 
-            IList<string> jobGroups = !string.IsNullOrEmpty(jobGroup) ? new List<string> { jobGroup } : _scheduler.GetJobGroupNames();
+            jobGroup = (!string.IsNullOrEmpty(jobGroup)) ? jobGroup : JobKey.DefaultGroup;
+            var jobKey = new JobKey(jobName, jobGroup);
 
-            foreach (string group in jobGroups)
+            if (_scheduler.CheckExists(jobKey))
             {
-                var jobKey = new JobKey(jobName, group);
-
-                if (_scheduler.CheckExists(jobKey))
-                    _scheduler.DeleteJob(jobKey);
+                _scheduler.DeleteJob(jobKey);
+            }
+            else
+            {
+                throw new KeyNotFoundException(string.Format("JobKey not found for {0}, {1}", jobName, jobGroup));
             }
         }
 
-        public void RemoveTriggerGroup(string groupName)
-        {
-            Quartz.Collection.ISet<TriggerKey> triggerKeys = _scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.GroupEquals(groupName));
-            _scheduler.UnscheduleJobs(triggerKeys.ToList());
-        }
-
+        /// <summary>
+        /// Remove trigger from scheduler.
+        /// Assume TriggerKey.DefaultGroup if triggerGroup not provided.
+        /// </summary>
+        /// <param name="triggerName"></param>
+        /// <param name="triggerGroup"></param>
         public void RemoveTrigger(string triggerName, string triggerGroup = null)
         {
             if (string.IsNullOrEmpty(triggerName))
                 throw new ArgumentException("triggerName is null or empty.");
 
-            IList<string> triggerGroups = !string.IsNullOrEmpty(triggerGroup) ? new List<string> { triggerGroup } : _scheduler.GetTriggerGroupNames();
+            triggerGroup = (!string.IsNullOrEmpty(triggerGroup)) ? triggerGroup : TriggerKey.DefaultGroup;
 
-            foreach (string group in triggerGroups)
+            var triggerKey = new TriggerKey(triggerName, triggerGroup);
+
+            if (_scheduler.CheckExists(triggerKey))
             {
-                var triggerKey = new TriggerKey(triggerName, group);
-
-                if (_scheduler.CheckExists(triggerKey))
-                    _scheduler.UnscheduleJob(triggerKey);
+                _scheduler.UnscheduleJob(triggerKey);
+            }
+            else
+            {
+                throw new KeyNotFoundException(string.Format("TriggerKey not found for {0}, {1}", triggerName, triggerGroup));
             }
         }
 

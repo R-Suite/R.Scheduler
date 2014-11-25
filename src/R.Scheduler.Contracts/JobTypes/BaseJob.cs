@@ -4,6 +4,7 @@
     {
         public string JobName { get; set; }
         public string JobGroup { get; set; }
+        public string JobType { get; set; }
         public string SchedulerName { get; set; }
     }
 }

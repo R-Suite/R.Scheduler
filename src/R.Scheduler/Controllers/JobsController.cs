@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Web.Http;
-using log4net;
+using Common.Logging;
 using R.Scheduler.Contracts.JobTypes;
 using R.Scheduler.Contracts.Model;
 using R.Scheduler.Interfaces;
@@ -21,11 +21,15 @@ namespace R.Scheduler.Controllers
             _schedulerCore = ObjectFactory.GetInstance<ISchedulerCore>();
         }
 
+        /// <summary>
+        /// Get all the jobs regardless of the job type
+        /// </summary>
+        /// <returns></returns>
         [AcceptVerbs("GET")]
         [Route("api/jobs")]
         public IEnumerable<BaseJob> Get()
         {
-            Logger.Info("Entered AssemblyPluginsController.Get().");
+            Logger.Info("Entered JobsController.Get().");
 
             var jobDetails = _schedulerCore.GetJobDetails();
 
@@ -75,6 +79,12 @@ namespace R.Scheduler.Controllers
             return response;
         }
 
+        /// <summary>
+        /// Remove job and all associated triggers.
+        /// </summary>
+        /// <param name="jobName"></param>
+        /// <param name="jobGroup"></param>
+        /// <returns></returns>
         [AcceptVerbs("DELETE")]
         [Route("api/jobs/{jobName}/{jobGroup?}")]
         public QueryResponse Delete(string jobName, string jobGroup = null)

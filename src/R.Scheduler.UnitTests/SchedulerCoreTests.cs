@@ -31,10 +31,10 @@ namespace R.Scheduler.UnitTests
         }
 
         [Fact]
-        public void ShouldDeleteJobInAllJobGroupsWhenJobGroupIsNotSpecifiedInRemoveJob()
+        public void ShouldDeleteJobInDefaultJobGroupsWhenJobGroupIsNotSpecifiedInRemoveJob()
         {
             // Arrange
-            _mockScheduler.Setup(x => x.GetJobGroupNames()).Returns(new List<string> { "Group1", "Group2" });
+            _mockScheduler.Setup(x => x.GetJobGroupNames()).Returns(new List<string> { "Group1", "DEFAULT" });
             _mockScheduler.Setup(x => x.CheckExists(It.IsAny<JobKey>())).Returns(true);
 
 
@@ -44,7 +44,7 @@ namespace R.Scheduler.UnitTests
             schedulerCore.RemoveJob("TestJob");
 
             // Assert
-            _mockScheduler.Verify(x => x.DeleteJob(It.Is<JobKey>(i => i.Name == "TestJob")),Times.Exactly(2));
+            _mockScheduler.Verify(x => x.DeleteJob(It.Is<JobKey>(i => i.Name == "TestJob" && i.Group == "DEFAULT")),Times.Exactly(1));
         }
 
         [Fact]
@@ -65,10 +65,10 @@ namespace R.Scheduler.UnitTests
         }
 
         [Fact]
-        public void ShouldDeleteTriggerInAllTriggerGroupsWhenTriggerGroupIsNotSpecifiedInRemoveTrigger()
+        public void ShouldDeleteTriggerInDefaultTriggerGroupsWhenTriggerGroupIsNotSpecifiedInRemoveTrigger()
         {
             // Arrange
-            _mockScheduler.Setup(x => x.GetTriggerGroupNames()).Returns(new List<string> { "Group1", "Group2" });
+            _mockScheduler.Setup(x => x.GetTriggerGroupNames()).Returns(new List<string> { "DEFAULT", "Group2" });
             _mockScheduler.Setup(x => x.CheckExists(It.IsAny<TriggerKey>())).Returns(true);
 
 
@@ -78,7 +78,7 @@ namespace R.Scheduler.UnitTests
             schedulerCore.RemoveTrigger("TestTrigger");
 
             // Assert
-            _mockScheduler.Verify(x => x.UnscheduleJob(It.Is<TriggerKey>(i => i.Name == "TestTrigger")), Times.Exactly(2));
+            _mockScheduler.Verify(x => x.UnscheduleJob(It.Is<TriggerKey>(i => i.Name == "TestTrigger" && i.Group == "DEFAULT")), Times.Exactly(1));
         }
 
         [Fact]

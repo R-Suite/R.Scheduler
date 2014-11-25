@@ -52,21 +52,32 @@ namespace R.Scheduler
             return jobDetails;
         }
 
-        public void ExecuteJob(string jobName, string groupName)
+        /// <summary>
+        /// Trigger job
+        /// </summary>
+        /// <param name="jobName"></param>
+        /// <param name="jobGroup"></param>
+        public void ExecuteJob(string jobName, string jobGroup)
         {
-            groupName = (!string.IsNullOrEmpty(groupName)) ? groupName : JobKey.DefaultGroup;
+            // Use DefaultGroup if jobGroup is null or empty
+            jobGroup = (!string.IsNullOrEmpty(jobGroup)) ? jobGroup : JobKey.DefaultGroup;
 
-            var jobKey = new JobKey(jobName, groupName);
+            var jobKey = new JobKey(jobName, jobGroup);
 
-            IJobDetail jobDetail = _scheduler.GetJobDetail(jobKey);
             _scheduler.TriggerJob(jobKey);
         }
 
-        public void RemoveJobTriggers(string jobName, string groupName)
+        /// <summary>
+        /// Removes all triggers of the specified job
+        /// </summary>
+        /// <param name="jobName"></param>
+        /// <param name="jobGroup"></param>
+        public void RemoveJobTriggers(string jobName, string jobGroup)
         {
-            groupName = (!string.IsNullOrEmpty(groupName)) ? groupName : JobKey.DefaultGroup;
+            // Use DefaultGroup if jobGroup is null or empty
+            jobGroup = (!string.IsNullOrEmpty(jobGroup)) ? jobGroup : JobKey.DefaultGroup;
 
-            var jobKey = new JobKey(jobName, groupName);
+            var jobKey = new JobKey(jobName, jobGroup);
 
             IList<ITrigger> triggers = _scheduler.GetTriggersOfJob(jobKey);
 
@@ -108,11 +119,19 @@ namespace R.Scheduler
             _scheduler.ScheduleJob(jobDetail, trigger);
         }
 
-        public void CreateJob(string jobName, string groupName, Type jobType, Dictionary<string, object> dataMap )
+        /// <summary>
+        /// Create new job of type <see cref="jobType"/> without any triggers
+        /// </summary>
+        /// <param name="jobName"></param>
+        /// <param name="jobGroup"></param>
+        /// <param name="jobType"></param>
+        /// <param name="dataMap"><see cref="jobType"/> specific parameters</param>
+        public void CreateJob(string jobName, string jobGroup, Type jobType, Dictionary<string, object> dataMap )
         {
-            groupName = (!string.IsNullOrEmpty(groupName)) ? groupName : JobKey.DefaultGroup;
+            // Use DefaultGroup if jobGroup is null or empty
+            jobGroup = (!string.IsNullOrEmpty(jobGroup)) ? jobGroup : JobKey.DefaultGroup;
 
-            IJobDetail jobDetail = new JobDetailImpl(jobName, groupName, jobType, true, false);
+            IJobDetail jobDetail = new JobDetailImpl(jobName, jobGroup, jobType, true, false);
             foreach (var mapItem in dataMap)
             {
                 jobDetail.JobDataMap.Add(mapItem.Key, mapItem.Value);
@@ -253,6 +272,10 @@ namespace R.Scheduler
             }
         }
 
+        /// <summary>
+        /// Schedule specified trigger
+        /// </summary>
+        /// <param name="myTrigger"></param>
         public void ScheduleTrigger(BaseTrigger myTrigger)
         {
             // Set default values

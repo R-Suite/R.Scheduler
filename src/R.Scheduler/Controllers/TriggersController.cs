@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Web.Http;
-using log4net;
+using Common.Logging;
 using Quartz;
 using R.Scheduler.Contracts.Model;
 using R.Scheduler.Interfaces;
@@ -20,6 +20,13 @@ namespace R.Scheduler.Controllers
             _schedulerCore = ObjectFactory.GetInstance<ISchedulerCore>();
         }
 
+        /// <summary>
+        /// Get all triggers of a specified job
+        /// </summary>
+        /// <param name="jobName"></param>
+        /// <param name="jobGroup"></param>
+        /// <returns></returns>
+        [AcceptVerbs("GET")]
         [Route("api/triggers/{jobName}/{jobGroup?}")]
         public IList<TriggerDetails> Get(string jobName, string jobGroup = null)
         {
@@ -68,7 +75,99 @@ namespace R.Scheduler.Controllers
         }
 
         /// <summary>
-        /// Removes all triggers.
+        /// Schedule SimpleTrigger for a specified job
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [AcceptVerbs("POST")]
+        [Route("api/simpleTriggers")]
+        public QueryResponse Post([FromBody]CustomJobSimpleTrigger model)
+        {
+            Logger.InfoFormat("Entered TriggersController.Post(). Name = {0}", model.TriggerName);
+
+            var response = new QueryResponse { Valid = true };
+
+            try
+            {
+                _schedulerCore.ScheduleTrigger(new SimpleTrigger
+                {
+                    Name = model.TriggerName,
+                    Group = model.TriggerGroup,
+                    JobName = model.JobName,
+                    JobGroup = model.JobGroup,
+                    RepeatCount = model.RepeatCount,
+                    RepeatInterval = model.RepeatInterval,
+                    StartDateTime = model.StartDateTime,
+                });
+            }
+            catch (Exception ex)
+            {
+                response.Valid = false;
+                response.Errors = new List<Error>
+                {
+                    new Error
+                    {
+                        Code = "ErrorSchedulingTrigger",
+                        Type = "Server",
+                        Message = string.Format("Error scheduling trigger {0}", ex.Message)
+                    }
+                };
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Schedule CronTrigger for a specified job
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [AcceptVerbs("POST")]
+        [Route("api/cronTriggers")]
+        public QueryResponse Post([FromBody] CustomJobCronTrigger model)
+        {
+            Logger.InfoFormat("Entered TriggersController.Post(). Name = {0}", model.TriggerName);
+
+            var response = new QueryResponse { Valid = true };
+
+            try
+            {
+                _schedulerCore.ScheduleTrigger(new CronTrigger
+                {
+                    Name = model.TriggerName,
+                    Group = model.TriggerGroup,
+                    JobName = model.JobName,
+                    JobGroup = model.JobGroup,
+                    CronExpression = model.CronExpression,
+                    StartDateTime = model.StartDateTime,
+                });
+            }
+            catch (Exception ex)
+            {
+                string type = "Server";
+
+                if (ex is FormatException)
+                {
+                    type = "Sender";
+                }
+
+                response.Valid = false;
+                response.Errors = new List<Error>
+                {
+                    new Error
+                    {
+                        Code = "ErrorSchedulingTrigger",
+                        Type = type,
+                        Message = string.Format("Error scheduling CronTrigger {0}", ex.Message)
+                    }
+                };
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Remove all triggers of a specified job
         /// </summary>
         /// <param name="jobName"></param>
         /// <param name="jobGroup"></param>
@@ -102,21 +201,27 @@ namespace R.Scheduler.Controllers
             return response;
         }
 
+        /// <summary>
+        /// Remove specified trigger
+        /// </summary>
+        /// <param name="triggerName"></param>
+        /// <param name="triggerGroup"></param>
+        /// <returns></returns>
         [AcceptVerbs("DELETE")]
         [Route("api/triggers")]
-        public QueryResponse DeleteTrigger(string trigger)
+        public QueryResponse DeleteTrigger(string triggerName, string triggerGroup=null)
         {
-            Logger.InfoFormat("Entered TriggersController.DeleteTrigger(). trigger = {0}", trigger);
+            Logger.InfoFormat("Entered TriggersController.DeleteTrigger(). triggerGroup = {0}, triggerGroup = {1}", triggerName, triggerGroup);
 
             var response = new QueryResponse { Valid = true };
 
             try
             {
-                _schedulerCore.RemoveTrigger(trigger);
+                _schedulerCore.RemoveTrigger(triggerName, triggerGroup);
             }
             catch (Exception ex)
             {
-                Logger.ErrorFormat("Error removing trigger  {0}. {1}", trigger, ex.Message);
+                Logger.ErrorFormat("Error removing trigger {0}. {1}", triggerName, ex.Message);
 
                 string type = "Server";
                 if (ex is ArgumentException)
@@ -131,44 +236,7 @@ namespace R.Scheduler.Controllers
                     {
                         Code = "ErrorRemovingTrigger",
                         Type = type,
-                        Message = string.Format("Error removing trigger {0}.", trigger)
-                    }
-                };
-            }
-
-            return response;
-        }
-
-        [AcceptVerbs("DELETE")]
-        [Route("api/triggers")]
-        public QueryResponse DeleteTrigger(string trigger, string triggerGroup)
-        {
-            Logger.InfoFormat("Entered TriggersController.DeleteTrigger(). triggerGroup = {0}, triggerGroup = {1}", trigger, triggerGroup);
-
-            var response = new QueryResponse { Valid = true };
-
-            try
-            {
-                _schedulerCore.RemoveTrigger(trigger, triggerGroup);
-            }
-            catch (Exception ex)
-            {
-                Logger.ErrorFormat("Error removing trigger  {0}. {1}", trigger, ex.Message);
-
-                string type = "Server";
-                if (ex is ArgumentException)
-                {
-                    type = "Sender";
-                }
-
-                response.Valid = false;
-                response.Errors = new List<Error>
-                {
-                    new Error
-                    {
-                        Code = "ErrorRemovingTrigger",
-                        Type = type,
-                        Message = string.Format("Error removing trigger {0}.", trigger)
+                        Message = string.Format("Error removing trigger {0}.", triggerName)
                     }
                 };
             }

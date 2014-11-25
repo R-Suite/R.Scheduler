@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Web.Http;
-using log4net;
+using Common.Logging;
 using R.Scheduler.Contracts.JobTypes.PipesAndFilters.Model;
 using R.Scheduler.Contracts.Model;
 using R.Scheduler.Controllers;
 using R.Scheduler.Interfaces;
-using R.Scheduler.Persistance;
 using StructureMap;
 
 namespace R.Scheduler.PipesAndFilters.Controllers
@@ -15,124 +15,73 @@ namespace R.Scheduler.PipesAndFilters.Controllers
     public class PafTransformationsController : BaseCustomJobController
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        readonly ICustomJobStore _repository;
+        readonly ISchedulerCore _schedulerCore;
 
         public PafTransformationsController()
         {
-            _repository = ObjectFactory.GetInstance<ICustomJobStore>();
+            _schedulerCore = ObjectFactory.GetInstance<ISchedulerCore>();
         }
 
+        /// <summary>
+        /// Get all the jobs of type <see cref="PafTransformationJob"/>
+        /// </summary>
+        /// <returns></returns>
+        [AcceptVerbs("GET")]
         [Route("api/pipesandfilters")]
         public IEnumerable<PafTransformation> Get()
         {
             Logger.Info("Entered PafTransformationsController.Get().");
 
-            IList<ICustomJob> registeredJobs = _repository.GetRegisteredJobs(typeof(PafTransformationJob).Name);
+            var jobDetails = _schedulerCore.GetJobDetails(typeof(PafTransformationJob));
 
-            return registeredJobs.Select(registeredJob =>   new PafTransformation
-                                                            {
-                                                                Name = registeredJob.Name,
-                                                                JobDefinitionPath = registeredJob.Params,
-                                                                Id = registeredJob.Id
-                                                            }).ToList();
+            return jobDetails.Select(jobDetail =>
+                                                    new PafTransformation
+                                                    {
+                                                        JobName = jobDetail.Key.Name,
+                                                        JobGroup = jobDetail.Key.Group,
+                                                        SchedulerName = _schedulerCore.SchedulerName,
+                                                        JobDefinitionPath = jobDetail.JobDataMap.GetString("jobDefinitionPath"),
+                                                    }).ToList();
+
         }
 
         /// <summary>
-        /// Schedules a temporary job for an immediate execution
+        /// Create new PafTransformationJob without any triggers
         /// </summary>
         /// <param name="model"></param>
-        /// <returns>QueryResponse</returns>
-        [AcceptVerbs("POST")]
-        [Route("api/pipesandfilters/execute")]
-        public QueryResponse Execute([FromBody]string model)
-        {
-            Logger.InfoFormat("Entered PafTransformationsController.Execute(). name = {0}", model);
-
-            return ExecuteCustomJob(model, "jobDefinitionPath", typeof(PafTransformationJob));
-        }
-
-        /// <summary>
-        /// Removes all triggers.
-        /// </summary>
-        /// <param name="model">PafTransformation name</param>
-        /// <returns>QueryResponse</returns>
-        [AcceptVerbs("POST")]
-        [Route("api/pipesandfilters/deschedule")]
-        public QueryResponse Deschedule([FromBody]string model)
-        {
-            Logger.InfoFormat("Entered PafTransformationsController.Deschedule(). name = {0}", model);
-
-            return DescheduleCustomJob(model, typeof(PafTransformationJob));
-        }
-
+        /// <returns></returns>
         [AcceptVerbs("POST")]
         [Route("api/pipesandfilters")]
         public QueryResponse Post([FromBody]PafTransformation model)
         {
-            Logger.InfoFormat("Entered PafTransformationsController.Post(). name = {0}", model.Name);
+            Logger.InfoFormat("Entered PafTransformationsController.Post(). Job Name = {0}", model.JobName);
 
-            return RegisterCustomJob(new CustomJob { Name = model.Name, Params = model.JobDefinitionPath, JobType = typeof(PafTransformationJob).Name });
-        }
+            var response = new QueryResponse { Valid = true };
 
-        [AcceptVerbs("PUT")]
-        [Route("api/pipesandfilters/{id}")]
-        public QueryResponse Put(string id, [FromBody]PafTransformation model)
-        {
-            Logger.InfoFormat("Entered PafTransformationsController.Put(). name = {0}", model.Name);
-
-            return UpdateCustomJob(id, new CustomJob { Name = model.Name });
-        }
-
-        [Route("api/pipesandfilters/{id}")]
-        public PafTransformationDetails Get(string id)
-        {
-            Logger.InfoFormat("Entered PafTransformationsController.Get(). id = {0}", id);
-
-            ICustomJob registeredJob = base.GetRegisteredCustomJob(id, typeof(PafTransformationJob).Name);
-
-            if (null == registeredJob)
+            var dataMap = new Dictionary<string, object>
             {
-                Logger.ErrorFormat("Error getting registered PafTransformation {0}", id);
-                return null;
-            }
-
-            var retval = new PafTransformationDetails
-            {
-                Name = registeredJob.Name,
-                JobDefinitionPath = registeredJob.Params,
-                TriggerDetails = new List<TriggerDetails>()
+                {"jobDefinitionPath", model.JobDefinitionPath},
             };
 
-            retval.TriggerDetails = GetCustomJobTriggerDetails(registeredJob);
+            try
+            {
+                _schedulerCore.CreateJob(model.JobName, model.JobGroup, typeof(PafTransformationJob), dataMap);
+            }
+            catch (Exception ex)
+            {
+                response.Valid = false;
+                response.Errors = new List<Error>
+                {
+                    new Error
+                    {
+                        Code = "ErrorCreatingJob",
+                        Type = "Server",
+                        Message = string.Format("Error: {0}", ex.Message)
+                    }
+                };
+            }
 
-            return retval;
-        }
-
-        [AcceptVerbs("DELETE")]
-        [Route("api/pipesandfilters")]
-        public QueryResponse Delete(string id)
-        {
-            Logger.InfoFormat("Entered PafTransformationsController.Delete(). id = {0}", id);
-
-            return DeleteCustomJob(id, typeof(PafTransformationJob));
-        }
-
-        [AcceptVerbs("POST")]
-        [Route("api/pipesandfilters/{id}/simpleTriggers")]
-        public QueryResponse Post(string id, [FromBody]CustomJobSimpleTrigger model)
-        {
-            Logger.InfoFormat("Entered PafTransformationsController.Post(). Name = {0}", model.TriggerName);
-
-            return CreateCustomJobSimpleTrigger(id, model, "jobDefinitionPath", typeof(PafTransformationJob));
-        }
-
-        [AcceptVerbs("POST")]
-        [Route("api/pipesandfilters/{id}/cronTriggers")]
-        public QueryResponse Post(string id, [FromBody]CustomJobCronTrigger model)
-        {
-            Logger.InfoFormat("Entered PafTransformationsController.Post(). Name = {0}", model.TriggerName);
-
-            return CreateCustomJobCronTrigger(id, model, "jobDefinitionPath", typeof(PafTransformationJob));
+            return response;
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Web.Http;
@@ -12,7 +11,7 @@ using StructureMap;
 
 namespace R.Scheduler.Controllers
 {
-    public class SendEmailJobsController : BaseCustomJobController
+    public class SendEmailJobsController : BaseJobsImpController
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         readonly ISchedulerCore _schedulerCore;
@@ -66,8 +65,6 @@ namespace R.Scheduler.Controllers
         {
             Logger.InfoFormat("Entered EmailsController.Post(). Job Name = {0}", model.JobName);
 
-            var response = new QueryResponse { Valid = true };
-
             var dataMap = new Dictionary<string, object>
             {
                 {"message", model.Body},
@@ -83,25 +80,7 @@ namespace R.Scheduler.Controllers
                 {"encoding", model.Encoding}
             };
 
-            try
-            {
-                _schedulerCore.CreateJob(model.JobName, model.JobGroup, typeof(SendMailJob), dataMap);
-            }
-            catch (Exception ex)
-            {
-                response.Valid = false;
-                response.Errors = new List<Error>
-                {
-                    new Error
-                    {
-                        Code = "ErrorCreatingJob",
-                        Type = "Server",
-                        Message = string.Format("Error: {0}", ex.Message)
-                    }
-                };
-            }
-
-            return response;
+            return base.CreateJob(model, typeof(SendMailJob), dataMap);
         }
     }
 }

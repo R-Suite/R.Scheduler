@@ -8,9 +8,8 @@ namespace R.Scheduler.PipesAndFilters
     {
         public SmRegistry()
         {
-            For<ICustomJobStore>().Use<InMemoryStore>();// default that my be overriden (using inteceptor) to use data store selected in Scheduler Configuration
+            For<IPersistanceStore>().Use<InMemoryStore>();// default that my be overriden (using inteceptor) to use data store selected in Scheduler Configuration
             For<IJobTypeStartup>().Use<Startup>();
-            For<IJobTypeManager>().Use<PafTransformationManager>();
         }
     }
 }

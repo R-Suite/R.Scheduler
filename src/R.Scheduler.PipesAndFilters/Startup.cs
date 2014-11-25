@@ -7,7 +7,7 @@ namespace R.Scheduler.PipesAndFilters
     {
         public void Initialise(IConfiguration config)
         {
-            ObjectFactory.Configure(x => x.RegisterInterceptor(new CustomJobStoreInterceptor(config)));
+            ObjectFactory.Configure(x => x.RegisterInterceptor(new PersistanceStoreInterceptor(config)));
         }
     }
 }

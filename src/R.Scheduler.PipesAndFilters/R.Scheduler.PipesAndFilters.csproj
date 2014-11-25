@@ -72,7 +72,6 @@
     <Compile Include="Config\StartParamCollection.cs" />
     <Compile Include="Config\StartParamElement.cs" />
     <Compile Include="Controllers\PafTransformationsController.cs" />
-    <Compile Include="CustomJobStoreInterceptor.cs" />
     <Compile Include="FiltersAssemblyLoader.cs" />
     <Compile Include="Interfaces\IFilter.cs" />
     <Compile Include="Interfaces\IFiltersAssemblyLoader.cs" />
@@ -80,7 +79,6 @@
     <Compile Include="Interfaces\IPipeLine.cs" />
     <Compile Include="Config\JobConfigurationManager.cs" />
     <Compile Include="PafTransformationJob.cs" />
-    <Compile Include="PafTransformationManager.cs" />
     <Compile Include="PipeLine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SmRegistry.cs" />

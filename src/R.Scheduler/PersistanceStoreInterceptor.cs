@@ -5,22 +5,22 @@ using R.Scheduler.Persistance;
 using StructureMap;
 using StructureMap.Interceptors;
 
-namespace R.Scheduler.AssemblyPlugin
+namespace R.Scheduler
 {
-    public class PluginStoreInterceptor : TypeInterceptor
+    public class PersistanceStoreInterceptor : TypeInterceptor
     {
         private readonly IConfiguration _config;
 
-        public PluginStoreInterceptor(IConfiguration config)
+        public PersistanceStoreInterceptor(IConfiguration config)
         {
             _config = config;
         }
 
         public object Process(object target, IContext context)
         {
-            ICustomJobStore retval = null;
+            IPersistanceStore retval = null;
 
-            if (target.GetType().GetInterfaces().Contains(typeof(ICustomJobStore)))
+            if (target.GetType().GetInterfaces().Contains(typeof(IPersistanceStore)))
             {
                 switch (_config.PersistanceStoreType)
                 {
@@ -41,7 +41,7 @@ namespace R.Scheduler.AssemblyPlugin
 
         public bool MatchesType(Type type)
         {
-            if (type.GetInterfaces().Contains(typeof(ICustomJobStore)))
+            if (type.GetInterfaces().Contains(typeof(IPersistanceStore)))
             {
                 return true;
             }

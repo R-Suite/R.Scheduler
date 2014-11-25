@@ -101,10 +101,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration.cs" />
-    <Compile Include="Controllers\BaseCustomJobController.cs" />
+    <Compile Include="Controllers\BaseJobsImpController.cs" />
     <Compile Include="Controllers\JobsController.cs" />
     <Compile Include="Controllers\SendEmailJobsController.cs" />
     <Compile Include="Controllers\TriggersController.cs" />
+    <Compile Include="PersistanceStoreInterceptor.cs" />
     <Compile Include="SchedulerCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scheduler.cs" />
@@ -129,6 +130,10 @@
     <ProjectReference Include="..\R.Scheduler.Interfaces\R.Scheduler.Interfaces.csproj">
       <Project>{4010d63d-4ba3-4e41-9087-16cdd341febf}</Project>
       <Name>R.Scheduler.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\R.Scheduler.Persistance\R.Scheduler.Persistance.csproj">
+      <Project>{FBADF088-E56E-4862-9C1C-3FF81C4BD92B}</Project>
+      <Name>R.Scheduler.Persistance</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

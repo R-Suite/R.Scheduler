@@ -7,7 +7,7 @@ namespace R.Scheduler.AssemblyPlugin
     {
         public void Initialise(IConfiguration config)
         {
-            ObjectFactory.Configure(x => x.RegisterInterceptor(new PluginStoreInterceptor(config)));
+            ObjectFactory.Configure(x => x.RegisterInterceptor(new PersistanceStoreInterceptor(config)));
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Web.Http;
 using Common.Logging;
+using Quartz;
 using R.Scheduler.Contracts.JobTypes.AssemblyPlugin.Model;
 using R.Scheduler.Contracts.Model;
 using R.Scheduler.Controllers;
@@ -43,6 +44,36 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
                                                         AssemblyPath = jobDetail.JobDataMap.GetString("pluginPath"),
                                                     }).ToList();
 
+        }
+
+        /// <summary>
+        /// Get job details of <see cref="jobName"/>
+        /// </summary>
+        /// <returns></returns>
+        [Route("api/plugins")]
+        public PluginJob GetJob(string jobName, string jobGroup = null)
+        {
+            Logger.Info("Entered AssemblyPluginsController.Get().");
+
+            IJobDetail jobDetail;
+
+            try
+            {
+                jobDetail = _schedulerCore.GetJobDetail(jobName, jobGroup);
+            }
+            catch (Exception ex)
+            {
+                Logger.Info(string.Format("Error getting JobDetail: {0}", ex.Message));
+                return null;
+            }
+
+            return new PluginJob
+            {
+                JobName = jobDetail.Key.Name,
+                JobGroup = jobDetail.Key.Group,
+                SchedulerName = _schedulerCore.SchedulerName,
+                AssemblyPath = jobDetail.JobDataMap.GetString("pluginPath")
+            };
         }
 
         /// <summary>

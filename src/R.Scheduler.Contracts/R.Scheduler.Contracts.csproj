@@ -45,7 +45,6 @@
     <Compile Include="JobTypes\BaseJob.cs" />
     <Compile Include="JobTypes\Email\Model\EmailJob.cs" />
     <Compile Include="JobTypes\PipesAndFilters\Model\PafTransformation.cs" />
-    <Compile Include="JobTypes\PipesAndFilters\Model\PafTransformationDetails.cs" />
     <Compile Include="Model\CustomJobCronTrigger.cs" />
     <Compile Include="Model\CustomJobSimpleTrigger.cs" />
     <Compile Include="Model\Error.cs" />

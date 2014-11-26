@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Web.Http;
 using Common.Logging;
+using Quartz;
 using Quartz.Job;
 using R.Scheduler.Contracts.JobTypes.Email.Model;
 using R.Scheduler.Contracts.Model;
@@ -30,7 +32,17 @@ namespace R.Scheduler.Controllers
         {
             Logger.Info("Entered SendEmailJobsController.Get().");
 
-            var jobDetails = _schedulerCore.GetJobDetails(typeof (SendMailJob));
+            IEnumerable<IJobDetail> jobDetails = null;
+
+            try
+            {
+                jobDetails = _schedulerCore.GetJobDetails(typeof(SendMailJob));
+            }
+            catch (Exception ex)
+            {
+                Logger.Info(string.Format("Error getting JobDetails: {0}", ex.Message));
+                return null;
+            }
 
             return jobDetails.Select(jobDetail =>
                                                     new EmailJob
@@ -53,6 +65,45 @@ namespace R.Scheduler.Controllers
 
         }
 
+        /// <summary>
+        /// Get job details of <see cref="jobName"/>
+        /// </summary>
+        /// <returns></returns>
+        [Route("api/emails")]
+        public EmailJob GetJob(string jobName, string jobGroup = null)
+        {
+            Logger.Info("Entered SendEmailJobsController.Get().");
+
+            IJobDetail jobDetail = null;
+
+            try
+            {
+                jobDetail = _schedulerCore.GetJobDetail(jobName, jobGroup);
+            }
+            catch (Exception ex)
+            {
+                Logger.Info(string.Format("Error getting JobDetail: {0}", ex.Message));
+                return null;
+            }
+
+            return new EmailJob
+            {
+                JobName = jobDetail.Key.Name,
+                JobGroup = jobDetail.Key.Group,
+                SchedulerName = _schedulerCore.SchedulerName,
+                Subject = jobDetail.JobDataMap.GetString("subject"),
+                Body = jobDetail.JobDataMap.GetString("message"),
+                CcRecipient = jobDetail.JobDataMap.GetString("cc_recipient"),
+                Encoding = jobDetail.JobDataMap.GetString("encoding"),
+                Password = jobDetail.JobDataMap.GetString("smtp_password"),
+                Recipient = jobDetail.JobDataMap.GetString("recipient"),
+                ReplyTo = jobDetail.JobDataMap.GetString("reply_to"),
+                Username = jobDetail.JobDataMap.GetString("smtp_username"),
+                SmtpHost = jobDetail.JobDataMap.GetString("smtp_host"),
+                SmtpPort = jobDetail.JobDataMap.GetString("smtp_port"),
+                Sender = jobDetail.JobDataMap.GetString("sender")
+            };
+        }
 
         /// <summary>
         /// Create new SendMailJob without any triggers

@@ -10,6 +10,8 @@ namespace R.Scheduler.Interfaces
 
         IEnumerable<IJobDetail> GetJobDetails(Type jobType = null);
 
+        IJobDetail GetJobDetail(string jobName, string jobGroup = null);
+
         void ExecuteJob(string jobName, string groupName);
 
         void CreateJob(string jobName, string groupName, Type jobType, Dictionary<string, object> dataMap);

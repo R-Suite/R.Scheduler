@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Web.Http;
 using Common.Logging;
+using Quartz;
 using R.Scheduler.Contracts.JobTypes.PipesAndFilters.Model;
 using R.Scheduler.Contracts.Model;
 using R.Scheduler.Controllers;
@@ -42,6 +44,36 @@ namespace R.Scheduler.PipesAndFilters.Controllers
                                                         JobDefinitionPath = jobDetail.JobDataMap.GetString("jobDefinitionPath"),
                                                     }).ToList();
 
+        }
+
+        /// <summary>
+        /// Get job details of <see cref="jobName"/>
+        /// </summary>
+        /// <returns></returns>
+        [Route("api/plugins")]
+        public PafTransformation GetJob(string jobName, string jobGroup = null)
+        {
+            Logger.Info("Entered PafTransformationsController.Get().");
+
+            IJobDetail jobDetail;
+
+            try
+            {
+                jobDetail = _schedulerCore.GetJobDetail(jobName, jobGroup);
+            }
+            catch (Exception ex)
+            {
+                Logger.Info(string.Format("Error getting JobDetail: {0}", ex.Message));
+                return null;
+            }
+
+            return new PafTransformation
+            {
+                JobName = jobDetail.Key.Name,
+                JobGroup = jobDetail.Key.Group,
+                SchedulerName = _schedulerCore.SchedulerName,
+                JobDefinitionPath = jobDetail.JobDataMap.GetString("jobDefinitionPath")
+            };
         }
 
         /// <summary>

@@ -53,6 +53,22 @@ namespace R.Scheduler
         }
 
         /// <summary>
+        /// Get JobDetail
+        /// </summary>
+        /// <param name="jobName"></param>
+        /// <param name="jobGroup"></param>
+        /// <returns></returns>
+        public IJobDetail GetJobDetail(string jobName, string jobGroup = null)
+        {
+            // Use DefaultGroup if jobGroup is null or empty
+            jobGroup = (!string.IsNullOrEmpty(jobGroup)) ? jobGroup : JobKey.DefaultGroup;
+
+            var jobKey = new JobKey(jobName, jobGroup);
+
+            return _scheduler.GetJobDetail(jobKey);
+        }
+
+        /// <summary>
         /// Trigger job
         /// </summary>
         /// <param name="jobName"></param>

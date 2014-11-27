@@ -10,7 +10,7 @@ namespace R.Scheduler.Interfaces
 
         IEnumerable<IJobDetail> GetJobDetails(Type jobType = null);
 
-        IJobDetail GetJobDetail(string jobName, string jobGroup = null);
+        IJobDetail GetJobDetail(string jobName, string jobGroup);
 
         void ExecuteJob(string jobName, string groupName);
 
@@ -18,12 +18,12 @@ namespace R.Scheduler.Interfaces
 
         void RemoveJobTriggers(string jobName, string groupName);
 
-        void RemoveJob(string jobName, string jobGroup = null);
+        void RemoveJob(string jobName, string jobGroup);
 
-        void RemoveTrigger(string triggerName, string groupName = null);
+        void RemoveTrigger(string triggerName, string groupName);
 
         void ScheduleTrigger(BaseTrigger myTrigger);
 
-        IEnumerable<ITrigger> GetTriggersOfJob(string jobName, string jobGroup = null);
+        IEnumerable<ITrigger> GetTriggersOfJob(string jobName, string jobGroup);
     }
 }

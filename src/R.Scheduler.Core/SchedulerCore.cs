@@ -64,11 +64,8 @@ namespace R.Scheduler.Core
         /// <param name="jobName"></param>
         /// <param name="jobGroup"></param>
         /// <returns></returns>
-        public IJobDetail GetJobDetail(string jobName, string jobGroup = null)
+        public IJobDetail GetJobDetail(string jobName, string jobGroup)
         {
-            // Use DefaultGroup if jobGroup is null or empty
-            jobGroup = (!string.IsNullOrEmpty(jobGroup)) ? jobGroup : JobKey.DefaultGroup;
-
             var jobKey = new JobKey(jobName, jobGroup);
 
             return _scheduler.GetJobDetail(jobKey);
@@ -81,9 +78,6 @@ namespace R.Scheduler.Core
         /// <param name="jobGroup"></param>
         public void ExecuteJob(string jobName, string jobGroup)
         {
-            // Use DefaultGroup if jobGroup is null or empty
-            jobGroup = (!string.IsNullOrEmpty(jobGroup)) ? jobGroup : JobKey.DefaultGroup;
-
             var jobKey = new JobKey(jobName, jobGroup);
 
             _scheduler.TriggerJob(jobKey);
@@ -96,9 +90,6 @@ namespace R.Scheduler.Core
         /// <param name="jobGroup"></param>
         public void RemoveJobTriggers(string jobName, string jobGroup)
         {
-            // Use DefaultGroup if jobGroup is null or empty
-            jobGroup = (!string.IsNullOrEmpty(jobGroup)) ? jobGroup : JobKey.DefaultGroup;
-
             var jobKey = new JobKey(jobName, jobGroup);
 
             IList<ITrigger> triggers = _scheduler.GetTriggersOfJob(jobKey);
@@ -135,7 +126,7 @@ namespace R.Scheduler.Core
         /// </summary>
         /// <param name="jobName"></param>
         /// <param name="jobGroup"></param>
-        public void RemoveJob(string jobName, string jobGroup = null)
+        public void RemoveJob(string jobName, string jobGroup)
         {
             if (string.IsNullOrEmpty(jobName))
                 throw new ArgumentException("jobName is null or empty.");
@@ -159,12 +150,10 @@ namespace R.Scheduler.Core
         /// </summary>
         /// <param name="triggerName"></param>
         /// <param name="triggerGroup"></param>
-        public void RemoveTrigger(string triggerName, string triggerGroup = null)
+        public void RemoveTrigger(string triggerName, string triggerGroup)
         {
             if (string.IsNullOrEmpty(triggerName))
                 throw new ArgumentException("triggerName is null or empty.");
-
-            triggerGroup = (!string.IsNullOrEmpty(triggerGroup)) ? triggerGroup : TriggerKey.DefaultGroup;
 
             var triggerKey = new TriggerKey(triggerName, triggerGroup);
 
@@ -236,11 +225,8 @@ namespace R.Scheduler.Core
         /// <param name="jobName"></param>
         /// <param name="jobGroup"></param>
         /// <returns></returns>
-        public IEnumerable<ITrigger> GetTriggersOfJob(string jobName, string jobGroup = null)
+        public IEnumerable<ITrigger> GetTriggersOfJob(string jobName, string jobGroup)
         {
-            // Set default trigger group
-            jobGroup = (!string.IsNullOrEmpty(jobGroup)) ? jobGroup : JobKey.DefaultGroup;
-
             return _scheduler.GetTriggersOfJob(new JobKey(jobName, jobGroup));
         }
     }

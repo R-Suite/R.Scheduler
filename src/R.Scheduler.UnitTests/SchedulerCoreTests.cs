@@ -25,7 +25,7 @@ namespace R.Scheduler.UnitTests
             ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object);
 
             // Act 
-            schedulerCore.RemoveJob("TestJob");
+            schedulerCore.RemoveJob("TestJob", "DEFAULT");
 
             // Assert
             _mockScheduler.Verify(x => x.DeleteJob(It.Is<JobKey>(i => i.Name == "TestJob" && i.Group == "DEFAULT")),Times.Exactly(1));
@@ -59,7 +59,7 @@ namespace R.Scheduler.UnitTests
             ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object);
 
             // Act 
-            schedulerCore.RemoveTrigger("TestTrigger");
+            schedulerCore.RemoveTrigger("TestTrigger", "DEFAULT");
 
             // Assert
             _mockScheduler.Verify(x => x.UnscheduleJob(It.Is<TriggerKey>(i => i.Name == "TestTrigger" && i.Group == "DEFAULT")), Times.Exactly(1));

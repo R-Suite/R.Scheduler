@@ -6,7 +6,7 @@ using Quartz.Impl;
 using Quartz.Impl.Matchers;
 using R.Scheduler.Interfaces;
 
-namespace R.Scheduler
+namespace R.Scheduler.Core
 {
     /// <summary>
     /// 

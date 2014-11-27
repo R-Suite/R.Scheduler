@@ -5,7 +5,7 @@ using R.Scheduler.Persistance;
 using StructureMap;
 using StructureMap.Interceptors;
 
-namespace R.Scheduler
+namespace R.Scheduler.Core
 {
     public class PersistanceStoreInterceptor : TypeInterceptor
     {

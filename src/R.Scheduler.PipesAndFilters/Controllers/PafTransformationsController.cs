@@ -7,7 +7,7 @@ using Common.Logging;
 using Quartz;
 using R.Scheduler.Contracts.JobTypes.PipesAndFilters.Model;
 using R.Scheduler.Contracts.Model;
-using R.Scheduler.Controllers;
+using R.Scheduler.Core;
 using R.Scheduler.Interfaces;
 using StructureMap;
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Moq;
 using Quartz;
+using R.Scheduler.Core;
 using R.Scheduler.Interfaces;
 using Xunit;
 

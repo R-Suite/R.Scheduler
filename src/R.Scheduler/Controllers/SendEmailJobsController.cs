@@ -8,6 +8,7 @@ using Quartz;
 using Quartz.Job;
 using R.Scheduler.Contracts.JobTypes.Email.Model;
 using R.Scheduler.Contracts.Model;
+using R.Scheduler.Core;
 using R.Scheduler.Interfaces;
 using StructureMap;
 

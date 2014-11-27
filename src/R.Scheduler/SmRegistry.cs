@@ -1,4 +1,5 @@
 ﻿using Quartz;
+using R.Scheduler.Core;
 using R.Scheduler.Interfaces;
 using StructureMap.Configuration.DSL;
 

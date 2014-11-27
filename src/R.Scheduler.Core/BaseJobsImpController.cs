@@ -6,7 +6,7 @@ using R.Scheduler.Contracts.Model;
 using R.Scheduler.Interfaces;
 using StructureMap;
 
-namespace R.Scheduler.Controllers
+namespace R.Scheduler.Core
 {
     public abstract class BaseJobsImpController : ApiController
     {

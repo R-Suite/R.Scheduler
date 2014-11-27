@@ -89,12 +89,15 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
-    <None Include="R.Scheduler.PipesAndFilters.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\R.Scheduler.Contracts\R.Scheduler.Contracts.csproj">
       <Project>{C2F4994F-DB81-4779-8490-89250561F0D7}</Project>
       <Name>R.Scheduler.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\R.Scheduler.Core\R.Scheduler.Core.csproj">
+      <Project>{0B05F704-2CFF-4571-B63C-D9ABC7FD5666}</Project>
+      <Name>R.Scheduler.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\R.Scheduler.Interfaces\R.Scheduler.Interfaces.csproj">
       <Project>{4010D63D-4BA3-4E41-9087-16CDD341FEBF}</Project>

@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.FakePafFilter1"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.FakePafFilter2", "R.Scheduler.FakePafFilter2\R.Scheduler.FakePafFilter2.csproj", "{F016B987-DB2E-4252-BF86-069BBDAF56FB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.Core", "R.Scheduler.Core\R.Scheduler.Core.csproj", "{0B05F704-2CFF-4571-B63C-D9ABC7FD5666}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,10 @@ Global
 		{F016B987-DB2E-4252-BF86-069BBDAF56FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F016B987-DB2E-4252-BF86-069BBDAF56FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F016B987-DB2E-4252-BF86-069BBDAF56FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B05F704-2CFF-4571-B63C-D9ABC7FD5666}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B05F704-2CFF-4571-B63C-D9ABC7FD5666}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B05F704-2CFF-4571-B63C-D9ABC7FD5666}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B05F704-2CFF-4571-B63C-D9ABC7FD5666}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>R.Scheduler</id>
-    <version>0.0.10</version>
+    <version>0.1.2</version>
     <title>R.Scheduler</title>
     <authors>Jakub Pachansky</authors>
     <owners>Jakub Pachansky,Tim Watson</owners>
@@ -25,6 +25,9 @@
     <file src="bin\Release\R.Scheduler.dll" target="lib\net40\R.Scheduler.dll" />
     <file src="bin\Release\R.Scheduler.Interfaces.dll" target="lib\net40\R.Scheduler.Interfaces.dll" />
     <file src="bin\Release\R.Scheduler.Contracts.dll" target="lib\net40\R.Scheduler.Contracts.dll" />
+    <file src="bin\Release\R.Scheduler.Core.dll" target="lib\net40\R.Scheduler.Core.dll" />
+    <file src="bin\Release\R.Scheduler.Persistance.dll" target="lib\net40\R.Scheduler.Persistance.dll" />
+    <file src="bin\Release\R.Scheduler.AssemblyPlugin.dll" target="lib\net40\R.Scheduler.AssemblyPlugin.dll" />
   </files>
 </package>
 

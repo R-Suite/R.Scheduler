@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Quartz;
 using Quartz.Impl;
 using Quartz.Impl.Matchers;
@@ -9,7 +8,8 @@ using R.Scheduler.Interfaces;
 namespace R.Scheduler.Core
 {
     /// <summary>
-    /// 
+    /// Provides abstraction layer between the Quartz Scheduler 
+    /// and the R.Scheduler controllers
     /// </summary>
     public class SchedulerCore : ISchedulerCore
     {
@@ -22,6 +22,12 @@ namespace R.Scheduler.Core
             _scheduler = scheduler;
         }
 
+        /// <summary>
+        /// Get job details of type <see cref="jobType"/>.
+        /// Get all the job details if jobType is not specified
+        /// </summary>
+        /// <param name="jobType"></param>
+        /// <returns></returns>
         public IEnumerable<IJobDetail> GetJobDetails(Type jobType = null)
         {
             IList<IJobDetail> jobDetails = new List<IJobDetail>();
@@ -53,7 +59,7 @@ namespace R.Scheduler.Core
         }
 
         /// <summary>
-        /// Get JobDetail
+        /// Get JobDetail of the specified job
         /// </summary>
         /// <param name="jobName"></param>
         /// <param name="jobGroup"></param>
@@ -69,7 +75,7 @@ namespace R.Scheduler.Core
         }
 
         /// <summary>
-        /// Trigger job
+        /// Trigger the specified job
         /// </summary>
         /// <param name="jobName"></param>
         /// <param name="jobGroup"></param>
@@ -103,38 +109,6 @@ namespace R.Scheduler.Core
             }
         }
 
-        public void ExecuteJob(Type jobType, Dictionary<string, object> dataMap)
-        {
-            // Set default values
-            Guid temp = Guid.NewGuid();
-            string name = temp + "_Name";
-            string group = temp + "_Group";
-            string jobName = temp + "_Job";
-            string jobGroup = temp + "_JobGroup";
-
-            IJobDetail jobDetail = JobBuilder.Create(jobType)
-                .WithIdentity(jobName, jobGroup)
-                .StoreDurably(false)
-                .Build();
-
-            if (null != dataMap && dataMap.Count > 0)
-            {
-                foreach (var mapItem in dataMap)
-                {
-                    jobDetail.JobDataMap.Add(mapItem.Key, mapItem.Value);
-                }
-            }
-
-            var trigger = (ISimpleTrigger) TriggerBuilder.Create()
-                .WithIdentity(name, group)
-                .StartNow()
-                .ForJob(jobDetail)
-                .WithSimpleSchedule(x => x.WithRepeatCount(0))
-                .Build();
-
-            _scheduler.ScheduleJob(jobDetail, trigger);
-        }
-
         /// <summary>
         /// Create new job of type <see cref="jobType"/> without any triggers
         /// </summary>
@@ -153,16 +127,6 @@ namespace R.Scheduler.Core
                 jobDetail.JobDataMap.Add(mapItem.Key, mapItem.Value);
             }
             _scheduler.AddJob(jobDetail, true);
-        }
-
-        public void RemoveJobGroup(string groupName)
-        {
-            if (string.IsNullOrEmpty(groupName))
-                throw new ArgumentException("groupName is null or empty.");
-
-            Quartz.Collection.ISet<JobKey> jobKeys = _scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(groupName));
-            _scheduler.DeleteJobs(jobKeys.ToList());
-
         }
 
         /// <summary>
@@ -214,80 +178,6 @@ namespace R.Scheduler.Core
             }
         }
 
-        public void ScheduleTrigger(BaseTrigger myTrigger, Type jobType)
-        {
-            // Set default values
-            Guid temp = Guid.NewGuid();
-            string name = !string.IsNullOrEmpty(myTrigger.Name) ? myTrigger.Name : temp + "_Name";
-            string group = !string.IsNullOrEmpty(myTrigger.Group) ? myTrigger.Group : temp + "_Group";
-            string jobName = !string.IsNullOrEmpty(myTrigger.JobName) ? myTrigger.JobName : temp + "_Job";
-            string jobGroup = !string.IsNullOrEmpty(myTrigger.JobGroup) ? myTrigger.JobGroup : temp + "_JobGroup";
-
-            DateTimeOffset startAt = (DateTime.MinValue != myTrigger.StartDateTime) ? myTrigger.StartDateTime : DateTime.UtcNow;
-
-            // Check if jobDetail already exists
-            var jobKey = new JobKey(jobName, jobGroup);
-            IJobDetail jobDetail = _scheduler.GetJobDetail(jobKey);
-
-            // If jobDetail does not exist, create new
-            if (null == jobDetail)
-            {
-                jobDetail = JobBuilder.Create(jobType)
-                    .WithIdentity(jobName, jobGroup)
-                    .StoreDurably(false)
-                    .Build();
-
-                foreach (var mapItem in myTrigger.DataMap)
-                {
-                    jobDetail.JobDataMap.Add(mapItem.Key, mapItem.Value);
-                }
-            }
-
-            var cronTrigger = myTrigger as CronTrigger;
-            if (cronTrigger != null)
-            {
-                var trigger = (ICronTrigger) TriggerBuilder.Create()
-                    .WithIdentity(name, group)
-                    .ForJob(jobDetail)
-                    .WithCronSchedule(cronTrigger.CronExpression)
-                    .StartAt(startAt)
-                    .Build();
-
-                // Schedule Job
-                if (_scheduler.CheckExists(jobKey))
-                {
-                    _scheduler.ScheduleJob(trigger);
-                }
-                else
-                {
-                    _scheduler.ScheduleJob(jobDetail, trigger);
-                }
-            }
-
-            var simpleTrigger = myTrigger as SimpleTrigger;
-            if (simpleTrigger != null)
-            {
-                var trigger = (ISimpleTrigger)TriggerBuilder.Create()
-                    .WithIdentity(name, group)
-                    .ForJob(jobDetail)
-                    .StartAt(startAt)
-                    .WithSimpleSchedule(x => x
-                        .WithInterval(simpleTrigger.RepeatInterval)
-                        .WithRepeatCount(simpleTrigger.RepeatCount))
-                    .Build();
-
-                // Schedule Job
-                if (_scheduler.CheckExists(jobKey))
-                {
-                    _scheduler.ScheduleJob(trigger);
-                }
-                else
-                {
-                    _scheduler.ScheduleJob(jobDetail, trigger);
-                }
-            }
-        }
-
         /// <summary>
         /// Schedule specified trigger
         /// </summary>
@@ -303,13 +193,13 @@ namespace R.Scheduler.Core
             // Check if jobDetail already exists
             var jobKey = new JobKey(myTrigger.JobName, myTrigger.JobGroup);
 
-            IJobDetail jobDetail = _scheduler.GetJobDetail(jobKey);
-
             // If jobDetail does not exist, throw
-            if (null == jobDetail)
+            if (!_scheduler.CheckExists(jobKey))
             {
                 throw new Exception(string.Format("Job does not exist. Name = {0}, Group = {1}", myTrigger.JobName, myTrigger.JobGroup));
             }
+
+            IJobDetail jobDetail = _scheduler.GetJobDetail(jobKey);
 
             var cronTrigger = myTrigger as CronTrigger;
             if (cronTrigger != null)
@@ -321,15 +211,7 @@ namespace R.Scheduler.Core
                     .StartAt(startAt)
                     .Build();
 
-                // Schedule Job
-                if (_scheduler.CheckExists(jobKey))
-                {
-                    _scheduler.ScheduleJob(trigger);
-                }
-                else
-                {
-                    _scheduler.ScheduleJob(jobDetail, trigger);
-                }
+                _scheduler.ScheduleJob(trigger);
             }
 
             var simpleTrigger = myTrigger as SimpleTrigger;
@@ -344,32 +226,16 @@ namespace R.Scheduler.Core
                         .WithRepeatCount(simpleTrigger.RepeatCount))
                     .Build();
 
-                // Schedule Job
-                if (_scheduler.CheckExists(jobKey))
-                {
-                    _scheduler.ScheduleJob(trigger);
-                }
-                else
-                {
-                    _scheduler.ScheduleJob(jobDetail, trigger);
-                }
+                _scheduler.ScheduleJob(trigger);
             }
         }
 
-        public IEnumerable<ITrigger> GetTriggersOfJobGroup(string jobGroup)
-        {
-            var retval = new List<ITrigger>();
-
-            Quartz.Collection.ISet<JobKey> jobKeys = _scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(jobGroup));
-
-            foreach (var jobKey in jobKeys)
-            {
-                retval.AddRange(_scheduler.GetTriggersOfJob(jobKey));
-            }
-
-            return retval;
-        }
-
+        /// <summary>
+        /// Get all triggers of a specified job
+        /// </summary>
+        /// <param name="jobName"></param>
+        /// <param name="jobGroup"></param>
+        /// <returns></returns>
         public IEnumerable<ITrigger> GetTriggersOfJob(string jobName, string jobGroup = null)
         {
             // Set default trigger group

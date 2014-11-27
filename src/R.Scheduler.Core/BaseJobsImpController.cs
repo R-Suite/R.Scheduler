@@ -8,6 +8,9 @@ using StructureMap;
 
 namespace R.Scheduler.Core
 {
+    /// <summary>
+    /// A base class that provides common functionality for job controllers
+    /// </summary>
     public abstract class BaseJobsImpController : ApiController
     {
         readonly ISchedulerCore _schedulerCore;

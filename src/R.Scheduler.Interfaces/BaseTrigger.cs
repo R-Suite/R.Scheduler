@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace R.Scheduler.Interfaces
 {
@@ -11,7 +10,5 @@ namespace R.Scheduler.Interfaces
         public string JobName { get; set; }
 
         public DateTime StartDateTime { get; set; }
-
-        public Dictionary<string, object> DataMap { get; set; } 
     }
 }

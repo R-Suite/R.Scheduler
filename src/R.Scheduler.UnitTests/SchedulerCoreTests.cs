@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Moq;
 using Quartz;
+using Quartz.Impl;
+using Quartz.Job;
 using R.Scheduler.Core;
 using R.Scheduler.Interfaces;
 using Xunit;
@@ -11,21 +13,6 @@ namespace R.Scheduler.UnitTests
     public class SchedulerCoreTests
     {
         private readonly Mock<IScheduler> _mockScheduler = new Mock<IScheduler>();
-
-        [Fact]
-        public void ShouldScheduleJobWithSimpleTriggerWhenCalledExecutePlugin()
-        {
-            // Arrange
-            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object);
-
-            // Act 
-            schedulerCore.ExecuteJob(typeof(IJob), new Dictionary<string, object> { { "pluginPath", "TestPath.dll" } });
-
-            // Assert
-            _mockScheduler.Verify(x => x.ScheduleJob(
-                It.Is<IJobDetail>(j => j.JobDataMap.ContainsKey("pluginPath") && j.JobDataMap.ContainsValue("TestPath.dll")),
-                It.Is<ISimpleTrigger>(t => t.RepeatCount == 0)));
-        }
 
         [Fact]
         public void ShouldDeleteJobInDefaultJobGroupsWhenJobGroupIsNotSpecifiedInRemoveJob()
@@ -106,21 +93,19 @@ namespace R.Scheduler.UnitTests
                 JobName = "TestJobName",
                 JobGroup = "TestJobGroup",
                 RepeatCount = 2,
-                RepeatInterval = new TimeSpan(0,0,0,1),
-                DataMap = new Dictionary<string, object> { { "pluginPath", "TestPath.dll" } }
+                RepeatInterval = new TimeSpan(0,0,0,1)
             };
-            IJobDetail nullJd = null;
-            _mockScheduler.Setup(x => x.GetJobDetail(It.IsAny<JobKey>())).Returns(nullJd);
-            _mockScheduler.Setup(x => x.CheckExists(It.IsAny<JobKey>())).Returns(false);
+            IJobDetail noOpJob = new JobDetailImpl("TestJobName", "TestJobGroup", typeof(NoOpJob));
+            _mockScheduler.Setup(x => x.GetJobDetail(It.IsAny<JobKey>())).Returns(noOpJob);
+            _mockScheduler.Setup(x => x.CheckExists(It.IsAny<JobKey>())).Returns(true);
 
             ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object);
             
             // Act 
-            schedulerCore.ScheduleTrigger(myTrigger, typeof(IJob));
+            schedulerCore.ScheduleTrigger(myTrigger);
 
             // Assert
             _mockScheduler.Verify(x => x.ScheduleJob(
-                It.Is<IJobDetail>(j => j.JobDataMap.ContainsKey("pluginPath") && j.JobDataMap.ContainsValue("TestPath.dll")),
                 It.Is<ISimpleTrigger>(t => t.RepeatCount == 2)), Times.Once);
         }
 
@@ -134,21 +119,19 @@ namespace R.Scheduler.UnitTests
                 Group = "TestGroup",
                 JobName = "TestJobName",
                 JobGroup = "TestJobGroup",
-                CronExpression = "0/30 * * * * ?",
-                DataMap = new Dictionary<string, object> { { "pluginPath", "TestPath.dll" } }
+                CronExpression = "0/30 * * * * ?"
             };
-            IJobDetail nullJd = null;
-            _mockScheduler.Setup(x => x.GetJobDetail(It.IsAny<JobKey>())).Returns(nullJd);
-            _mockScheduler.Setup(x => x.CheckExists(It.IsAny<JobKey>())).Returns(false);
+            IJobDetail noOpJob = new JobDetailImpl("TestJobName", "TestJobGroup", typeof(NoOpJob));
+            _mockScheduler.Setup(x => x.GetJobDetail(It.IsAny<JobKey>())).Returns(noOpJob);
+            _mockScheduler.Setup(x => x.CheckExists(It.IsAny<JobKey>())).Returns(true);
 
             ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object);
 
             // Act 
-            schedulerCore.ScheduleTrigger(myTrigger, typeof(IJob));
+            schedulerCore.ScheduleTrigger(myTrigger);
 
             // Assert
             _mockScheduler.Verify(x => x.ScheduleJob(
-                It.Is<IJobDetail>(j => j.JobDataMap.ContainsKey("pluginPath") && j.JobDataMap.ContainsValue("TestPath.dll")),
                 It.Is<ICronTrigger>(t => t.CronExpressionString == "0/30 * * * * ?")), Times.Once);
         }
     }

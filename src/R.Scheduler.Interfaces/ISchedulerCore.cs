@@ -18,19 +18,11 @@ namespace R.Scheduler.Interfaces
 
         void RemoveJobTriggers(string jobName, string groupName);
 
-        void ExecuteJob(Type jobType, Dictionary<string, object> dataMap);
-
         void RemoveJob(string jobName, string jobGroup = null);
-
-        void RemoveJobGroup(string groupName);
 
         void RemoveTrigger(string triggerName, string groupName = null);
 
-        void ScheduleTrigger(BaseTrigger myTrigger, Type jobType);
-
         void ScheduleTrigger(BaseTrigger myTrigger);
-
-        IEnumerable<ITrigger> GetTriggersOfJobGroup(string jobGroup);
 
         IEnumerable<ITrigger> GetTriggersOfJob(string jobName, string jobGroup = null);
     }

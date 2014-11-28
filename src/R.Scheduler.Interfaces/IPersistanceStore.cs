@@ -2,6 +2,6 @@
 {
     public interface IPersistanceStore
     {
-        void InsertAuditLog(IAuditLog log);
+        void InsertAuditLog(AuditLog log);
     }
 }

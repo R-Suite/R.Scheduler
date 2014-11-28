@@ -17,7 +17,7 @@ namespace R.Scheduler.Persistance
             _policy = new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddHours(10.00) };
         }
 
-        public void InsertAuditLog(IAuditLog log)
+        public void InsertAuditLog(AuditLog log)
         {
             throw new NotImplementedException();
         }

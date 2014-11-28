@@ -28,6 +28,7 @@ namespace R.Scheduler.Controllers
         /// Get all the jobs of type <see cref="SendMailJob"/>
         /// </summary>
         /// <returns></returns>
+        [AcceptVerbs("GET")]
         [Route("api/emails")]
         public IEnumerable<EmailJob> Get()
         {
@@ -70,12 +71,13 @@ namespace R.Scheduler.Controllers
         /// Get job details of <see cref="jobName"/>
         /// </summary>
         /// <returns></returns>
+        [AcceptVerbs("GET")]
         [Route("api/emails")]
-        public EmailJob GetJob(string jobName, string jobGroup = null)
+        public EmailJob Get(string jobName, string jobGroup)
         {
             Logger.Info("Entered SendEmailJobsController.Get().");
 
-            IJobDetail jobDetail = null;
+            IJobDetail jobDetail;
 
             try
             {

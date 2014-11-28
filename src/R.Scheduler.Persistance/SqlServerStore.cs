@@ -15,7 +15,7 @@ namespace R.Scheduler.Persistance
             _connectionString = connectionString;
         }
 
-        public void InsertAuditLog(IAuditLog log)
+        public void InsertAuditLog(AuditLog log)
         {
             throw new NotImplementedException();
         }

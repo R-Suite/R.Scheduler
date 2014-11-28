@@ -27,8 +27,8 @@ namespace R.Scheduler.Controllers
         /// <param name="jobGroup"></param>
         /// <returns></returns>
         [AcceptVerbs("GET")]
-        [Route("api/triggers/{jobName}/{jobGroup?}")]
-        public IList<TriggerDetails> Get(string jobName, string jobGroup = null)
+        [Route("api/triggers/{jobName}/{jobGroup}")]
+        public IList<TriggerDetails> Get(string jobName, string jobGroup)
         {
             Logger.InfoFormat("Entered TriggersController.Get(). jobName = {0}, jobName = {1}", jobName, jobGroup);
 
@@ -173,8 +173,8 @@ namespace R.Scheduler.Controllers
         /// <param name="jobGroup"></param>
         /// <returns></returns>
         [AcceptVerbs("DELETE")]
-        [Route("api/triggers/{jobName}/{jobGroup?}")]
-        public QueryResponse Unschedule(string jobName, string jobGroup = null)
+        [Route("api/triggers/{jobName}/{jobGroup}")]
+        public QueryResponse Unschedule(string jobName, string jobGroup)
         {
             Logger.InfoFormat("Entered TriggersController.Unschedule(). jobName = {0}, jobName = {1}", jobName, jobGroup);
 
@@ -209,7 +209,7 @@ namespace R.Scheduler.Controllers
         /// <returns></returns>
         [AcceptVerbs("DELETE")]
         [Route("api/triggers")]
-        public QueryResponse DeleteTrigger(string triggerName, string triggerGroup=null)
+        public QueryResponse DeleteTrigger(string triggerName, string triggerGroup)
         {
             Logger.InfoFormat("Entered TriggersController.DeleteTrigger(). triggerGroup = {0}, triggerGroup = {1}", triggerName, triggerGroup);
 

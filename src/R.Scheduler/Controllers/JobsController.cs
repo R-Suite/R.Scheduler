@@ -51,8 +51,8 @@ namespace R.Scheduler.Controllers
         /// <param name="jobGroup"></param>
         /// <returns></returns>
         [AcceptVerbs("POST")]
-        [Route("api/jobs/{jobName}/{jobGroup?}")]
-        public QueryResponse Execute(string jobName, string jobGroup = null)
+        [Route("api/jobs/{jobName}/{jobGroup}")]
+        public QueryResponse Execute(string jobName, string jobGroup)
         {
             Logger.InfoFormat("Entered JobsController.Execute(). jobName = {0}, jobGroup = {1}", jobName, jobGroup);
 
@@ -86,8 +86,8 @@ namespace R.Scheduler.Controllers
         /// <param name="jobGroup"></param>
         /// <returns></returns>
         [AcceptVerbs("DELETE")]
-        [Route("api/jobs/{jobName}/{jobGroup?}")]
-        public QueryResponse Delete(string jobName, string jobGroup = null)
+        [Route("api/jobs/{jobName}/{jobGroup}")]
+        public QueryResponse Delete(string jobName, string jobGroup)
         {
             Logger.InfoFormat("Entered JobsController.Delete(). jobName = {0}, jobGroup = {1}", jobName, jobGroup);
 

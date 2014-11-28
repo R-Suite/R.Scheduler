@@ -60,6 +60,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AuditTriggerListener.cs" />
     <Compile Include="BaseJobsImpController.cs" />
     <Compile Include="PersistanceStoreInterceptor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

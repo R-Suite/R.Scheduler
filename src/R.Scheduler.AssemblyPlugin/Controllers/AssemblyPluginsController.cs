@@ -50,8 +50,9 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         /// Get job details of <see cref="jobName"/>
         /// </summary>
         /// <returns></returns>
+        [AcceptVerbs("GET")]
         [Route("api/plugins")]
-        public PluginJob GetJob(string jobName, string jobGroup = null)
+        public PluginJob Get(string jobName, string jobGroup)
         {
             Logger.Info("Entered AssemblyPluginsController.Get().");
 

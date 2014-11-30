@@ -15,6 +15,8 @@ namespace R.Scheduler
 
             EnableWebApiSelfHost = true;
             WebApiBaseAddress = "http://localhost:5000/";
+
+            EnableAuditHistory = true;
         }
 
         public PersistanceStoreType PersistanceStoreType { get; set; }
@@ -26,5 +28,7 @@ namespace R.Scheduler
 
         public bool EnableWebApiSelfHost { get; set; }
         public string WebApiBaseAddress { get; set; }
+
+        public bool EnableAuditHistory { get; set; }
     }
 }

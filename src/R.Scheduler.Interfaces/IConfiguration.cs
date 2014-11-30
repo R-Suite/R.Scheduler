@@ -11,5 +11,7 @@
 
         bool EnableWebApiSelfHost { get; set; }
         string WebApiBaseAddress { get; set; }
+
+        bool EnableAuditHistory { get; set; }
     }
 }

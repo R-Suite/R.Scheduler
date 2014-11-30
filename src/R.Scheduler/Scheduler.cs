@@ -3,6 +3,8 @@ using System.Collections.Specialized;
 using Microsoft.Owin.Hosting;
 using Quartz;
 using Quartz.Impl;
+using Quartz.Impl.Matchers;
+using R.Scheduler.Core;
 using R.Scheduler.Interfaces;
 using StructureMap;
 using IConfiguration = R.Scheduler.Interfaces.IConfiguration;
@@ -70,6 +72,12 @@ namespace R.Scheduler
 
                         ISchedulerFactory schedFact = new StdSchedulerFactory(GetProperties());
                         _instance = schedFact.GetScheduler();
+
+                        if (Configuration.EnableAuditHistory)
+                        {
+                            _instance.ListenerManager.AddJobListener(new AuditJobListener(), GroupMatcher<JobKey>.AnyGroup());
+                            _instance.ListenerManager.AddTriggerListener(new AuditTriggerListener(), GroupMatcher<TriggerKey>.AnyGroup());
+                        }
 
                         if (Configuration.EnableWebApiSelfHost)
                         {

@@ -4,9 +4,9 @@ namespace R.Scheduler.Interfaces
 {
     public class AuditLog
     {
-        public string FireInstanceId { get; set; }
         public DateTime TimeStamp { get; set; }
         public string Action { get; set; }
+        public string FireInstanceId { get; set; }
         public string JobName { get; set; }
         public string JobGroup { get; set; }
         public string JobType { get; set; }
@@ -19,5 +19,6 @@ namespace R.Scheduler.Interfaces
         public int RefireCount { get; set; }
         public bool Recovering { get; set; }
         public string Result { get; set; }
+        public string ExecutionException { get; set; }
     }
 }

@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Globalization;
 using System.Runtime.Caching;
 using R.Scheduler.Interfaces;
 
 namespace R.Scheduler.Persistance
 {
     /// <summary>
-    /// InMemory implementation of ICustomJobStore
+    /// InMemory implementation of IPersistanceStore
     /// </summary>
     public class InMemoryStore : IPersistanceStore
     {
@@ -19,7 +20,14 @@ namespace R.Scheduler.Persistance
 
         public void InsertAuditLog(AuditLog log)
         {
-            throw new NotImplementedException();
+            _policy = new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddHours(10.00) };
+
+            if (log.TimeStamp == DateTime.MinValue)
+            {
+                log.TimeStamp = DateTime.UtcNow;
+            }
+
+            Cache.Set(log.TimeStamp.ToString(CultureInfo.InvariantCulture), log, _policy);
         }
     }
 }

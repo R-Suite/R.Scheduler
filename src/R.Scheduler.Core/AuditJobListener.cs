@@ -98,7 +98,7 @@ namespace R.Scheduler.Core
                 Params = JsonConvert.SerializeObject(context.MergedJobDataMap),
                 RefireCount = context.RefireCount,
                 Recovering = context.Recovering,
-                Result = context.Result.ToString()
+                Result = (context.Result != null) ? context.Result.ToString() : null
             };
 
             return auditLog;

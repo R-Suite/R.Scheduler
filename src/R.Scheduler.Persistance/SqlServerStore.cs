@@ -1,11 +1,17 @@
 ﻿using System;
 using System.Data.SqlClient;
+using System.Reflection;
+using Common.Logging;
 using R.Scheduler.Interfaces;
 
 namespace R.Scheduler.Persistance
 {
+    /// <summary>
+    /// Sql Server implementation of <see cref="IPersistanceStore"/>
+    /// </summary>
     public class SqlServerStore : IPersistanceStore
     {
+        private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly string _connectionString;
 
         public SqlServerStore(string connectionString)
@@ -13,12 +19,14 @@ namespace R.Scheduler.Persistance
             _connectionString = connectionString;
         }
 
+        /// <summary>
+        /// Insert AuditLog. 
+        /// Each entry is read-only.
+        /// </summary>
+        /// <param name="log"></param>
         public void InsertAuditLog(AuditLog log)
         {
-            var conn = new SqlConnection(_connectionString);
-            conn.Open();
-
-            var sqlInsert = @"INSERT INTO RSCHED_AUDIT_HISTORY([TIME_STAMP]
+            const string sqlInsert = @"INSERT INTO RSCHED_AUDIT_HISTORY([TIME_STAMP]
                                                                ,[ACTION]
                                                                ,[FIRE_INSTANCE_ID]
                                                                ,[JOB_NAME]
@@ -51,13 +59,13 @@ namespace R.Scheduler.Persistance
                                                                 @recovering, 
                                                                 @result, 
                                                                 @executionException);";
-            var command = new SqlCommand(sqlInsert, conn);
 
-            try
+            using (var con = new SqlConnection(_connectionString))
             {
-                using (var transaction = conn.BeginTransaction())
+                try
                 {
-                    try
+                    con.Open();
+                    using (var command = new SqlCommand(sqlInsert, con))
                     {
                         command.Parameters.AddWithValue("@timeStamp", DateTime.UtcNow);
                         command.Parameters.AddWithValue("@action", log.Action);
@@ -73,25 +81,16 @@ namespace R.Scheduler.Persistance
                         command.Parameters.AddWithValue("@params", log.Params);
                         command.Parameters.AddWithValue("@refireCount", log.RefireCount);
                         command.Parameters.AddWithValue("@recovering", log.Recovering);
-                        command.Parameters.AddWithValue("@result", log.Result);
-                        command.Parameters.AddWithValue("@executionException", log.ExecutionException);
+                        command.Parameters.AddWithValue("@result", log.Result ?? string.Empty);
+                        command.Parameters.AddWithValue("@executionException", log.ExecutionException ?? string.Empty);
 
-                        command.Transaction = transaction;
-                        command.CommandText = sqlInsert;
                         command.ExecuteScalar();
-
-                        transaction.Commit();
-                    }
-                    catch (Exception)
-                    {
-                        transaction.Rollback();
-                        throw;
                     }
                 }
-            }
-            finally
-            {
-                conn.Close();
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error persisting AuditLog. {0}", ex.Message);
+                }
             }
         }
     }

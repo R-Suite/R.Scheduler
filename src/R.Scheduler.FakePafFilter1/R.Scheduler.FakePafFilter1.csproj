@@ -49,6 +49,9 @@
       <Name>R.Scheduler.PipesAndFilters</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy /Y "$(TargetDir)$(ProjectName).dll" "$(SolutionDir)R.Scheduler.IntegrationTests\Resourses\$(ProjectName).dll"</PostBuildEvent>

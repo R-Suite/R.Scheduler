@@ -93,7 +93,7 @@ namespace R.Scheduler.Core
             {
                 Action = action,
                 TimeStamp = DateTime.UtcNow,
-                JobName = trigger.JobKey.Group,
+                JobName = trigger.JobKey.Name,
                 JobGroup = trigger.JobKey.Group,
                 TriggerName = trigger.Key.Name,
                 TriggerGroup = trigger.Key.Group,
@@ -110,7 +110,7 @@ namespace R.Scheduler.Core
                 auditLog.Params = JsonConvert.SerializeObject(context.MergedJobDataMap);
                 auditLog.RefireCount = context.RefireCount;
                 auditLog.Recovering = context.Recovering;
-                auditLog.Result = context.Result.ToString();
+                auditLog.Result = (context.Result != null) ? context.Result.ToString() : null;
             }
 
             return auditLog;

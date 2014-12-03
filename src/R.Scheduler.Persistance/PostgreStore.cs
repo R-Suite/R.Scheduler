@@ -27,22 +27,22 @@ namespace R.Scheduler.Persistance
         /// <param name="log"></param>
         public void InsertAuditLog(AuditLog log)
         {
-            const string sqlInsert = @"INSERT INTO RSCHED_AUDIT_HISTORY([time_stamp]
-                                                               ,[action]
-                                                               ,[fire_instance_id]
-                                                               ,[job_name]
-                                                               ,[job_group]
-                                                               ,[job_type]
-                                                               ,[trigger_name]
-                                                               ,[trigger_group]
-                                                               ,[fire_time_utc]
-                                                               ,[scheduled_fire_time_utc]
-                                                               ,[job_run_time]
-                                                               ,[params]
-                                                               ,[refire_count]
-                                                               ,[recovering]
-                                                               ,[result]
-                                                               ,[execution_exception]) 
+            const string sqlInsert = @"INSERT INTO RSCHED_AUDIT_HISTORY(time_stamp
+                                                               ,action
+                                                               ,fire_instance_id
+                                                               ,job_name
+                                                               ,job_group
+                                                               ,job_type
+                                                               ,trigger_name
+                                                               ,trigger_group
+                                                               ,fire_time_utc
+                                                               ,scheduled_fire_time_utc
+                                                               ,job_run_time
+                                                               ,params
+                                                               ,refire_count
+                                                               ,recovering
+                                                               ,result
+                                                               ,execution_exception) 
                                                             VALUES (
                                                                 :timeStamp, 
                                                                 :action, 
@@ -77,8 +77,8 @@ namespace R.Scheduler.Persistance
                         command.Parameters.Add(new NpgsqlParameter("jobType", NpgsqlDbType.Varchar));
                         command.Parameters.Add(new NpgsqlParameter("triggerName", NpgsqlDbType.Varchar));
                         command.Parameters.Add(new NpgsqlParameter("triggerGroup", NpgsqlDbType.Varchar));
-                        command.Parameters.Add(new NpgsqlParameter("fireTimeUtc", NpgsqlDbType.Date));
-                        command.Parameters.Add(new NpgsqlParameter("scheduledFireTimeUtc", NpgsqlDbType.Date));
+                        command.Parameters.Add(new NpgsqlParameter("fireTimeUtc", NpgsqlDbType.TimestampTZ));
+                        command.Parameters.Add(new NpgsqlParameter("scheduledFireTimeUtc", NpgsqlDbType.TimestampTZ));
                         command.Parameters.Add(new NpgsqlParameter("jobRunTime", NpgsqlDbType.Bigint));
                         command.Parameters.Add(new NpgsqlParameter("params", NpgsqlDbType.Varchar));
                         command.Parameters.Add(new NpgsqlParameter("refireCount", NpgsqlDbType.Integer));

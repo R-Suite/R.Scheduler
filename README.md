@@ -1,5 +1,5 @@
 # R.Scheduler
-An experimental, easy to use plugin execution engine built on top of Quartz Enterprise Scheduler .NET. 
+An experimental, easy to use job execution engine built on top of Quartz Enterprise Scheduler .NET. 
 R.Scheduler is API driven. Actions can be performed using a simple RESTful API using JSON over HTTP.
 
 ## Getting Started
@@ -32,3 +32,11 @@ R.Scheduler.Scheduler.Initialize(config =>
 IScheduler sched = R.Scheduler.Scheduler.Instance();
 sched.Start();
 ```
+
+#### Downloads
+
+Download from NuGet 'R.Scheduler' and install into your Host application.
+
+Download from NuGet 'R.Scheduler.Contracts' and install into your Client application(s).
+
+[Search NuGet for R.Scheduler](http://nuget.org/packages?q=R.Scheduler)

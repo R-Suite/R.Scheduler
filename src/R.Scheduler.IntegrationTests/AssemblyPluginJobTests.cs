@@ -12,11 +12,11 @@ namespace R.Scheduler.IntegrationTests
     /// Presense of the file after each test indicates a successful execution.
     /// 
     /// </summary>
-    public class PluginRunnerTests
+    public class AssemblyPluginJobTests
     {
         private readonly Mock<IJobExecutionContext> _mockJobExecutionContext = new Mock<IJobExecutionContext>();
 
-        public PluginRunnerTests()
+        public AssemblyPluginJobTests()
         {
             // Delete the controle text file if already exists
             File.Delete("FakeJobPlugin.txt");

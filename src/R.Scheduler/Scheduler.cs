@@ -32,7 +32,7 @@ namespace R.Scheduler
         /// Instantiates Scheduler, including any configuration.
         /// </summary>
         /// <param name="action">A lambda that configures that sets the Scheduler configuration.</param>
-        public static void Initialize(Action<IConfiguration> action)
+        public static void Initialize(Action<IConfiguration> action = null)
         {
             if (null != _instance)
             {
@@ -40,7 +40,11 @@ namespace R.Scheduler
             }
 
             var configuration = new Configuration();
-            action(configuration);
+
+            if (null != action)
+            {
+                action(configuration);
+            }
 
             Configuration = configuration;
 

@@ -56,6 +56,7 @@ namespace R.Scheduler.Controllers
                     JobName = quartzTrigger.JobKey.Name,
                     JobGroup = quartzTrigger.JobKey.Group,
                     Description = quartzTrigger.Description,
+                    CalendarName = quartzTrigger.CalendarName,
                     StartTimeUtc = quartzTrigger.StartTimeUtc.UtcDateTime,
                     EndTimeUtc =
                         (quartzTrigger.EndTimeUtc.HasValue)
@@ -98,6 +99,7 @@ namespace R.Scheduler.Controllers
                     RepeatCount = model.RepeatCount,
                     RepeatInterval = model.RepeatInterval,
                     StartDateTime = model.StartDateTime,
+                    CalendarName = model.CalendarName
                 });
             }
             catch (Exception ex)
@@ -140,6 +142,7 @@ namespace R.Scheduler.Controllers
                     JobGroup = model.JobGroup,
                     CronExpression = model.CronExpression,
                     StartDateTime = model.StartDateTime,
+                    CalendarName = model.CalendarName
                 });
             }
             catch (Exception ex)

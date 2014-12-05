@@ -90,7 +90,7 @@ namespace R.Scheduler.UnitTests
             {
                 Name = "TestTrigger",
                 Group = "TestGroup",
-                JobName = "TestJobName",
+                CalendarName = "TestJobName",
                 JobGroup = "TestJobGroup",
                 RepeatCount = 2,
                 RepeatInterval = new TimeSpan(0,0,0,1)
@@ -117,7 +117,7 @@ namespace R.Scheduler.UnitTests
             {
                 Name = "TestTrigger",
                 Group = "TestGroup",
-                JobName = "TestJobName",
+                CalendarName = "TestJobName",
                 JobGroup = "TestJobGroup",
                 CronExpression = "0/30 * * * * ?"
             };

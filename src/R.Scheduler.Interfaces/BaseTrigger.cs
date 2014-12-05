@@ -9,6 +9,8 @@ namespace R.Scheduler.Interfaces
         public string JobGroup { get; set; }
         public string JobName { get; set; }
 
+        public string CalendarName { get; set; }
+
         public DateTime StartDateTime { get; set; }
     }
 }

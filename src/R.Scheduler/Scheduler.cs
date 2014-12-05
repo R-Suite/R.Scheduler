@@ -58,7 +58,7 @@ namespace R.Scheduler
 
         /// <summary>
         /// Gets instance of Quartz Scheduler.
-        /// Hosts R.MessageBus and WebApi endpoints if needed.
+        /// Hosts WebApi endpoints and register AuditListeners.
         /// </summary>
         /// <returns></returns>
         public static IScheduler Instance()

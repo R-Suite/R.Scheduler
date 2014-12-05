@@ -25,5 +25,11 @@ namespace R.Scheduler.Interfaces
         void ScheduleTrigger(BaseTrigger myTrigger);
 
         IEnumerable<ITrigger> GetTriggersOfJob(string jobName, string jobGroup);
+
+        void AddHolidayCalendar(string name, string description, IList<DateTime> daysExcludedUtc = null);
+
+        void AddHolidayCalendarExclusionDates(string name, IList<DateTime> daysExcludedUtc);
+
+        bool DeleteCalendar(string name);
     }
 }

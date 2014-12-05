@@ -11,6 +11,7 @@ namespace R.Scheduler.Contracts.Model
         public string JobGroup { get; set; }
 
         public DateTime StartDateTime { get; set; }
+        public string CalendarName { get; set; }
         public string CronExpression { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Quartz;
 using Quartz.Impl;
+using Quartz.Impl.Calendar;
 using Quartz.Impl.Matchers;
 using R.Scheduler.Interfaces;
 
@@ -24,7 +25,7 @@ namespace R.Scheduler.Core
 
         /// <summary>
         /// Get job details of type <see cref="jobType"/>.
-        /// Get all the job details if jobType is not specified
+        /// Get all the job details if <see cref="jobType"/> is not specified
         /// </summary>
         /// <param name="jobType"></param>
         /// <returns></returns>
@@ -59,7 +60,7 @@ namespace R.Scheduler.Core
         }
 
         /// <summary>
-        /// Get JobDetail of the specified job
+        /// Get <see cref="IJobDetail"/> of the specified job
         /// </summary>
         /// <param name="jobName"></param>
         /// <param name="jobGroup"></param>
@@ -122,10 +123,16 @@ namespace R.Scheduler.Core
 
         /// <summary>
         /// Remove job and all associated triggers.
-        /// Assume JobKey.DefaultGroup if jobGroup not provided.
+        /// Assume <see cref="JobKey.DefaultGroup"/> if jobGroup not provided.
         /// </summary>
         /// <param name="jobName"></param>
         /// <param name="jobGroup"></param>
+        /// <exception cref="ArgumentException"> 
+        /// If the jobName is an empty string.
+        /// </exception>
+        /// /// <exception cref="KeyNotFoundException"> 
+        /// If the jobKey is not found.
+        /// </exception>
         public void RemoveJob(string jobName, string jobGroup)
         {
             if (string.IsNullOrEmpty(jobName))
@@ -146,7 +153,7 @@ namespace R.Scheduler.Core
 
         /// <summary>
         /// Remove trigger from scheduler.
-        /// Assume TriggerKey.DefaultGroup if triggerGroup not provided.
+        /// Assume <see cref="TriggerKey.DefaultGroup"/> if triggerGroup not provided.
         /// </summary>
         /// <param name="triggerName"></param>
         /// <param name="triggerGroup"></param>
@@ -180,12 +187,12 @@ namespace R.Scheduler.Core
             myTrigger.Group = (!string.IsNullOrEmpty(myTrigger.Group)) ? myTrigger.Group : TriggerKey.DefaultGroup;
 
             // Check if jobDetail already exists
-            var jobKey = new JobKey(myTrigger.JobName, myTrigger.JobGroup);
+            var jobKey = new JobKey(myTrigger.CalendarName, myTrigger.JobGroup);
 
             // If jobDetail does not exist, throw
             if (!_scheduler.CheckExists(jobKey))
             {
-                throw new Exception(string.Format("Job does not exist. Name = {0}, Group = {1}", myTrigger.JobName, myTrigger.JobGroup));
+                throw new Exception(string.Format("Job does not exist. Name = {0}, Group = {1}", myTrigger.CalendarName, myTrigger.JobGroup));
             }
 
             IJobDetail jobDetail = _scheduler.GetJobDetail(jobKey);
@@ -196,6 +203,7 @@ namespace R.Scheduler.Core
                 var trigger = (ICronTrigger)TriggerBuilder.Create()
                     .WithIdentity(myTrigger.Name, myTrigger.Group)
                     .ForJob(jobDetail)
+                    .ModifiedByCalendar(!string.IsNullOrEmpty(cronTrigger.CalendarName) ? cronTrigger.CalendarName : null)
                     .WithCronSchedule(cronTrigger.CronExpression)
                     .StartAt(startAt)
                     .Build();
@@ -209,6 +217,7 @@ namespace R.Scheduler.Core
                 var trigger = (ISimpleTrigger)TriggerBuilder.Create()
                     .WithIdentity(myTrigger.Name, myTrigger.Group)
                     .ForJob(jobDetail)
+                    .ModifiedByCalendar(!string.IsNullOrEmpty(simpleTrigger.CalendarName) ? simpleTrigger.CalendarName : null)
                     .StartAt(startAt)
                     .WithSimpleSchedule(x => x
                         .WithInterval(simpleTrigger.RepeatInterval)
@@ -228,6 +237,56 @@ namespace R.Scheduler.Core
         public IEnumerable<ITrigger> GetTriggersOfJob(string jobName, string jobGroup)
         {
             return _scheduler.GetTriggersOfJob(new JobKey(jobName, jobGroup));
+        }
+
+        /// <summary>
+        /// Register new <see cref="HolidayCalendar"/> and optionally provide an initital set of dates to exclude.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="description"></param>
+        /// <param name="daysExcludedUtc"></param>
+        public void AddHolidayCalendar(string name, string description, IList<DateTime> daysExcludedUtc = null)
+        {
+            var holidays = new HolidayCalendar();
+
+            if (null != daysExcludedUtc && daysExcludedUtc.Count > 0)
+            {
+                foreach (var dateTime in daysExcludedUtc)
+                {
+                    holidays.AddExcludedDate(dateTime);
+                }
+            }
+
+            _scheduler.AddCalendar(name, holidays, true, true);
+        }
+
+        /// <summary>
+        /// Add exclusion dates to <see cref="HolidayCalendar"/>
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="daysExcludedUtc"></param>
+        public void AddHolidayCalendarExclusionDates(string name, IList<DateTime> daysExcludedUtc)
+        {
+            var holidays = (HolidayCalendar)_scheduler.GetCalendar(name);
+
+            if (null != daysExcludedUtc && daysExcludedUtc.Count > 0)
+            {
+                foreach (var dateTime in daysExcludedUtc)
+                {
+                    holidays.AddExcludedDate(dateTime);
+                }
+            }
+
+            _scheduler.AddCalendar(name, holidays, true, true);
+        }
+
+        /// <summary>
+        /// Delete Calendar
+        /// </summary>
+        /// <param name="name"></param>
+        public bool DeleteCalendar(string name)
+        {
+            return _scheduler.DeleteCalendar(name);
         }
     }
 }

@@ -187,7 +187,7 @@ namespace R.Scheduler.Core
             myTrigger.Group = (!string.IsNullOrEmpty(myTrigger.Group)) ? myTrigger.Group : TriggerKey.DefaultGroup;
 
             // Check if jobDetail already exists
-            var jobKey = new JobKey(myTrigger.CalendarName, myTrigger.JobGroup);
+            var jobKey = new JobKey(myTrigger.JobName, myTrigger.JobGroup);
 
             // If jobDetail does not exist, throw
             if (!_scheduler.CheckExists(jobKey))
@@ -248,6 +248,7 @@ namespace R.Scheduler.Core
         public void AddHolidayCalendar(string name, string description, IList<DateTime> daysExcludedUtc = null)
         {
             var holidays = new HolidayCalendar();
+            holidays.Description = description;
 
             if (null != daysExcludedUtc && daysExcludedUtc.Count > 0)
             {
@@ -278,6 +279,19 @@ namespace R.Scheduler.Core
             }
 
             _scheduler.AddCalendar(name, holidays, true, true);
+        }
+
+        /// <summary>
+        /// Register new <see cref="CronCalendar"/>
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="description"></param>
+        /// <param name="cronExpression"></param>
+        public void AddCronCalendar(string name, string description, string cronExpression)
+        {
+            var cronCal = new CronCalendar(cronExpression) {Description = description};
+
+            _scheduler.AddCalendar(name, cronCal, true, true);
         }
 
         /// <summary>

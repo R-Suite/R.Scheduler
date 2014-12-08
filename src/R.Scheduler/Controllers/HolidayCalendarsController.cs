@@ -25,7 +25,7 @@ namespace R.Scheduler.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [AcceptVerbs("POST")]
-        [Route("api/calendars/holiday")]
+        [Route("api/holidayCalendars")]
         public QueryResponse Post([FromBody]HolidayCalendar model)
         {
             Logger.InfoFormat("Entered HolidayCalendarsController.Post(). Calendar Name = {0}", model.Name);
@@ -60,7 +60,7 @@ namespace R.Scheduler.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [AcceptVerbs("PUT")]
-        [Route("api/calendars/holiday/{name}")]
+        [Route("api/holidayCalendars/{name}")]
         public QueryResponse Put(string name, [FromBody]HolidayCalendar model)
         {
             Logger.InfoFormat("Entered HolidayCalendarsController.Put(). Calendar Name = {0}", name);
@@ -95,7 +95,7 @@ namespace R.Scheduler.Controllers
         /// <param name="date"></param>
         /// <returns></returns>
         [AcceptVerbs("POST")]
-        [Route("api/calendars/holiday/{name}")]
+        [Route("api/holidayCalendars/{name}")]
         public QueryResponse PostExclusionDate(string name, [FromBody]DateTime date)
         {
             Logger.InfoFormat("Entered HolidayCalendarsController.PostExclusionDate(). Calendar Name = {0}, ExclusionDate = {1}", name, date);

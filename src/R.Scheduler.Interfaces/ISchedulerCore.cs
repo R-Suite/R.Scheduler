@@ -30,6 +30,8 @@ namespace R.Scheduler.Interfaces
 
         void AddHolidayCalendarExclusionDates(string name, IList<DateTime> daysExcludedUtc);
 
+        void AddCronCalendar(string name, string description, string cronExpression);
+
         bool DeleteCalendar(string name);
     }
 }

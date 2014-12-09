@@ -11,6 +11,7 @@ namespace R.Scheduler.Contracts.Model
         public string JobGroup { get; set; }
         public string Description { get; set; }
         public string CalendarName { get; set; }
+        public string MisfireInstruction { get; set; }
         public DateTime StartTimeUtc { get; set; }
         public DateTime? NextFireTimeUtc { get; set; }
         public DateTime? PreviousFireTimeUtc { get; set; }

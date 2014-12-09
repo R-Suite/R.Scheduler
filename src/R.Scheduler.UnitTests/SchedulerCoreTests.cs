@@ -4,6 +4,7 @@ using Moq;
 using Quartz;
 using Quartz.Impl;
 using Quartz.Job;
+using R.Scheduler.Contracts.Model;
 using R.Scheduler.Core;
 using R.Scheduler.Interfaces;
 using Xunit;
@@ -90,7 +91,7 @@ namespace R.Scheduler.UnitTests
             {
                 Name = "TestTrigger",
                 Group = "TestGroup",
-                CalendarName = "TestJobName",
+                JobName = "TestJobName",
                 JobGroup = "TestJobGroup",
                 RepeatCount = 2,
                 RepeatInterval = new TimeSpan(0,0,0,1)
@@ -117,7 +118,7 @@ namespace R.Scheduler.UnitTests
             {
                 Name = "TestTrigger",
                 Group = "TestGroup",
-                CalendarName = "TestJobName",
+                JobName = "TestJobName",
                 JobGroup = "TestJobGroup",
                 CronExpression = "0/30 * * * * ?"
             };

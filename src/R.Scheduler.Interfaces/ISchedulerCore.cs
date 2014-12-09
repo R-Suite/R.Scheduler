@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Quartz;
+using R.Scheduler.Contracts.Model;
 
 namespace R.Scheduler.Interfaces
 {

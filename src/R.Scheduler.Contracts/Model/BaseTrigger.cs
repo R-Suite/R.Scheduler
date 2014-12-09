@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace R.Scheduler.Interfaces
+namespace R.Scheduler.Contracts.Model
 {
     public abstract class BaseTrigger
     {

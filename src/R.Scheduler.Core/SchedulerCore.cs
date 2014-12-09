@@ -4,6 +4,7 @@ using Quartz;
 using Quartz.Impl;
 using Quartz.Impl.Calendar;
 using Quartz.Impl.Matchers;
+using R.Scheduler.Contracts.Model;
 using R.Scheduler.Interfaces;
 
 namespace R.Scheduler.Core
@@ -200,11 +201,27 @@ namespace R.Scheduler.Core
             var cronTrigger = myTrigger as CronTrigger;
             if (cronTrigger != null)
             {
+                //SmartPolicy
+                Action<CronScheduleBuilder> misFireAction = x => {};
+
+                switch (cronTrigger.MisfireInstruction)
+                {
+                    case MisfireInstructionCron.DoNothing:
+                        misFireAction = builder => builder.WithMisfireHandlingInstructionDoNothing();
+                        break;
+                    case MisfireInstructionCron.FireOnceNow:
+                        misFireAction = builder => builder.WithMisfireHandlingInstructionFireAndProceed();
+                        break;
+                    case MisfireInstructionCron.Ignore:
+                        misFireAction = builder => builder.WithMisfireHandlingInstructionIgnoreMisfires();
+                        break;
+                }
+
                 var trigger = (ICronTrigger)TriggerBuilder.Create()
                     .WithIdentity(myTrigger.Name, myTrigger.Group)
                     .ForJob(jobDetail)
                     .ModifiedByCalendar(!string.IsNullOrEmpty(cronTrigger.CalendarName) ? cronTrigger.CalendarName : null)
-                    .WithCronSchedule(cronTrigger.CronExpression)
+                    .WithCronSchedule(cronTrigger.CronExpression, misFireAction)
                     .StartAt(startAt)
                     .Build();
 
@@ -214,14 +231,44 @@ namespace R.Scheduler.Core
             var simpleTrigger = myTrigger as SimpleTrigger;
             if (simpleTrigger != null)
             {
+                //SmartPolicy
+                Action<SimpleScheduleBuilder> misFireAction = x => x.WithInterval(simpleTrigger.RepeatInterval)
+                    .WithRepeatCount(simpleTrigger.RepeatCount);
+
+                switch (simpleTrigger.MisfireInstruction)
+                {
+                    case MisfireInstructionSimple.FireNow:
+                        misFireAction = builder => builder.WithInterval(simpleTrigger.RepeatInterval)
+                        .WithRepeatCount(simpleTrigger.RepeatCount).WithMisfireHandlingInstructionFireNow();
+                        break;
+                    case MisfireInstructionSimple.Ignore:
+                        misFireAction = builder => builder.WithInterval(simpleTrigger.RepeatInterval)
+                        .WithRepeatCount(simpleTrigger.RepeatCount).WithMisfireHandlingInstructionIgnoreMisfires();
+                        break;
+                    case MisfireInstructionSimple.RescheduleNextWithExistingCount:
+                        misFireAction = builder => builder.WithInterval(simpleTrigger.RepeatInterval)
+                        .WithRepeatCount(simpleTrigger.RepeatCount).WithMisfireHandlingInstructionNextWithExistingCount();
+                        break;
+                    case MisfireInstructionSimple.RescheduleNextWithRemainingCount:
+                        misFireAction = builder => builder.WithInterval(simpleTrigger.RepeatInterval)
+                        .WithRepeatCount(simpleTrigger.RepeatCount).WithMisfireHandlingInstructionNextWithRemainingCount();
+                        break;
+                    case MisfireInstructionSimple.RescheduleNowWithExistingRepeatCount:
+                        misFireAction = builder => builder.WithInterval(simpleTrigger.RepeatInterval)
+                        .WithRepeatCount(simpleTrigger.RepeatCount).WithMisfireHandlingInstructionNowWithExistingCount();
+                        break;
+                    case MisfireInstructionSimple.RescheduleNowWithRemainingRepeatCount:
+                        misFireAction = builder => builder.WithInterval(simpleTrigger.RepeatInterval)
+                        .WithRepeatCount(simpleTrigger.RepeatCount).WithMisfireHandlingInstructionNowWithRemainingCount();
+                        break;
+                }
+
                 var trigger = (ISimpleTrigger)TriggerBuilder.Create()
                     .WithIdentity(myTrigger.Name, myTrigger.Group)
                     .ForJob(jobDetail)
                     .ModifiedByCalendar(!string.IsNullOrEmpty(simpleTrigger.CalendarName) ? simpleTrigger.CalendarName : null)
                     .StartAt(startAt)
-                    .WithSimpleSchedule(x => x
-                        .WithInterval(simpleTrigger.RepeatInterval)
-                        .WithRepeatCount(simpleTrigger.RepeatCount))
+                    .WithSimpleSchedule(misFireAction)
                     .Build();
 
                 _scheduler.ScheduleJob(trigger);

@@ -63,8 +63,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseTrigger.cs" />
-    <Compile Include="CronTrigger.cs" />
     <Compile Include="AuditLog.cs" />
     <Compile Include="IConfiguration.cs" />
     <Compile Include="IPersistanceStore.cs" />
@@ -73,7 +71,6 @@
     <Compile Include="ISchedulerCore.cs" />
     <Compile Include="PersistanceStoreType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SimpleTrigger.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\R.Scheduler.Contracts\R.Scheduler.Contracts.csproj">

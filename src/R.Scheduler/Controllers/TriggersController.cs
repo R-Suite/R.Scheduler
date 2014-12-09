@@ -38,14 +38,55 @@ namespace R.Scheduler.Controllers
 
             foreach (ITrigger quartzTrigger in quartzTriggers)
             {
-                var triggerType = string.Empty;
+                var triggerType = "InstructionNotSet";
+                var misfireInstruction = string.Empty;
                 if (quartzTrigger is ICronTrigger)
                 {
                     triggerType = "Cron";
+                    switch (quartzTrigger.MisfireInstruction)
+                    {
+                        case 0:
+                            misfireInstruction = "SmartPolicy";
+                            break;
+                        case 1:
+                            misfireInstruction = "FireOnceNow";
+                            break;
+                        case 2:
+                            misfireInstruction = "DoNothing";
+                            break;
+                        case -1:
+                            misfireInstruction = "IgnoreMisfirePolicy";
+                            break;
+                    }
+
                 }
                 if (quartzTrigger is ISimpleTrigger)
                 {
                     triggerType = "Simple";
+                    switch (quartzTrigger.MisfireInstruction)
+                    {
+                        case 0:
+                            misfireInstruction = "SmartPolicy";
+                            break;
+                        case 1:
+                            misfireInstruction = "FireNow";
+                            break;
+                        case 2:
+                            misfireInstruction = "RescheduleNowWithExistingRepeatCount";
+                            break;
+                        case 3:
+                            misfireInstruction = "RescheduleNowWithRemainingRepeatCount";
+                            break;
+                        case 4:
+                            misfireInstruction = "RescheduleNextWithRemainingCount";
+                            break;
+                        case 5:
+                            misfireInstruction = "RescheduleNextWithExistingCount";
+                            break;
+                        case -1:
+                            misfireInstruction = "IgnoreMisfirePolicy";
+                            break;
+                    }
                 }
                 var nextFireTimeUtc = quartzTrigger.GetNextFireTimeUtc();
                 var previousFireTimeUtc = quartzTrigger.GetPreviousFireTimeUtc();
@@ -68,7 +109,8 @@ namespace R.Scheduler.Controllers
                     FinalFireTimeUtc = (quartzTrigger.FinalFireTimeUtc.HasValue)
                         ? quartzTrigger.FinalFireTimeUtc.Value.UtcDateTime
                         : (DateTime?)null,
-                    Type = triggerType
+                    Type = triggerType,
+                    MisfireInstruction = misfireInstruction
                 });
             }
 
@@ -82,25 +124,15 @@ namespace R.Scheduler.Controllers
         /// <returns></returns>
         [AcceptVerbs("POST")]
         [Route("api/simpleTriggers")]
-        public QueryResponse Post([FromBody]CustomJobSimpleTrigger model)
+        public QueryResponse Post([FromBody]SimpleTrigger model)
         {
-            Logger.InfoFormat("Entered TriggersController.Post(). Name = {0}", model.TriggerName);
+            Logger.InfoFormat("Entered TriggersController.Post(). Name = {0}", model.Name);
 
             var response = new QueryResponse { Valid = true };
 
             try
             {
-                _schedulerCore.ScheduleTrigger(new SimpleTrigger
-                {
-                    Name = model.TriggerName,
-                    Group = model.TriggerGroup,
-                    JobName = model.JobName,
-                    JobGroup = model.JobGroup,
-                    RepeatCount = model.RepeatCount,
-                    RepeatInterval = model.RepeatInterval,
-                    StartDateTime = model.StartDateTime,
-                    CalendarName = model.CalendarName
-                });
+                _schedulerCore.ScheduleTrigger(model);
             }
             catch (Exception ex)
             {
@@ -126,24 +158,15 @@ namespace R.Scheduler.Controllers
         /// <returns></returns>
         [AcceptVerbs("POST")]
         [Route("api/cronTriggers")]
-        public QueryResponse Post([FromBody] CustomJobCronTrigger model)
+        public QueryResponse Post([FromBody] CronTrigger model)
         {
-            Logger.InfoFormat("Entered TriggersController.Post(). Name = {0}", model.TriggerName);
+            Logger.InfoFormat("Entered TriggersController.Post(). Name = {0}", model.Name);
 
             var response = new QueryResponse { Valid = true };
 
             try
             {
-                _schedulerCore.ScheduleTrigger(new CronTrigger
-                {
-                    Name = model.TriggerName,
-                    Group = model.TriggerGroup,
-                    JobName = model.JobName,
-                    JobGroup = model.JobGroup,
-                    CronExpression = model.CronExpression,
-                    StartDateTime = model.StartDateTime,
-                    CalendarName = model.CalendarName
-                });
+                _schedulerCore.ScheduleTrigger(model);
             }
             catch (Exception ex)
             {

@@ -4,7 +4,6 @@ R.Scheduler is API driven. Actions can be performed using a simple RESTful API u
 
 ## Getting Started
 
-### Configuration
 
 #### Simple Configuration
 
@@ -33,6 +32,7 @@ IScheduler sched = R.Scheduler.Scheduler.Instance();
 sched.Start();
 ```
 
+
 #### Downloads
 
 Download from NuGet 'R.Scheduler' and install into your Host application.
@@ -40,3 +40,26 @@ Download from NuGet 'R.Scheduler' and install into your Host application.
 Download from NuGet 'R.Scheduler.Contracts' and install into your Client application(s).
 
 [Search NuGet for R.Scheduler](http://nuget.org/packages?q=R.Scheduler)
+
+
+#### Supported Quartz.net Functionality
+
+- Jobs: 
+  - SendMailJob
+- Triggers:
+  - Simple Trigger
+  - Cron Trigger
+- Calendars:
+  - Holiday Calendar
+- Misfire Instructions
+- DataStore:
+  - SqlServer
+  - Postgres
+
+#### What does R.Scheduler add on top of top of Quartz.net
+
+- Jobs:
+  - AssemblyPluginJob
+- WebApi
+- Auditing
+- [WebManagement](https://github.com/R-Suite/R.Scheduler.Web)

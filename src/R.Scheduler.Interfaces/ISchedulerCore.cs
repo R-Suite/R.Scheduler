@@ -27,7 +27,7 @@ namespace R.Scheduler.Interfaces
 
         IEnumerable<ITrigger> GetTriggersOfJob(string jobName, string jobGroup);
 
-        IEnumerable<ITrigger> GetTriggersForDateRange(DateTime start, DateTime end);
+        IEnumerable<TriggerFireTime> GetFireTimesBetween(DateTime start, DateTime end);
 
         void AddHolidayCalendar(string name, string description, IList<DateTime> daysExcludedUtc = null);
 

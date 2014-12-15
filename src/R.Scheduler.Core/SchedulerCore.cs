@@ -5,6 +5,7 @@ using Quartz;
 using Quartz.Impl;
 using Quartz.Impl.Calendar;
 using Quartz.Impl.Matchers;
+using Quartz.Spi;
 using R.Scheduler.Contracts.Model;
 using R.Scheduler.Interfaces;
 
@@ -288,14 +289,14 @@ namespace R.Scheduler.Core
         }
 
         /// <summary>
-        /// Get all the triggers within a specified date range
+        /// Get all the fire times within a specified date range
         /// </summary>
         /// <param name="start"></param>
         /// <param name="end"></param>
         /// <returns></returns>
-        public IEnumerable<ITrigger> GetTriggersForDateRange(DateTime start, DateTime end)
+        public IEnumerable<TriggerFireTime> GetFireTimesBetween(DateTime start, DateTime end)
         {
-            IList<ITrigger> retval = new List<ITrigger>();
+            IList<TriggerFireTime> retval = new List<TriggerFireTime>();
 
             var allTriggerKeys = _scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.AnyGroup());
             foreach (var triggerKey in allTriggerKeys)
@@ -303,7 +304,24 @@ namespace R.Scheduler.Core
                 ITrigger trigger = _scheduler.GetTrigger(triggerKey);
                 if (trigger.GetNextFireTimeUtc() >= start && trigger.GetNextFireTimeUtc() <= end)
                 {
-                    retval.Add(trigger);
+                    ICalendar cal = null;
+                    if (!string.IsNullOrEmpty(trigger.CalendarName))
+                    {
+                        cal = _scheduler.GetCalendar(trigger.CalendarName);
+                    }
+                    var fireTimes = TriggerUtils.ComputeFireTimesBetween(trigger as IOperableTrigger, cal, start, end);
+
+                    foreach (var fireTime in fireTimes)
+                    {
+                        retval.Add(new TriggerFireTime
+                        {
+                            FireDateTime = fireTime,
+                            JobName = trigger.JobKey.Name,
+                            JobGroup = trigger.JobKey.Group,
+                            TriggerName = trigger.Key.Name,
+                            TriggerGroup = trigger.Key.Group
+                        });
+                    }
                 }
             }
 

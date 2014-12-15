@@ -42,14 +42,14 @@ namespace R.Scheduler.Controllers
         /// </summary>
         /// <returns></returns>
         [AcceptVerbs("GET")]
-        [Route("api/triggers")]
-        public IList<TriggerDetails> Get(DateTime start, DateTime end)
+        [Route("api/fireTimes")]
+        public IList<TriggerFireTime> Get(DateTime start, DateTime end)
         {
             Logger.Info("Entered TriggersController.Get()");
 
-            IEnumerable<ITrigger> quartzTriggers = _schedulerCore.GetTriggersForDateRange(start, end);
+            IEnumerable<TriggerFireTime> fireTimes = _schedulerCore.GetFireTimesBetween(start, end);
 
-            return GetTriggerDetails(quartzTriggers);
+            return fireTimes as IList<TriggerFireTime>;
         }
 
         /// <summary>

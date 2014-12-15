@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Quartz;
 using Quartz.Impl;
@@ -284,6 +285,29 @@ namespace R.Scheduler.Core
         public IEnumerable<ITrigger> GetTriggersOfJob(string jobName, string jobGroup)
         {
             return _scheduler.GetTriggersOfJob(new JobKey(jobName, jobGroup));
+        }
+
+        /// <summary>
+        /// Get all the triggers within a specified date range
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        public IEnumerable<ITrigger> GetTriggersForDateRange(DateTime start, DateTime end)
+        {
+            IList<ITrigger> retval = new List<ITrigger>();
+
+            var allTriggerKeys = _scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.AnyGroup());
+            foreach (var triggerKey in allTriggerKeys)
+            {
+                ITrigger trigger = _scheduler.GetTrigger(triggerKey);
+                if (trigger.GetNextFireTimeUtc() >= start && trigger.GetNextFireTimeUtc() <= end)
+                {
+                    retval.Add(trigger);
+                }
+            }
+
+            return retval;
         }
 
         /// <summary>

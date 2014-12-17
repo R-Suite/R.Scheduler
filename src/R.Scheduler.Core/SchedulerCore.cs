@@ -302,26 +302,23 @@ namespace R.Scheduler.Core
             foreach (var triggerKey in allTriggerKeys)
             {
                 ITrigger trigger = _scheduler.GetTrigger(triggerKey);
-                if (trigger.GetNextFireTimeUtc() >= start && trigger.GetNextFireTimeUtc() <= end)
+                ICalendar cal = null;
+                if (!string.IsNullOrEmpty(trigger.CalendarName))
                 {
-                    ICalendar cal = null;
-                    if (!string.IsNullOrEmpty(trigger.CalendarName))
-                    {
-                        cal = _scheduler.GetCalendar(trigger.CalendarName);
-                    }
-                    var fireTimes = TriggerUtils.ComputeFireTimesBetween(trigger as IOperableTrigger, cal, start, end);
+                    cal = _scheduler.GetCalendar(trigger.CalendarName);
+                }
+                var fireTimes = TriggerUtils.ComputeFireTimesBetween(trigger as IOperableTrigger, cal, start, end);
 
-                    foreach (var fireTime in fireTimes)
+                foreach (var fireTime in fireTimes)
+                {
+                    retval.Add(new TriggerFireTime
                     {
-                        retval.Add(new TriggerFireTime
-                        {
-                            FireDateTime = fireTime,
-                            JobName = trigger.JobKey.Name,
-                            JobGroup = trigger.JobKey.Group,
-                            TriggerName = trigger.Key.Name,
-                            TriggerGroup = trigger.Key.Group
-                        });
-                    }
+                        FireDateTime = fireTime,
+                        JobName = trigger.JobKey.Name,
+                        JobGroup = trigger.JobKey.Group,
+                        TriggerName = trigger.Key.Name,
+                        TriggerGroup = trigger.Key.Group
+                    });
                 }
             }
 

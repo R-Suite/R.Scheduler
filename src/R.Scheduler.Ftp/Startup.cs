@@ -8,7 +8,7 @@ namespace R.Scheduler.Ftp
     {
         public void Initialise(IConfiguration config)
         {
-            //ObjectFactory.Configure(x => x.RegisterInterceptor(new PersistanceStoreInterceptor(config)));
+            ObjectFactory.Configure(x => x.RegisterInterceptor(new FtpLibraryInterceptor(config)));
         }
     }
 }

@@ -118,6 +118,10 @@
       <Project>{c2f4994f-db81-4779-8490-89250561f0d7}</Project>
       <Name>R.Scheduler.Contracts</Name>
     </ProjectReference>
+    <ProjectReference Include="..\R.Scheduler.FakeFtpLib\R.Scheduler.FakeFtpLib.csproj">
+      <Project>{1c7c190b-4ca0-426f-9558-364e979d73e8}</Project>
+      <Name>R.Scheduler.FakeFtpLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\R.Scheduler.Ftp\R.Scheduler.Ftp.csproj">
       <Project>{f2992d16-12e0-4277-b8eb-ce474eab2bcc}</Project>
       <Name>R.Scheduler.Ftp</Name>

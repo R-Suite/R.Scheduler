@@ -30,5 +30,6 @@ namespace R.Scheduler
         public string WebApiBaseAddress { get; set; }
 
         public bool EnableAuditHistory { get; set; }
+        public string CustomFtpLibraryAssemblyName { get; set; }
     }
 }

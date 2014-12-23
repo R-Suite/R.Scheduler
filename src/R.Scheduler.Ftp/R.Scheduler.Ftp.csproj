@@ -64,8 +64,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\FtpJobsController.cs" />
-    <Compile Include="FtpJob.cs" />
+    <Compile Include="FtpDownloadJob.cs" />
     <Compile Include="FtpLibrary.cs" />
+    <Compile Include="FtpLibraryInterceptor.cs" />
     <Compile Include="IFtpLibrary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SmRegistry.cs" />

@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C2F4994F-DB81-4779-8490-89250561F0D7}</ProjectGuid>
+    <ProjectGuid>{1C7C190B-4CA0-426F-9558-364E979D73E8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>R.Scheduler.Contracts</RootNamespace>
-    <AssemblyName>R.Scheduler.Contracts</AssemblyName>
+    <RootNamespace>R.Scheduler.FakeFtpLib</RootNamespace>
+    <AssemblyName>R.Scheduler.FakeFtpLib</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -39,30 +39,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Calendars\Cron\Model\CronCalendar.cs" />
-    <Compile Include="Calendars\Holiday\Model\HolidayCalendar.cs" />
-    <Compile Include="JobTypes\AssemblyPlugin\BaseJobPlugin.cs" />
-    <Compile Include="JobTypes\AssemblyPlugin\Model\PluginJob.cs" />
-    <Compile Include="JobTypes\AssemblyPlugin\IJobPlugin.cs" />
-    <Compile Include="JobTypes\BaseJob.cs" />
-    <Compile Include="JobTypes\Email\Model\EmailJob.cs" />
-    <Compile Include="JobTypes\Ftp\Model\FtpDownloadJob.cs" />
-    <Compile Include="JobTypes\PipesAndFilters\Model\PafTransformation.cs" />
-    <Compile Include="Model\BaseTrigger.cs" />
-    <Compile Include="Model\CronTrigger.cs" />
-    <Compile Include="Model\TriggerFireTime.cs" />
-    <Compile Include="Model\SimpleTrigger.cs" />
-    <Compile Include="Model\Error.cs" />
-    <Compile Include="Model\QueryResponse.cs" />
-    <Compile Include="Model\TriggerDetails.cs" />
+    <Compile Include="FakeFtpLibrary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="R.Scheduler.Contracts.nuspec">
-      <SubType>Designer</SubType>
-    </None>
+    <ProjectReference Include="..\R.Scheduler.Ftp\R.Scheduler.Ftp.csproj">
+      <Project>{F2992D16-12E0-4277-B8EB-CE474EAB2BCC}</Project>
+      <Name>R.Scheduler.Ftp</Name>
+    </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

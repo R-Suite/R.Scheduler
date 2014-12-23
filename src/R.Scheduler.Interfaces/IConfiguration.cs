@@ -13,5 +13,7 @@
         string WebApiBaseAddress { get; set; }
 
         bool EnableAuditHistory { get; set; }
+
+        string CustomFtpLibraryAssemblyName { get; set; }
     }
 }

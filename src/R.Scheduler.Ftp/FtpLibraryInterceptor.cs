@@ -28,7 +28,7 @@ namespace R.Scheduler.Ftp
             {
                 var assemblyFileName = _config.CustomFtpLibraryAssemblyName;
 
-                if (!assemblyFileName.EndsWith(".dll"))
+                if (!assemblyFileName.ToLower().EndsWith(".dll"))
                 {
                     assemblyFileName += ".dll";
                 }

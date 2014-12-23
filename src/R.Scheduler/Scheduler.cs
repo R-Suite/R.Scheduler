@@ -48,6 +48,9 @@ namespace R.Scheduler
 
             Configuration = configuration;
 
+            // Ensure container resolves persistance store based on configuration settings
+            ObjectFactory.Configure(x => x.RegisterInterceptor(new PersistanceStoreInterceptor(Configuration)));
+
             // Initialise JobTypes modules
             var jobTypeStartups = ObjectFactory.GetAllInstances<IJobTypeStartup>();
             foreach (var jobTypeStartup in jobTypeStartups)

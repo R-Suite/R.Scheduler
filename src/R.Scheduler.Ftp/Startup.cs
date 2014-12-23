@@ -1,5 +1,4 @@
-﻿using R.Scheduler.Core;
-using R.Scheduler.Interfaces;
+﻿using R.Scheduler.Interfaces;
 using StructureMap;
 
 namespace R.Scheduler.Ftp

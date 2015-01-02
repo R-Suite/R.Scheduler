@@ -22,7 +22,7 @@ namespace R.Scheduler.Ftp
 
         public object Process(object target, IContext context)
         {
-            IFtpLibrary retval = null;
+            IFtpLibrary retval = new FtpLibrary();
 
             if (!string.IsNullOrEmpty(_config.CustomFtpLibraryAssemblyName) && target.GetType().GetInterfaces().Contains(typeof(IFtpLibrary)))
             {

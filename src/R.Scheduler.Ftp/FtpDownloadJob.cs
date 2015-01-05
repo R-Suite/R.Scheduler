@@ -71,9 +71,11 @@ namespace R.Scheduler.Ftp
             }
 
             // Get files
-            var ftpLibrary = ObjectFactory.GetInstance<IFtpLibrary>();
-            ftpLibrary.Connect(ftpHost, port, userName, password, remoteDirectoryPath);
-            ftpLibrary.GetFiles(localDirectoryPath, fileExtensions, cutOffTimeSpan);
+            using (var ftpLibrary = ObjectFactory.GetInstance<IFtpLibrary>())
+            {
+                ftpLibrary.Connect(ftpHost, port, userName, password);
+                ftpLibrary.GetFiles(remoteDirectoryPath, localDirectoryPath, fileExtensions, cutOffTimeSpan);
+            }
         }
 
         protected virtual string GetOptionalParameter(JobDataMap data, string propertyName)

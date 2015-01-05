@@ -47,45 +47,51 @@ namespace R.Scheduler.Ftp
         /// <param name="userName"></param>
         /// <param name="password"></param>
         /// <param name="remoteDirectoryPath"></param>
-        public void Connect(string host, int serverPort, string userName, string password, string remoteDirectoryPath = null)
+        public void Connect(string host, int serverPort, string userName, string password = null)
         {
             _requestUri = host;
-            if (!string.IsNullOrEmpty(remoteDirectoryPath))
-            {
-                _requestUri += "/" + remoteDirectoryPath;
-            }
-
             _userName = userName;
             _password = password;
         }
 
         /// <summary>
-        /// Get all the files with specified <paramref name="fileExtension" /> no older than <paramref name="cutOff" /> timespan.
+        /// Get all the files with specified <paramref name="fileExtensions" /> no older than <paramref name="cutOff" /> timespan.
         /// Matched files are downloaded into <paramref name="localDir" />
         /// </summary>
+        /// <param name="remotePath"></param>
         /// <param name="localDir"></param>
-        /// <param name="fileExtension"></param>
+        /// <param name="fileExtensions"></param>
         /// <param name="cutOff"></param>
-        public void GetFiles(string localDir, string fileExtension, TimeSpan cutOff)
+        public void GetFiles(string remotePath, string localDir, string fileExtensions, TimeSpan cutOff)
         {
-            var fileExtensions = new List<string>();
-            if (fileExtension.Contains(","))
+            // Build list of file extensions
+            var fileExtensionList = new List<string>();
+            if (fileExtensions.Contains(","))
             {
-                fileExtensions = fileExtension.Split(',').Select(s=>s.Trim()).ToList();
+                fileExtensionList = fileExtensions.Split(',').Select(s => s.Trim()).ToList();
             }
             else
             {
-                fileExtensions.Add(fileExtension);
+                fileExtensionList.Add(fileExtensions);
             }
 
+            // If remotePath specified, adjust _requestUri
+            if (!string.IsNullOrEmpty(remotePath))
+            {
+                _requestUri += "/" + remotePath;
+            }
+
+            // Get all directory items metadata 
             var dirItemsRaw = GetDirectoryItems() as IList<string>;
             IEnumerable<DirItemStruct> dirItemsParsed = GetDirItemsParsed(dirItemsRaw);
 
+            // Download directory items with matching filetype/extension
+            // and no older than a specified cut-off timespan
             foreach (var dirItem in dirItemsParsed)
             {
                 if (!dirItem.IsDirectory &&
                     !string.IsNullOrEmpty(dirItem.Name) &&
-                    fileExtensions.Any(e => dirItem.Name.ToLower().EndsWith(e.ToLower())) &&
+                    fileExtensionList.Any(e => dirItem.Name.ToLower().EndsWith(e.ToLower())) &&
                     dirItem.CreateTime > DateTime.UtcNow.Subtract(cutOff))
                 {
                     GetFile(dirItem.Name, Path.Combine(localDir, dirItem.Name));
@@ -93,6 +99,9 @@ namespace R.Scheduler.Ftp
             }
         }
 
+        /// <summary>
+        /// Not relevant to this implementation
+        /// </summary>
         public void Dispose()
         {}
 

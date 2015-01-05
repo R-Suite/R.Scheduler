@@ -9,11 +9,11 @@ namespace R.Scheduler.FakeFtpLib
         {
         }
 
-        public void Connect(string host, int serverPort, string userName, string password, string remoteDirectoryPath = null)
+        public void Connect(string host, int serverPort, string userName, string password)
         {
         }
 
-        public void GetFiles(string localDir, string fileExtension, TimeSpan cutOff)
+        public void GetFiles(string remotePath, string localDir, string fileExtension, TimeSpan cutOff)
         {
         }
     }

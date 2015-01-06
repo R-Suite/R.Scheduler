@@ -27,7 +27,7 @@ namespace R.Scheduler.Ftp.Controllers
         /// </summary>
         /// <returns></returns>
         [AcceptVerbs("GET")]
-        [Route("api/jobs/ftpDownload")]
+        [Route("api/ftpDownloads")]
         public IEnumerable<Contracts.JobTypes.Ftp.Model.FtpDownloadJob> Get()
         {
             Logger.Info("Entered FtpJobsController.Get().");
@@ -50,7 +50,7 @@ namespace R.Scheduler.Ftp.Controllers
         /// </summary>
         /// <returns></returns>
         [AcceptVerbs("GET")]
-        [Route("api/jobs/ftpDownload")]
+        [Route("api/ftpDownloads")]
         public Contracts.JobTypes.Ftp.Model.FtpDownloadJob Get(string jobName, string jobGroup)
         {
             Logger.Info("Entered FtpJobsController.Get().");
@@ -89,7 +89,7 @@ namespace R.Scheduler.Ftp.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [AcceptVerbs("POST")]
-        [Route("api/jobs/ftpDownload")]
+        [Route("api/ftpDownloads")]
         public QueryResponse Post([FromBody]Contracts.JobTypes.Ftp.Model.FtpDownloadJob model)
         {
             Logger.InfoFormat("Entered FtpJobsController.Post(). Job Name = {0}", model.JobName);

@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using R.Scheduler.Contracts.JobTypes.AssemblyPlugin.Model;
+using R.Scheduler.Contracts.Model;
 
 namespace R.Scheduler.TestClient.AssemblyPlugins
 {
@@ -15,7 +16,7 @@ namespace R.Scheduler.TestClient.AssemblyPlugins
         {
             Console.WriteLine();
             Console.WriteLine("-------------------------------------");
-            Console.WriteLine("<1> Register MyPlugin (plugins must be registered first)");
+            Console.WriteLine("<1> Register MyPlugin (AssemblyPluginJob)");
             Console.WriteLine("<2> Execute MyPlugin (immediately)");
             Console.WriteLine("<3> Schedule MyPlugin with SimpleTrigger (executes 3 times in 3-second intervals)");
             Console.WriteLine("-------------------------------------");
@@ -46,10 +47,11 @@ namespace R.Scheduler.TestClient.AssemblyPlugins
         /// </summary>
         private static void RegisterPlugin()
         {
-            var dataDict = new Dictionary<string, string>
+            var job = new PluginJob
             {
-                {"Name", "MyPlugin"},
-                {"AssemblyPath", PluginAssemblyPath}
+                AssemblyPath = PluginAssemblyPath,
+                JobName = "MyAssemblyPluginJob",
+                JobGroup = "MyJobGroup"
             };
 
             using (var client = new HttpClient())
@@ -58,8 +60,7 @@ namespace R.Scheduler.TestClient.AssemblyPlugins
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                var requestContent = new FormUrlEncodedContent(dataDict);
-                var response = client.PostAsync("api/plugins/", requestContent).Result;
+                var response = client.PostAsJsonAsync("api/plugins/", job).Result;
                 string result = response.Content.ReadAsStringAsync().Result;
 
                 if (result != null)
@@ -74,16 +75,13 @@ namespace R.Scheduler.TestClient.AssemblyPlugins
         /// </summary>
         private static void ExecutePlugin()
         {
-            var dataDict = new Dictionary<string, string>{{"", "MyPlugin"}};
-
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(Url);
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                var requestContent = new FormUrlEncodedContent(dataDict);
-                var response = client.PostAsync("api/plugins/execute/", requestContent).Result;
+                var response = client.PostAsync("api/jobs/execution?jobName=MyAssemblyPluginJob&jobGroup=MyJobGroup", null).Result;
                 string result = response.Content.ReadAsStringAsync().Result;
 
                 if (result != null)
@@ -98,12 +96,15 @@ namespace R.Scheduler.TestClient.AssemblyPlugins
         /// </summary>
         private static void SchedulePluginWithSimpleTrigger()
         {
-            var dataDict = new Dictionary<string, string>
+            var trigger = new SimpleTrigger()
             {
-                {"TriggerName", "MyPluginTestTrigger"},
-                {"StartDateTime", DateTime.Now.AddSeconds(3).ToString("O") },
-                {"RepeatCount", "3"},
-                {"RepeatInterval", "00:00:03"}
+                Name = "MyPluginTestTrigger",
+                Group = "DEFAULT",
+                JobName = "MyAssemblyPluginJob",
+                JobGroup = "MyJobGroup",
+                StartDateTime = DateTime.Now.AddSeconds(3),
+                RepeatCount = 3,
+                RepeatInterval = new TimeSpan(0,0,0,3)
             };
 
             using (var client = new HttpClient())
@@ -112,8 +113,7 @@ namespace R.Scheduler.TestClient.AssemblyPlugins
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                var requestContent = new FormUrlEncodedContent(dataDict);
-                var response = client.PostAsync("api/plugins/MyPlugin/simpleTriggers/", requestContent).Result;
+                var response = client.PostAsJsonAsync("api/simpleTriggers", trigger).Result;
                 string result = response.Content.ReadAsStringAsync().Result;
 
                 if (result != null)

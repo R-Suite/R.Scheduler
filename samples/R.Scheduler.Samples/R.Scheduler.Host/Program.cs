@@ -13,6 +13,7 @@ namespace R.Scheduler.Host
             Scheduler.Initialize(config =>
             {
                 config.PersistanceStoreType = PersistanceStoreType.InMemory;
+                config.EnableAuditHistory = false;
             });
 
             IScheduler sched = R.Scheduler.Scheduler.Instance();

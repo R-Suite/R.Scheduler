@@ -17,8 +17,8 @@
       <dependency id="Quartz" version="2.2.4" />
       <dependency id="Microsoft.AspNet.WebApi.OwinSelfHost" version="5.2.2" />
       <dependency id="Microsoft.AspNet.WebApi.Cors" version="5.2.2" />
-      <dependency id="log4net" version="2.0.3" />
       <dependency id="structuremap" version="2.6.4.1" />
+      <dependency id="Common.Logging" version="2.3.1" />
   </dependencies>
   </metadata>
   <files>

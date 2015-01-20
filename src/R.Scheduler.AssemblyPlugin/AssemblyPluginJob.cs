@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using log4net;
+using Common.Logging;
 using Quartz;
 using R.Scheduler.Contracts.JobTypes.AssemblyPlugin;
 

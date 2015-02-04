@@ -39,7 +39,7 @@ namespace R.Scheduler.WebRequest
             string actionType = GetRequiredParameter(data, ActionType);
             string method = GetRequiredParameter(data, Method);
             string uri = GetRequiredParameter(data, Uri);
-            string body = GetOptionalParameter(data, Body);
+            string body = GetOptionalParameter(data, Body) ?? string.Empty;
 
             if (uri.ToLower().StartsWith("http"))
             {
@@ -49,6 +49,11 @@ namespace R.Scheduler.WebRequest
                 uri = uri.Replace("HTTPS://", "");
             }
 
+            if (!actionType.Contains("://"))
+            {
+                actionType += "://";
+            }
+
             // Execute WebRequest
             System.Net.WebRequest request = System.Net.WebRequest.Create(actionType + uri);
             request.Method = method;
@@ -56,10 +61,10 @@ namespace R.Scheduler.WebRequest
             Stream dataStream;
 
             // Create POST/PUT data and convert it to a byte array.
-            if ((method.ToUpper() == "PUT" || method.ToUpper() == "POST") && !string.IsNullOrEmpty(body))
+            if (method.ToUpper() == "PUT" || method.ToUpper() == "POST")
             {
                 byte[] byteArray = Encoding.UTF8.GetBytes(body);
-                request.ContentType = "application/x-www-form-urlencoded";
+                request.ContentType = "text/plain";
                 request.ContentLength = byteArray.Length;
 
                 dataStream = request.GetRequestStream();
@@ -69,7 +74,6 @@ namespace R.Scheduler.WebRequest
 
             // Get the response.
             WebResponse response = request.GetResponse();
-            Logger.Info(((HttpWebResponse)response).StatusDescription);
             Logger.InfoFormat("WebRequestJob server response status: {0}", ((HttpWebResponse)response).StatusDescription);
             
             // Get the stream containing content returned by the server.

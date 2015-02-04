@@ -139,6 +139,10 @@
       <Project>{FBADF088-E56E-4862-9C1C-3FF81C4BD92B}</Project>
       <Name>R.Scheduler.Persistance</Name>
     </ProjectReference>
+    <ProjectReference Include="..\R.Scheduler.WebRequest\R.Scheduler.WebRequest.csproj">
+      <Project>{f6b44c96-f2d3-4086-ae9c-507f528559be}</Project>
+      <Name>R.Scheduler.WebRequest</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

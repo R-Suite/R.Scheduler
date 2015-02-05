@@ -57,8 +57,8 @@ namespace R.Scheduler.Controllers
                                                         SchedulerName = _schedulerCore.SchedulerName,
                                                         Command = jobDetail.JobDataMap.GetString("command"),
                                                         Parameters = jobDetail.JobDataMap.GetString("parameters"),
-                                                        WaitForProcess = jobDetail.JobDataMap.GetBooleanValue("waitForProcess"),
-                                                        ConsumeStreams = jobDetail.JobDataMap.GetBooleanValue("consumeStreams"),
+                                                        WaitForProcess = jobDetail.JobDataMap.GetBooleanValueFromString("waitForProcess"),
+                                                        ConsumeStreams = jobDetail.JobDataMap.GetBooleanValueFromString("consumeStreams"),
                                                         WorkingDirectory = jobDetail.JobDataMap.GetString("workingDirectory"),
                                                     }).ToList();
 
@@ -93,8 +93,8 @@ namespace R.Scheduler.Controllers
                 SchedulerName = _schedulerCore.SchedulerName,
                 Command = jobDetail.JobDataMap.GetString("command"),
                 Parameters = jobDetail.JobDataMap.GetString("parameters"),
-                WaitForProcess = jobDetail.JobDataMap.GetBooleanValue("waitForProcess"),
-                ConsumeStreams = jobDetail.JobDataMap.GetBooleanValue("consumeStreams"),
+                WaitForProcess = jobDetail.JobDataMap.GetBooleanValueFromString("waitForProcess"),
+                ConsumeStreams = jobDetail.JobDataMap.GetBooleanValueFromString("consumeStreams"),
                 WorkingDirectory = jobDetail.JobDataMap.GetString("workingDirectory")
             };
         }
@@ -114,8 +114,8 @@ namespace R.Scheduler.Controllers
             {
                 {"command", model.Command},
                 {"parameters", model.Parameters},
-                {"waitForProcess", model.WaitForProcess},
-                {"consumeStreams", model.ConsumeStreams},
+                {"waitForProcess", model.WaitForProcess.ToString()},
+                {"consumeStreams", model.ConsumeStreams.ToString()},
                 {"workingDirectory", model.WorkingDirectory}
             };
 

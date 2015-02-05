@@ -58,6 +58,7 @@ sched.Start();
 - Jobs:
   - AssemblyPluginJob
   - FtpDownloadJob (Use Default Ftp library or inject your own)
+  - WebRequestJob
 - WebApi
 - Auditing
 - [WebManagement](https://github.com/R-Suite/R.Scheduler.Web)

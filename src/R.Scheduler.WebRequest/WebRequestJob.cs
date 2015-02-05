@@ -80,6 +80,7 @@ namespace R.Scheduler.WebRequest
             dataStream = response.GetResponseStream();
             var reader = new StreamReader(dataStream);
             string responseFromServer = reader.ReadToEnd();
+            context.Result = responseFromServer;
             Logger.InfoFormat("WebRequestJob server response content: {0}", responseFromServer);
 
             // Clean up the streams.

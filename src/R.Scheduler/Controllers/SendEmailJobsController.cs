@@ -14,6 +14,9 @@ using StructureMap;
 
 namespace R.Scheduler.Controllers
 {
+    /// <summary>
+    /// Controller for a Quartz.net built-in job which sends an e-mail with the configured content to the configured
+    /// </summary>
     public class SendEmailJobsController : BaseJobsImpController
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);

@@ -97,6 +97,7 @@
     <Compile Include="Controllers\CronCalendarsController.cs" />
     <Compile Include="Controllers\HolidayCalendarsController.cs" />
     <Compile Include="Controllers\JobsController.cs" />
+    <Compile Include="Controllers\NativeJobsController.cs" />
     <Compile Include="Controllers\SendEmailJobsController.cs" />
     <Compile Include="Controllers\TriggersController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

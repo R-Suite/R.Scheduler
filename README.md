@@ -43,6 +43,7 @@ sched.Start();
 
 - Jobs: 
   - SendMailJob
+  - NativeJob
 - Triggers:
   - Simple Trigger
   - Cron Trigger

@@ -44,6 +44,7 @@ sched.Start();
 - Jobs: 
   - SendMailJob
   - NativeJob
+  - DirectoryScanJob (with callback url parameter)
 - Triggers:
   - Simple Trigger
   - Cron Trigger
@@ -60,6 +61,7 @@ sched.Start();
   - AssemblyPluginJob
   - FtpDownloadJob (Use Default Ftp library or inject your own)
   - WebRequestJob
+  - DirectoryScanJob callback
 - WebApi
 - Auditing
 - [WebManagement](https://github.com/R-Suite/R.Scheduler.Web)

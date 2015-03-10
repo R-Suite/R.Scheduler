@@ -38,6 +38,37 @@ IScheduler sched = R.Scheduler.Scheduler.Instance();
 sched.Start();
 ```
 
+#### Create New Job
+
+```c#
+POST /api/dirScanJobs
+{
+    "JobName": "MyJob",
+    "DirectoryName": "C:/MyFiles",
+    "MinimumUpdateAge": 10000,
+    "CallbackUrl": "http://myendpoint:6000/",
+    "LastModifiedTime": "01/01/2015"
+}
+```
+
+#### Schedule Job with Simple Trigger
+
+```c#
+POST /api/simpleTriggers
+{
+    "Name": "MyTrigger",
+    "JobName": "MyJob",
+    "RepeatCount": 5,
+    "RepeatInterval": "0:00:01:00"
+}
+```
+
+#### Execute Job
+
+```c#
+POST /api/jobs/execution?JobName=MyJob&JobGroup=DEFAULT
+{}
+```
 
 #### Supported Quartz.net Functionality
 

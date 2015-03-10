@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler", "R.Scheduler\R.Scheduler.csproj", "{59E14D25-72BD-4E1F-A224-B8A6F5179B90}"
 EndProject
@@ -41,6 +41,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.FakeFtpLib", "R.Scheduler.FakeFtpLib\R.Scheduler.FakeFtpLib.csproj", "{1C7C190B-4CA0-426F-9558-364E979D73E8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.WebRequest", "R.Scheduler.WebRequest\R.Scheduler.WebRequest.csproj", "{F6B44C96-F2D3-4086-AE9C-507F528559BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.DirectoryScan", "R.Scheduler.DirectoryScan\R.Scheduler.DirectoryScan.csproj", "{137A3DCF-486E-498F-837A-D206E9B42CC3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -100,6 +102,10 @@ Global
 		{F6B44C96-F2D3-4086-AE9C-507F528559BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6B44C96-F2D3-4086-AE9C-507F528559BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6B44C96-F2D3-4086-AE9C-507F528559BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{137A3DCF-486E-498F-837A-D206E9B42CC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{137A3DCF-486E-498F-837A-D206E9B42CC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{137A3DCF-486E-498F-837A-D206E9B42CC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{137A3DCF-486E-498F-837A-D206E9B42CC3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -114,5 +120,6 @@ Global
 		{F2992D16-12E0-4277-B8EB-CE474EAB2BCC} = {6C0687DC-4023-4803-8690-197C9274A5C0}
 		{1C7C190B-4CA0-426F-9558-364E979D73E8} = {ACF74C8F-7012-44A7-A924-4F87D805F93F}
 		{F6B44C96-F2D3-4086-AE9C-507F528559BE} = {6C0687DC-4023-4803-8690-197C9274A5C0}
+		{137A3DCF-486E-498F-837A-D206E9B42CC3} = {6C0687DC-4023-4803-8690-197C9274A5C0}
 	EndGlobalSection
 EndGlobal

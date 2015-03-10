@@ -95,6 +95,7 @@
     <Compile Include="Configuration.cs" />
     <Compile Include="Controllers\CalendarsController.cs" />
     <Compile Include="Controllers\CronCalendarsController.cs" />
+    <Compile Include="Controllers\DirectoryScanJobsController.cs" />
     <Compile Include="Controllers\HolidayCalendarsController.cs" />
     <Compile Include="Controllers\JobsController.cs" />
     <Compile Include="Controllers\NativeJobsController.cs" />
@@ -127,6 +128,10 @@
     <ProjectReference Include="..\R.Scheduler.Core\R.Scheduler.Core.csproj">
       <Project>{0B05F704-2CFF-4571-B63C-D9ABC7FD5666}</Project>
       <Name>R.Scheduler.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\R.Scheduler.DirectoryScan\R.Scheduler.DirectoryScan.csproj">
+      <Project>{137A3DCF-486E-498F-837A-D206E9B42CC3}</Project>
+      <Name>R.Scheduler.DirectoryScan</Name>
     </ProjectReference>
     <ProjectReference Include="..\R.Scheduler.Ftp\R.Scheduler.Ftp.csproj">
       <Project>{f2992d16-12e0-4277-b8eb-ce474eab2bcc}</Project>

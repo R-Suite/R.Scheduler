@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>R.Scheduler</id>
-    <version>0.1.16</version>
+    <version>0.1.17</version>
     <title>R.Scheduler</title>
     <authors>Jakub Pachansky</authors>
     <owners>Jakub Pachansky,Tim Watson</owners>
@@ -11,7 +11,7 @@
     <language>en-GB</language>
     <projectUrl>https://github.com/R-Suite/R.Scheduler</projectUrl>
     <copyright>Copyright 2015 R.Scheduler. All rights reserved</copyright>
-    <tags>Scheduler,R Scheduler,Quartz, Quartz net,R.Scheduler,Quartz Scheduler,RScheduler,R.MessageBus Scheduler,Scheduling</tags>
+    <tags>Scheduler,R Scheduler,Quartz, Quartz net,R.Scheduler,Quartz Scheduler,RScheduler,Scheduling</tags>
     <dependencies>
       <dependency id="R.Scheduler.Contracts" version="" />
       <dependency id="Quartz" version="2.2.4" />
@@ -30,6 +30,7 @@
     <file src="bin\Release\R.Scheduler.AssemblyPlugin.dll" target="lib\net40\R.Scheduler.AssemblyPlugin.dll" />
     <file src="bin\Release\R.Scheduler.Ftp.dll" target="lib\net40\R.Scheduler.Ftp.dll" />
     <file src="bin\Release\R.Scheduler.WebRequest.dll" target="lib\net40\R.Scheduler.WebRequest.dll" />
+    <file src="bin\Release\R.Scheduler.DirectoryScan.dll" target="lib\net40\R.Scheduler.DirectoryScan.dll" />
   </files>
 </package>
 

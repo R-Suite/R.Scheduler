@@ -130,8 +130,7 @@ namespace R.Scheduler.Controllers
                 {"DIRECTORY_NAME", model.DirectoryName},
                 {"CALLBACK_URL", model.CallbackUrl},
                 {"MINIMUM_UPDATE_AGE", model.MinimumUpdateAge.ToString()},
-                {"LAST_MODIFIED_TIME", model.LastModifiedTime.ToString()},
-                {"DIRECTORY_SCAN_LISTENER_NAME", "RDirectoryScanListener"}
+                {"LAST_MODIFIED_TIME", model.LastModifiedTime.ToString()}
             };
 
             return base.CreateJob(model, typeof(RDirectoryScanJob), dataMap);

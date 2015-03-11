@@ -11,6 +11,10 @@ using Quartz.Job;
 
 namespace R.Scheduler.DirectoryScan
 {
+    /// <summary>
+    /// Implementation of <see cref="IDirectoryScanListener"/> that defines a call back method
+    /// for when one or more files  in a directory have been created or updated.
+    /// </summary>
     public class RDirectoryScanListener : IDirectoryScanListener
     {
         private readonly string _callbackUrl;
@@ -21,6 +25,10 @@ namespace R.Scheduler.DirectoryScan
             _callbackUrl = callbackUrl;
         }
 
+        /// <summary>
+        /// Creates a web request that posts updated or created files to a specified url 
+        /// </summary>
+        /// <param name="updatedFiles"></param>
         public void FilesUpdatedOrAdded(IEnumerable<FileInfo> updatedFiles)
         {
             var fileInfos = updatedFiles as IList<FileInfo> ?? updatedFiles.ToList();
@@ -61,6 +69,9 @@ namespace R.Scheduler.DirectoryScan
         }
     }
 
+    /// <summary>
+    /// Simple wrapper for <see cref="DirectoryScanJob"/> that allows
+    /// </summary>
     public class RDirectoryScanJob : DirectoryScanJob, IJob
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -68,19 +79,28 @@ namespace R.Scheduler.DirectoryScan
         /// <summary> The callback url where list of updated file path are posted. REQUIRED.</summary>
         public const string CallbackUrl = "CALLBACK_URL";
 
+        /// <summary>
+        /// Registers new instance of <see cref="IDirectoryScanListener"/> with the scheduler context,
+        /// executes the job, and removes the instance from the scheduler context
+        /// </summary>
+        /// <param name="context"></param>
         public new void Execute(IJobExecutionContext context)
         {
             JobDataMap data = context.MergedJobDataMap;
 
             string callbackUrl = GetRequiredParameter(data, CallbackUrl);
 
+            string listenerName = Guid.NewGuid().ToString();
             var listener = new RDirectoryScanListener(callbackUrl);
 
-            context.Scheduler.Context.Add("RDirectoryScanListener", listener);
+            Logger.DebugFormat("Adding {0} to context.", listenerName);
 
-            Logger.Debug("Adding RDirectoryScanListener to context.");
+            data.Put("DIRECTORY_SCAN_LISTENER_NAME", listenerName);
+            context.Scheduler.Context.Add(listenerName, listener);
 
             base.Execute(context);
+
+            context.Scheduler.Context.Remove(listenerName);
         }
 
         protected virtual string GetRequiredParameter(JobDataMap data, string propertyName)

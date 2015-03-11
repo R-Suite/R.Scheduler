@@ -38,12 +38,44 @@ IScheduler sched = R.Scheduler.Scheduler.Instance();
 sched.Start();
 ```
 
+#### Create New Job
+
+```c#
+POST /api/dirScanJobs
+{
+    "JobName": "MyJob",
+    "DirectoryName": "C:/MyFiles",
+    "MinimumUpdateAge": 10000,
+    "CallbackUrl": "http://myendpoint:6000/",
+    "LastModifiedTime": "01/01/2015"
+}
+```
+
+#### Schedule Job with Simple Trigger
+
+```c#
+POST /api/simpleTriggers
+{
+    "Name": "MyTrigger",
+    "JobName": "MyJob",
+    "RepeatCount": 5,
+    "RepeatInterval": "0:00:01:00"
+}
+```
+
+#### Execute Job
+
+```c#
+POST /api/jobs/execution?JobName=MyJob&JobGroup=DEFAULT
+{}
+```
 
 #### Supported Quartz.net Functionality
 
 - Jobs: 
   - SendMailJob
   - NativeJob
+  - DirectoryScanJob (with callback url parameter)
 - Triggers:
   - Simple Trigger
   - Cron Trigger
@@ -60,6 +92,7 @@ sched.Start();
   - AssemblyPluginJob
   - FtpDownloadJob (Use Default Ftp library or inject your own)
   - WebRequestJob
+  - DirectoryScanJob callback
 - WebApi
 - Auditing
 - [WebManagement](https://github.com/R-Suite/R.Scheduler.Web)

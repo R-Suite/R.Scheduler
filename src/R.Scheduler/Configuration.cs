@@ -11,7 +11,7 @@ namespace R.Scheduler
             TablePrefix = "QRTZ_";
             InstanceName = "RScheduler";
             InstanceId = "instance_one";
-            UseProperties = "true";
+            UseProperties = "false";
 
             EnableWebApiSelfHost = true;
             WebApiBaseAddress = "http://localhost:5000/";
@@ -24,6 +24,12 @@ namespace R.Scheduler
         public string TablePrefix { get; set; }
         public string InstanceName { get; set; }
         public string InstanceId { get; set; }
+
+        /// <summary>
+        /// Instruct AdoJobStore that all values in JobDataMaps will be Strings,
+        /// and therefore can be stored as name-value pairs, rather than storing more complex objects 
+        /// in their serialized form in the BLOB column.
+        /// </summary>
         public string UseProperties { get; set; }
 
         public bool EnableWebApiSelfHost { get; set; }

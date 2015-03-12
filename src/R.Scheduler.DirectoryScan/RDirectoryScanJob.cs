@@ -41,6 +41,7 @@ namespace R.Scheduler.DirectoryScan
             var sbFiles = new StringBuilder();
             foreach (var updatedFileInfo in fileInfos)
             {
+                Logger.DebugFormat("updatedFileInfo.FullName: {0}", updatedFileInfo.FullName);
                 sbFiles.AppendLine(updatedFileInfo.FullName);
             }
 
@@ -54,16 +55,9 @@ namespace R.Scheduler.DirectoryScan
 
             // Get the response.
             WebResponse response = request.GetResponse();
-            Logger.InfoFormat("RDirectoryScanListener server response status: {0}", ((HttpWebResponse)response).StatusDescription);
-
-            // Get the stream containing content returned by the server.
-            dataStream = response.GetResponseStream();
-            var reader = new StreamReader(dataStream);
-            string responseFromServer = reader.ReadToEnd();
-            Logger.InfoFormat("RDirectoryScanListener server response content: {0}", responseFromServer);
+            Logger.InfoFormat("RDirectoryScanListener server response status: {0}, {1}", ((HttpWebResponse)response).StatusCode, ((HttpWebResponse)response).StatusDescription);
 
             // Clean up the streams.
-            reader.Close();
             dataStream.Close();
             response.Close();
         }

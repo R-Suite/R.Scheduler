@@ -21,7 +21,7 @@ namespace R.Scheduler.IntegrationTests
             Assert.Equal("QRTZ_", Scheduler.Configuration.TablePrefix);
             Assert.Equal("RScheduler", Scheduler.Configuration.InstanceName);
             Assert.Equal("instance_one", Scheduler.Configuration.InstanceId);
-            Assert.Equal("true", Scheduler.Configuration.UseProperties);
+            Assert.Equal("false", Scheduler.Configuration.UseProperties);
             Assert.Equal("http://localhost:5000/", Scheduler.Configuration.WebApiBaseAddress);
         }
 
@@ -41,7 +41,7 @@ namespace R.Scheduler.IntegrationTests
                 config.TablePrefix = "TEST_";
                 config.InstanceName = "TestInstance";
                 config.InstanceId = "TestInstanceId";
-                config.UseProperties = "false";
+                config.UseProperties = "true";
                 config.WebApiBaseAddress = "http://test:123/";
             }));
 
@@ -52,7 +52,7 @@ namespace R.Scheduler.IntegrationTests
             Assert.Equal("TEST_", Scheduler.Configuration.TablePrefix);
             Assert.Equal("TestInstance", Scheduler.Configuration.InstanceName);
             Assert.Equal("TestInstanceId", Scheduler.Configuration.InstanceId);
-            Assert.Equal("false", Scheduler.Configuration.UseProperties);
+            Assert.Equal("true", Scheduler.Configuration.UseProperties);
             Assert.Equal("http://test:123/", Scheduler.Configuration.WebApiBaseAddress);
         }
     }

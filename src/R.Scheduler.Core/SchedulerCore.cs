@@ -227,6 +227,7 @@ namespace R.Scheduler.Core
                     .StartAt(startAt)
                     .Build();
 
+                trigger.TimeZone = TimeZoneInfo.Local;
                 _scheduler.ScheduleJob(trigger);
             }
 

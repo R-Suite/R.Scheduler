@@ -135,5 +135,31 @@ namespace R.Scheduler.UnitTests
             _mockScheduler.Verify(x => x.ScheduleJob(
                 It.Is<ICronTrigger>(t => t.CronExpressionString == "0/30 * * * * ?")), Times.Once);
         }
+
+        [Fact]
+        public void ShouldSetLocalTimezoneOnCronTriggerWhenCalledScheduleTrigger()
+        {
+            // Arrange
+            var myTrigger = new CronTrigger
+            {
+                Name = "TestTrigger",
+                Group = "TestGroup",
+                JobName = "TestJobName",
+                JobGroup = "TestJobGroup",
+                CronExpression = "0/30 * * * * ?"
+            };
+            IJobDetail noOpJob = new JobDetailImpl("TestJobName", "TestJobGroup", typeof(NoOpJob));
+            _mockScheduler.Setup(x => x.GetJobDetail(It.IsAny<JobKey>())).Returns(noOpJob);
+            _mockScheduler.Setup(x => x.CheckExists(It.IsAny<JobKey>())).Returns(true);
+
+            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object);
+
+            // Act 
+            schedulerCore.ScheduleTrigger(myTrigger);
+
+            // Assert
+            _mockScheduler.Verify(x => x.ScheduleJob(
+                It.Is<ICronTrigger>(t => (Equals(t.TimeZone, TimeZoneInfo.Local)))), Times.Once);
+        }
     }
 }

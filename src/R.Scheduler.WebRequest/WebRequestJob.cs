@@ -73,20 +73,52 @@ namespace R.Scheduler.WebRequest
             }
 
             // Get the response.
-            WebResponse response = request.GetResponse();
-            Logger.InfoFormat("WebRequestJob server response status: {0}", ((HttpWebResponse)response).StatusDescription);
-            
-            // Get the stream containing content returned by the server.
-            dataStream = response.GetResponseStream();
-            var reader = new StreamReader(dataStream);
-            string responseFromServer = reader.ReadToEnd();
-            context.Result = responseFromServer;
-            Logger.InfoFormat("WebRequestJob server response content: {0}", responseFromServer);
+            try
+            {
+                WebResponse response = request.GetResponse();
+                Logger.InfoFormat("WebRequestJob server response status: {0}", ((HttpWebResponse) response).StatusDescription);
 
-            // Clean up the streams.
-            reader.Close();
-            dataStream.Close();
-            response.Close();
+                // Get the stream containing content returned by the server.
+                using (dataStream = response.GetResponseStream())
+                {
+                    if (dataStream != null)
+                    {
+                        var reader = new StreamReader(dataStream);
+                        string responseFromServer = reader.ReadToEnd();
+                        context.Result = responseFromServer;
+                        Logger.InfoFormat("WebRequestJob server response content: {0}", responseFromServer);
+
+                        reader.Close();
+                    }
+                }
+                response.Close();
+            }
+            catch (WebException ex)
+            {
+                Logger.Error("WebRequestJob: WebException occured", ex);
+
+                if (ex.Response != null)
+                {
+                    using (var errorResponse = (HttpWebResponse) ex.Response)
+                    {
+                        var stream = errorResponse.GetResponseStream();
+                        if (stream != null)
+                        {
+                            using (var reader = new StreamReader(stream))
+                            {
+                                string error = reader.ReadToEnd();
+                                Logger.ErrorFormat("WebRequestJob: {0}", error);
+                            }
+                        }
+                    }
+                }
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("WebRequestJob: Exception occured", ex);
+                throw;
+            }
         }
 
         protected virtual string GetOptionalParameter(JobDataMap data, string propertyName)

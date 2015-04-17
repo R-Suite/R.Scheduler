@@ -26,7 +26,9 @@ namespace R.Scheduler.DirectoryScan
         }
 
         /// <summary>
-        /// Creates a web request that posts updated or created files to a specified url 
+        /// Creates a web request that posts updated or created files to a specified url.
+        /// Let exceptions to bubble up to <see cref="DirectoryScanJob"/> 
+        /// so that the job picks up the same files next time.
         /// </summary>
         /// <param name="updatedFiles"></param>
         public void FilesUpdatedOrAdded(IEnumerable<FileInfo> updatedFiles)

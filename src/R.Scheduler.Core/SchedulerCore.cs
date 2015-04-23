@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using Quartz;
 using Quartz.Impl;
@@ -184,7 +183,7 @@ namespace R.Scheduler.Core
         public void ScheduleTrigger(BaseTrigger myTrigger)
         {
             // Set default values
-            DateTimeOffset startAt = (DateTime.MinValue != myTrigger.StartDateTime) ? myTrigger.StartDateTime : DateTime.UtcNow;
+            DateTimeOffset startAt = (DateTime.MinValue != myTrigger.StartDateTime) ? myTrigger.StartDateTime : DateTime.Now;
 
             // Set default trigger group
             myTrigger.Group = (!string.IsNullOrEmpty(myTrigger.Group)) ? myTrigger.Group : TriggerKey.DefaultGroup;

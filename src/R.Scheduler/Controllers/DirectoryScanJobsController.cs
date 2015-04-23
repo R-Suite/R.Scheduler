@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Web.Http;
@@ -129,8 +130,8 @@ namespace R.Scheduler.Controllers
             {
                 {"DIRECTORY_NAME", model.DirectoryName},
                 {"CALLBACK_URL", model.CallbackUrl},
-                {"MINIMUM_UPDATE_AGE", model.MinimumUpdateAge.ToString()},
-                {"LAST_MODIFIED_TIME", model.LastModifiedTime.ToString()}
+                {"MINIMUM_UPDATE_AGE", model.MinimumUpdateAge.ToString(CultureInfo.InvariantCulture)},
+                {"LAST_MODIFIED_TIME", model.LastModifiedTime.ToString("o")}
             };
 
             return base.CreateJob(model, typeof(RDirectoryScanJob), dataMap);

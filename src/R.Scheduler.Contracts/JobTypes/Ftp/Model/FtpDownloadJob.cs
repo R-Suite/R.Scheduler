@@ -7,7 +7,7 @@
         public string Username { get; set; }
         public string Password { get; set; }
         public string LocalDirectoryPath { get; set; }
-        public string RemotelDirectoryPath { get; set; }
+        public string RemoteDirectoryPath { get; set; }
         public string FileExtensions { get; set; }
         public string CutOffTimeSpan { get; set; }
     }

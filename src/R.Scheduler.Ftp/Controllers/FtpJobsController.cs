@@ -77,7 +77,7 @@ namespace R.Scheduler.Ftp.Controllers
                 Username = jobDetail.JobDataMap.GetString("userName"),
                 Password = jobDetail.JobDataMap.GetString("password"),
                 LocalDirectoryPath = jobDetail.JobDataMap.GetString("localDirectoryPath"),
-                RemotelDirectoryPath = jobDetail.JobDataMap.GetString("remoteDirectoryPath"),
+                RemoteDirectoryPath = jobDetail.JobDataMap.GetString("remoteDirectoryPath"),
                 FileExtensions = jobDetail.JobDataMap.GetString("fileExtensions"),
                 CutOffTimeSpan = jobDetail.JobDataMap.GetString("cutOffTimeSpan"),
             };
@@ -101,7 +101,7 @@ namespace R.Scheduler.Ftp.Controllers
                 {"userName", model.Username},
                 {"password", model.Password},
                 {"localDirectoryPath", model.LocalDirectoryPath},
-                {"remoteDirectoryPath", model.RemotelDirectoryPath},
+                {"remoteDirectoryPath", model.RemoteDirectoryPath},
                 {"fileExtensions", model.FileExtensions},
                 {"cutOffTimeSpan", model.CutOffTimeSpan}
             };

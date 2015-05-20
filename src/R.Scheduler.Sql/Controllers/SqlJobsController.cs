@@ -44,7 +44,7 @@ namespace R.Scheduler.Sql.Controllers
                                                         CommandClass = jobDetail.JobDataMap.GetString("commandClass"),
                                                         ConnectionClass = jobDetail.JobDataMap.GetString("connectionClass"),
                                                         CommandStyle = jobDetail.JobDataMap.GetString("commandStyle"),
-                                                        PoviderAssemblyName = jobDetail.JobDataMap.GetString("providerAssemblyName"),
+                                                        ProviderAssemblyName = jobDetail.JobDataMap.GetString("providerAssemblyName"),
                                                         NonQueryCommand = jobDetail.JobDataMap.GetString("nonQueryCommand"),
                                                         DataAdapterClass = jobDetail.JobDataMap.GetString("dataAdapterClass")
                                                     }).ToList();
@@ -82,7 +82,7 @@ namespace R.Scheduler.Sql.Controllers
                 CommandClass = jobDetail.JobDataMap.GetString("commandClass"),
                 ConnectionClass = jobDetail.JobDataMap.GetString("connectionClass"),
                 CommandStyle = jobDetail.JobDataMap.GetString("commandStyle"),
-                PoviderAssemblyName = jobDetail.JobDataMap.GetString("providerAssemblyName"),
+                ProviderAssemblyName = jobDetail.JobDataMap.GetString("providerAssemblyName"),
                 NonQueryCommand = jobDetail.JobDataMap.GetString("nonQueryCommand"),
                 DataAdapterClass = jobDetail.JobDataMap.GetString("dataAdapterClass")
             };
@@ -105,7 +105,7 @@ namespace R.Scheduler.Sql.Controllers
                 {"commandClass", model.CommandClass},
                 {"connectionClass", model.ConnectionClass},
                 {"commandStyle", model.CommandStyle},
-                {"providerAssemblyName", model.PoviderAssemblyName},
+                {"providerAssemblyName", model.ProviderAssemblyName},
                 {"nonQueryCommand", model.NonQueryCommand},
                 {"dataAdapterClass", model.DataAdapterClass}
             };

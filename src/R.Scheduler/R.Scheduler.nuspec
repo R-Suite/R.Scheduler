@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>R.Scheduler</id>
-    <version>0.2.5</version>
+    <version>0.3.0</version>
     <title>R.Scheduler</title>
     <authors>Jakub Pachansky</authors>
     <owners>Jakub Pachansky,Tim Watson</owners>
@@ -31,6 +31,7 @@
     <file src="bin\Release\R.Scheduler.Ftp.dll" target="lib\net40\R.Scheduler.Ftp.dll" />
     <file src="bin\Release\R.Scheduler.WebRequest.dll" target="lib\net40\R.Scheduler.WebRequest.dll" />
     <file src="bin\Release\R.Scheduler.DirectoryScan.dll" target="lib\net40\R.Scheduler.DirectoryScan.dll" />
+    <file src="bin\Release\R.Scheduler.Sql.dll" target="lib\net40\R.Scheduler.Sql.dll" />
   </files>
 </package>
 

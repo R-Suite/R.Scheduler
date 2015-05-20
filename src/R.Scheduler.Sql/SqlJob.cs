@@ -16,9 +16,6 @@ namespace R.Scheduler.Sql
         /// <summary> Non query command (insert, update, delete, stored proc REQUIRED.</summary>
         public const string NonQueryCommand = "nonQueryCommand";
 
-        /// <summary> Query parameters. Optional.</summary>
-        public const string Parameters = "params";
-
         /// <summary> Fully qualified provider assembly name. REQUIRED.</summary>
         public const string PoviderAssemblyName = "providerAssemblyName";
 
@@ -42,11 +39,10 @@ namespace R.Scheduler.Sql
             string connectionClass = GetRequiredParameter(data, ConnectionClass);
             string commandClass = GetRequiredParameter(data, CommandClass);
             string dataAdapterClass = GetRequiredParameter(data, DataAdapterClass);
-            string commandStyle = GetRequiredParameter(data, CommandStyle);
+            string commandStyle = GetOptionalParameter(data, CommandStyle);
 
             string connectionString = GetRequiredParameter(data, ConnectionString);
             string nonQueryCommand = GetRequiredParameter(data, NonQueryCommand);
-            string paramStr = GetOptionalParameter(data, Parameters);
 
             // try load types 
             Assembly provider = Assembly.Load(providerAssemblyName);
@@ -57,17 +53,17 @@ namespace R.Scheduler.Sql
             // execute methods using the provider types as generic arguments
             MethodInfo executeNonQueryMethod = typeof(SqlJob).GetMethod("ExecuteNonQuery");
             MethodInfo genericExecuteNonQueryMethod = executeNonQueryMethod.MakeGenericMethod(connectionType, commandType, dataAdapterType);
-            genericExecuteNonQueryMethod.Invoke(this, new[] { connectionString, nonQueryCommand, paramStr, commandStyle });
+            genericExecuteNonQueryMethod.Invoke(this, new[] { connectionString, nonQueryCommand, commandStyle });
         }
 
-        public void ExecuteNonQuery<CONNECTION_TYPE, COMMAND_TYPE, ADAPTER_TYPE>(string connectionString, string commandText, string paramStr, string commandStyle) 
+        public void ExecuteNonQuery<CONNECTION_TYPE, COMMAND_TYPE, ADAPTER_TYPE>(string connectionString, string commandText, string commandStyle) 
             where CONNECTION_TYPE : DbConnection, new() 
             where COMMAND_TYPE : DbCommand 
             where ADAPTER_TYPE : DbDataAdapter, new()
         {
             using (var dbControl = new DbControl<CONNECTION_TYPE, COMMAND_TYPE, ADAPTER_TYPE>(connectionString))
             {
-                DbCommand command = commandStyle.ToLower() == "storedprocedure"
+                DbCommand command = (null != commandStyle && commandStyle.ToLower() == "storedprocedure")
                     ? dbControl.GetStoredProcedureCommand(commandText)
                     : dbControl.GetSqlStringCommand(commandText);
 

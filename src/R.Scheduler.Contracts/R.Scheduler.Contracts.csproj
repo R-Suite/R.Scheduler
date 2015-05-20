@@ -49,6 +49,7 @@
     <Compile Include="JobTypes\Email\Model\EmailJob.cs" />
     <Compile Include="JobTypes\Ftp\Model\FtpDownloadJob.cs" />
     <Compile Include="JobTypes\Native\Model\NativeExecJob.cs" />
+    <Compile Include="JobTypes\Sql\Model\SqlJob.cs" />
     <Compile Include="JobTypes\WebRequest\Model\WebRequestJob.cs" />
     <Compile Include="Model\BaseTrigger.cs" />
     <Compile Include="Model\CronTrigger.cs" />

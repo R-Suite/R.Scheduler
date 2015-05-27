@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>R.Scheduler</id>
-    <version>0.3.0</version>
+    <version>0.3.2</version>
     <title>R.Scheduler</title>
     <authors>Jakub Pachansky</authors>
     <owners>Jakub Pachansky,Tim Watson</owners>
@@ -14,11 +14,11 @@
     <tags>Scheduler,R Scheduler,Quartz, Quartz net,R.Scheduler,Quartz Scheduler,RScheduler,Scheduling</tags>
     <dependencies>
       <dependency id="R.Scheduler.Contracts" version="" />
-      <dependency id="Quartz" version="2.2.4" />
+      <dependency id="Quartz" version="2.3.2" />
       <dependency id="Microsoft.AspNet.WebApi.OwinSelfHost" version="5.2.2" />
       <dependency id="Microsoft.AspNet.WebApi.Cors" version="5.2.2" />
       <dependency id="structuremap" version="2.6.4.1" />
-      <dependency id="Common.Logging" version="2.3.1" />
+      <dependency id="Common.Logging" version="3.1.0" />
   </dependencies>
   </metadata>
   <files>

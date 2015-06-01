@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using Common.Logging;
 using Quartz;
 
@@ -40,6 +41,26 @@ namespace R.Scheduler.WebRequest
             string method = GetRequiredParameter(data, Method);
             string uri = GetRequiredParameter(data, Uri);
             string body = GetOptionalParameter(data, Body) ?? string.Empty;
+
+            // Parse tokens in uri. This allows passing context property values, such as FireInstanceId, in the query string
+            var r = new Regex(Regex.Escape("{$") + "(.*?)" + Regex.Escape("}"));
+            MatchCollection matches = r.Matches(uri);
+            foreach (object match in matches)
+            {
+                var token = match.ToString();
+                var tokenValue = token.Replace("{$", "").Replace("}", "");
+
+                PropertyInfo prop = context.GetType().GetProperty(tokenValue, BindingFlags.Public | BindingFlags.Instance);
+                if (null != prop && prop.CanRead)
+                {
+                    var val = prop.GetValue(context);
+
+                    if (null != val)
+                    {
+                        uri = uri.Replace(token, val.ToString());
+                    }
+                }
+            }
 
             if (uri.ToLower().StartsWith("http"))
             {

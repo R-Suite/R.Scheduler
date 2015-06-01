@@ -79,6 +79,7 @@
     <Compile Include="DirectoryScanJobsControllerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SchedulerCoreTests.cs" />
+    <Compile Include="WebRequestJobTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

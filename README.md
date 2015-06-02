@@ -93,6 +93,7 @@ POST /api/jobs/execution?JobName=MyJob&JobGroup=DEFAULT
   - FtpDownloadJob (Use Default Ftp library or inject your own)
   - WebRequestJob
   - DirectoryScanJob callback
+  - SqlJob
 - WebApi
 - Auditing
 - [WebManagement](https://github.com/R-Suite/R.Scheduler.Web)

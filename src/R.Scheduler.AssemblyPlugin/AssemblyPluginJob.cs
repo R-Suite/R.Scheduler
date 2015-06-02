@@ -36,14 +36,15 @@ namespace R.Scheduler.AssemblyPlugin
 
             if (string.IsNullOrEmpty(pluginPath) || !File.Exists(pluginPath))
             {
-                Logger.Error(string.Format("plugin file '{0}' does not exist.", pluginPath));
-                return;
+                Logger.WarnFormat("plugin file '{0}' does not exist.", pluginPath);
+                throw new FileNotFoundException("Assembly file does not exist", pluginPath);
             }
 
             var pluginAssemblyName = Path.GetFileNameWithoutExtension(pluginPath);
 
             var appDomain = GetAppDomain(pluginPath, pluginAssemblyName);
             var pluginTypeName = GetPluginTypeName(appDomain, pluginPath);
+            Exception executionException = null;
 
             IJobPlugin jobPlugin;
             try
@@ -52,8 +53,9 @@ namespace R.Scheduler.AssemblyPlugin
             }
             catch (Exception ex)
             {
-                Logger.Error(string.Format("Error creating instance of IJobPlugin. {0}.", ex.Message));
+                Logger.Warn(string.Format("Error creating instance of IJobPlugin. pluginTypeName = {0}.", pluginTypeName), ex);
                 jobPlugin = null;
+                executionException = ex;
             }
 
             try
@@ -70,10 +72,16 @@ namespace R.Scheduler.AssemblyPlugin
             }
             catch (Exception ex)
             {
-                Logger.Error(string.Format("Error occured in {0}.", pluginTypeName), ex);
+                Logger.Warn(string.Format("Error occured in {0}.", pluginTypeName), ex);
+                executionException = ex;
             }
 
             AppDomain.Unload(appDomain);
+
+            if (null != executionException)
+            {
+                throw executionException;
+            }
         }
 
         #region Private Methods

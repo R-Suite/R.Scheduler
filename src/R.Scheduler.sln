@@ -46,6 +46,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.DirectoryScan",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.Sql", "R.Scheduler.Sql\R.Scheduler.Sql.csproj", "{99EDF966-9370-4FA2-8CE7-6089F88E83CC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.FakeJobPluginWithError", "R.Scheduler.FakeJobPluginWithError\R.Scheduler.FakeJobPluginWithError.csproj", "{9AB8E06A-1951-4C47-A438-AD3BA5E65A3F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -112,6 +114,10 @@ Global
 		{99EDF966-9370-4FA2-8CE7-6089F88E83CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99EDF966-9370-4FA2-8CE7-6089F88E83CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99EDF966-9370-4FA2-8CE7-6089F88E83CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9AB8E06A-1951-4C47-A438-AD3BA5E65A3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AB8E06A-1951-4C47-A438-AD3BA5E65A3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AB8E06A-1951-4C47-A438-AD3BA5E65A3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AB8E06A-1951-4C47-A438-AD3BA5E65A3F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -128,5 +134,6 @@ Global
 		{F6B44C96-F2D3-4086-AE9C-507F528559BE} = {6C0687DC-4023-4803-8690-197C9274A5C0}
 		{137A3DCF-486E-498F-837A-D206E9B42CC3} = {6C0687DC-4023-4803-8690-197C9274A5C0}
 		{99EDF966-9370-4FA2-8CE7-6089F88E83CC} = {6C0687DC-4023-4803-8690-197C9274A5C0}
+		{9AB8E06A-1951-4C47-A438-AD3BA5E65A3F} = {ACF74C8F-7012-44A7-A924-4F87D805F93F}
 	EndGlobalSection
 EndGlobal

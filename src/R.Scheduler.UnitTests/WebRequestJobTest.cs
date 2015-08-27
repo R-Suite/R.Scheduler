@@ -1,15 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Moq;
-using Quartz;
-using R.Scheduler.Core;
-using R.Scheduler.Interfaces;
+﻿using System.Text.RegularExpressions;
 using Xunit;
-using Match = System.Text.RegularExpressions.Match;
 
 namespace R.Scheduler.UnitTests
 {

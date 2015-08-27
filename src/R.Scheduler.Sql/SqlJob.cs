@@ -74,7 +74,7 @@ namespace R.Scheduler.Sql
                 catch (Exception ex)
                 {
                     Logger.Error("Error executing non-query.", ex);
-                    throw;
+                    throw new JobExecutionException("Error in SqlJob: " + ex.Message, ex, false);
                 }
             }
         }

@@ -80,7 +80,7 @@ namespace R.Scheduler.AssemblyPlugin
 
             if (null != executionException)
             {
-                throw executionException;
+                throw new JobExecutionException("Error in WebRequestJob: " + executionException.Message, executionException, false);
             }
         }
 

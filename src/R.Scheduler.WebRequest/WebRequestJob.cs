@@ -117,6 +117,7 @@ namespace R.Scheduler.WebRequest
             catch (WebException ex)
             {
                 Logger.Error("WebRequestJob: WebException occured", ex);
+                context.Result = ex.Message;
 
                 if (ex.Response != null)
                 {
@@ -133,12 +134,12 @@ namespace R.Scheduler.WebRequest
                         }
                     }
                 }
-                throw;
+                throw new JobExecutionException("Error in WebRequestJob: " + ex.Message, ex, false);
             }
             catch (Exception ex)
             {
                 Logger.Error("WebRequestJob: Exception occured", ex);
-                throw;
+                throw new JobExecutionException("Error in WebRequestJob: " + ex.Message, ex, false);
             }
         }
 

@@ -4,7 +4,7 @@ R.Scheduler is API driven. Actions can be performed using a simple RESTful API u
 
 ## Project Maturity
 
-R.Scheduler is used in a production environment with a limited number of jobs. It is still in relatively early stages of development and hasn’t been officially released. It may not yet be suitable for the most demanding and conservative projects.
+R.Scheduler is used in a production environment with a couple of thousands of jobs running daily. It is relatively matured but hasn’t been officially released. It may not yet be suitable for the most demanding and conservative projects.
 
 Public (Web) API is relatively stable but minor changes are likely in future versions.
 
@@ -96,7 +96,6 @@ POST /api/jobs/execution?JobName=MyJob&JobGroup=DEFAULT
   - SqlJob
 - WebApi
 - Auditing
-- [WebManagement](https://github.com/R-Suite/R.Scheduler.Web)
 
 
 

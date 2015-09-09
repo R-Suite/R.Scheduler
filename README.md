@@ -13,7 +13,7 @@ Public (Web) API is relatively stable but minor changes are likely in future ver
 
 #### Simple Configuration
 
-Calling initialize with no parameters will create and start an instance of the Scheduler with default configuration options.
+Calling initialize with no parameters will **create and start** an instance of the Scheduler with default configuration options.
 
 ```c#
 R.Scheduler.Scheduler.Initialize();

@@ -13,22 +13,20 @@ Public (Web) API is relatively stable but minor changes are likely in future ver
 
 #### Simple Configuration
 
-Calling initialize with no parameters will create an instance of the Scheduler with default configuration options.
+Calling initialize with no parameters will create and start an instance of the Scheduler with default configuration options.
 
 ```c#
 R.Scheduler.Scheduler.Initialize();
-
-IScheduler sched = R.Scheduler.Scheduler.Instance();
-sched.Start();
 ```
 
 #### Custom Configuration
 
-Initialize also takes a single lambda/action parameter for custom configuration.
+Initialize also takes a single lambda/action parameter for custom configuration. In this case we choose not to start the Scheduler automatically. Instead, we create a scheduler instance and start the instance explicitly after the Scheduler initialization.
 
 ```c#
 R.Scheduler.Scheduler.Initialize(config =>
 {
+    config.AutoStart = false;
     config.CustomFtpLibraryAssemblyName = "MyFtpLib.dll";
     config.PersistanceStoreType = PersistanceStoreType.Postgre;
     config.ConnectionString = "Server=localhost;Port=5432;Database=Scheduler;User Id=xxx;Password=xxx;";

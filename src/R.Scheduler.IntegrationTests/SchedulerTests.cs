@@ -12,7 +12,7 @@ namespace R.Scheduler.IntegrationTests
             Scheduler.Shutdown();
             
             // Act
-            Scheduler.Initialize();
+            Scheduler.Initialize(_=>_.AutoStart = false);
 
             // Assert
             Assert.True(Scheduler.Configuration.EnableAuditHistory);
@@ -43,11 +43,13 @@ namespace R.Scheduler.IntegrationTests
                 config.InstanceId = "TestInstanceId";
                 config.UseProperties = "true";
                 config.WebApiBaseAddress = "http://test:123/";
+                config.AutoStart = false;
             }));
 
             // Assert
             Assert.False(Scheduler.Configuration.EnableAuditHistory);
             Assert.False(Scheduler.Configuration.EnableWebApiSelfHost);
+            Assert.False(Scheduler.Configuration.AutoStart);
             Assert.Equal(PersistanceStoreType.Postgre, Scheduler.Configuration.PersistanceStoreType);
             Assert.Equal("TEST_", Scheduler.Configuration.TablePrefix);
             Assert.Equal("TestInstance", Scheduler.Configuration.InstanceName);

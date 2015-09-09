@@ -7,6 +7,7 @@
         string TablePrefix { get; set; }
         string InstanceName { get; set; }
         string InstanceId { get; set; }
+        bool AutoStart { get; set; }
 
         /// <summary>
         /// Instruct AdoJobStore that all values in JobDataMaps will be Strings,

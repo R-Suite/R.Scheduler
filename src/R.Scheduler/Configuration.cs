@@ -17,6 +17,7 @@ namespace R.Scheduler
             WebApiBaseAddress = "http://localhost:5000/";
 
             EnableAuditHistory = true;
+            AutoStart = true;
         }
 
         public PersistanceStoreType PersistanceStoreType { get; set; }
@@ -24,6 +25,7 @@ namespace R.Scheduler
         public string TablePrefix { get; set; }
         public string InstanceName { get; set; }
         public string InstanceId { get; set; }
+        public bool AutoStart { get; set; }
 
         /// <summary>
         /// Instruct AdoJobStore that all values in JobDataMaps will be Strings,

@@ -57,6 +57,12 @@ namespace R.Scheduler
             {
                 jobTypeStartup.Initialise(Configuration);
             }
+
+            if (configuration.AutoStart)
+            {
+                IScheduler sched = Instance();
+                sched.Start();
+            }
         }
 
         /// <summary>

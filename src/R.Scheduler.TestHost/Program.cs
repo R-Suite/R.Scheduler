@@ -1,5 +1,4 @@
-﻿using Quartz;
-using R.Scheduler.Interfaces;
+﻿using R.Scheduler.Interfaces;
 
 namespace R.Scheduler.TestHost
 {
@@ -14,9 +13,6 @@ namespace R.Scheduler.TestHost
                 config.ConnectionString = "Server=127.0.0.1;Port=5432;Database=Scheduler;User Id=postgres;Password=postgres;";
                 //config.CustomFtpLibraryAssemblyName = "R.Scheduler.FakeFtpLib";
             });
-
-            IScheduler sched = R.Scheduler.Scheduler.Instance();
-            sched.Start();
         }
     }
 }

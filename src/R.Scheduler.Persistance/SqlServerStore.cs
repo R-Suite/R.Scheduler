@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Reflection;
 using Common.Logging;
+using Quartz;
 using R.Scheduler.Interfaces;
 
 namespace R.Scheduler.Persistance
@@ -92,6 +94,85 @@ namespace R.Scheduler.Persistance
                     Logger.ErrorFormat("Error persisting AuditLog. {0}", ex.Message);
                 }
             }
+        }
+
+        public int GetJobDetailsCount()
+        {
+            int retval = 0;
+            const string sql = @"SELECT count(*) FROM [QRTZ_JOB_DETAILS];";
+
+            using (var con = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    con.Open();
+                    using (var command = new SqlCommand(sql, con))
+                    {
+                        retval = (int) command.ExecuteScalar();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error getting job details count. {0}", ex.Message);
+                }
+            }
+
+            return retval;
+        }
+
+        public int GetTriggerCount()
+        {
+            int retval = 0;
+            const string sql = @"SELECT count(*) FROM [QRTZ_TRIGGERS];";
+
+            using (var con = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    con.Open();
+                    using (var command = new SqlCommand(sql, con))
+                    {
+                        retval = (int)command.ExecuteScalar();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error getting triggers count. {0}", ex.Message);
+                }
+            }
+
+            return retval;
+        }
+
+        public IList<TriggerKey> GetFiredTriggers()
+        {
+            IList<TriggerKey> keys = new List<TriggerKey>();
+
+            const string sql = @"SELECT [TRIGGER_NAME], [TRIGGER_GROUP] FROM [QRTZ_FIRED_TRIGGERS]";
+
+            using (var con = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    con.Open();
+                    using (var command = new SqlCommand(sql, con))
+                    {
+                        using (SqlDataReader rs = command.ExecuteReader())
+                        {
+                            if (rs.Read())
+                            {
+                                keys.Add(new TriggerKey(rs.GetString(0), rs.GetString(1)));
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error getting fired triggers. {0}", ex.Message);
+                }
+            }
+
+            return keys;
         }
     }
 }

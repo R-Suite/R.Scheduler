@@ -15,6 +15,7 @@ namespace R.Scheduler
         {
             For<ISchedulerCore>().Use<SchedulerCore>();
             For<IScheduler>().Use(Scheduler.Instance);
+            For<IAnalytics>().Use<Analytics>();
             // Default that my be overriden (using Sm TypeInterceptor) to use 
             // data store implementation selected in Scheduler Configuration
             For<IPersistanceStore>().Use<InMemoryStore>();

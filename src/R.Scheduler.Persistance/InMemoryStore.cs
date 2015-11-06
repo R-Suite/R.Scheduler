@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.Caching;
+using Quartz;
 using R.Scheduler.Interfaces;
 
 namespace R.Scheduler.Persistance
@@ -28,6 +30,21 @@ namespace R.Scheduler.Persistance
             }
 
             Cache.Set(log.TimeStamp.ToString(CultureInfo.InvariantCulture), log, _policy);
+        }
+
+        public int GetJobDetailsCount()
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetTriggerCount()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IList<TriggerKey> GetFiredTriggers()
+        {
+            throw new NotImplementedException();
         }
     }
 }

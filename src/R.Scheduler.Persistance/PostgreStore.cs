@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Common.Logging;
 using Npgsql;
 using NpgsqlTypes;
+using Quartz;
 using R.Scheduler.Interfaces;
 
 namespace R.Scheduler.Persistance
@@ -111,6 +113,85 @@ namespace R.Scheduler.Persistance
                     Logger.ErrorFormat("Error persisting AuditLog. {0}", ex.Message);
                 }
             }
+        }
+
+        public int GetJobDetailsCount()
+        {
+            long retval = 0;
+            const string sql = @"SELECT count(*) FROM qrtz_job_details;";
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            {
+                try
+                {
+                    con.Open();
+                    using (var command = new NpgsqlCommand(sql, con))
+                    {
+                        retval = (long) command.ExecuteScalar();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error getting job details count. {0}", ex.Message);
+                }
+            }
+
+            return (int) retval;
+        }
+
+        public int GetTriggerCount()
+        {
+            long retval = 0;
+            const string sql = @"SELECT count(*) FROM qrtz_triggers;";
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            {
+                try
+                {
+                    con.Open();
+                    using (var command = new NpgsqlCommand(sql, con))
+                    {
+                        retval = (long)command.ExecuteScalar();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error getting triggers count. {0}", ex.Message);
+                }
+            }
+
+            return (int)retval;
+        }
+
+        public IList<TriggerKey> GetFiredTriggers()
+        {
+            IList<TriggerKey> keys = new List<TriggerKey>();
+
+            const string sql = @"SELECT trigger_name, trigger_group FROM qrtz_fired_triggers";
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            {
+                try
+                {
+                    con.Open();
+                    using (var command = new NpgsqlCommand(sql, con))
+                    {
+                        using (NpgsqlDataReader rs = command.ExecuteReader())
+                        {
+                            if (rs.Read())
+                            {
+                                keys.Add(new TriggerKey(rs.GetString(0), rs.GetString(1)));
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error getting fired triggers. {0}", ex.Message);
+                }
+            }
+
+            return keys;
         }
     }
 }

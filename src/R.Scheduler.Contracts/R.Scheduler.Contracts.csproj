@@ -53,6 +53,7 @@
     <Compile Include="JobTypes\WebRequest\Model\WebRequestJob.cs" />
     <Compile Include="Model\BaseTrigger.cs" />
     <Compile Include="Model\CronTrigger.cs" />
+    <Compile Include="Model\FireInstance.cs" />
     <Compile Include="Model\TriggerFireTime.cs" />
     <Compile Include="Model\SimpleTrigger.cs" />
     <Compile Include="Model\Error.cs" />

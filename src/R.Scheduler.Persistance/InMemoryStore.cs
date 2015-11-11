@@ -46,5 +46,10 @@ namespace R.Scheduler.Persistance
         {
             throw new NotImplementedException();
         }
+
+        public IEnumerable<AuditLog> GetErroredJobs(int count)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

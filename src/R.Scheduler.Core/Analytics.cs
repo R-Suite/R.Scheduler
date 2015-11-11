@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Common.Logging;
 using Quartz;
 using R.Scheduler.Interfaces;
@@ -48,6 +44,11 @@ namespace R.Scheduler.Core
             }
 
             return retval;
+        }
+
+        public IEnumerable<AuditLog> GetErroredJobs(int count)
+        {
+            return _persistanceStore.GetErroredJobs(count);
         }
     }
 }

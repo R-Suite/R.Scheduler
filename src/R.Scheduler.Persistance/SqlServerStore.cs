@@ -174,5 +174,60 @@ namespace R.Scheduler.Persistance
 
             return keys;
         }
+
+        public IEnumerable<AuditLog> GetErroredJobs(int count)
+        {
+            IList<AuditLog> retval = new List<AuditLog>();
+
+            if (count > 1000)
+            {
+                Logger.Warn("Max number of AuditLogs to fetch is 1000");
+                count = 1000;
+            }
+
+            string sql = string.Format(@"SELECT TOP {0} * FROM [RSCHED_AUDIT_HISTORY] WHERE [EXECUTION_EXCEPTION] <> '' AND [ACTION] = 'JobWasExecuted' order by [TIME_STAMP] DESC", count);
+
+            using (var con = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    con.Open();
+                    using (var command = new SqlCommand(sql, con))
+                    {
+                        using (SqlDataReader rs = command.ExecuteReader())
+                        {
+                            while (rs.Read())
+                            {
+                                retval.Add(new AuditLog
+                                {
+                                    TimeStamp = (DateTime)rs["TIME_STAMP"],
+                                    Action = rs["ACTION"].ToString(),
+                                    ExecutionException = rs["EXECUTION_EXCEPTION"].ToString(),
+                                    FireInstanceId = rs["FIRE_INSTANCE_ID"].ToString(),
+                                    FireTimeUtc = (DateTimeOffset?) rs["FIRE_TIME_UTC"],
+                                    JobGroup = rs["JOB_GROUP"].ToString(),
+                                    JobName = rs["JOB_NAME"].ToString(),
+                                    JobType = rs["JOB_TYPE"].ToString(),
+                                    TriggerName = rs["TRIGGER_NAME"].ToString(),
+                                    TriggerGroup = rs["TRIGGER_GROUP"].ToString(),
+                                    JobRunTime = new TimeSpan((long)rs["JOB_RUN_TIME"]),
+                                    ScheduledFireTimeUtc = (DateTimeOffset?) rs["SCHEDULED_FIRE_TIME_UTC"],
+                                    Params = rs["PARAMS"].ToString(),
+                                    RefireCount = (int) rs["REFIRE_COUNT"],
+                                    Recovering = (bool) rs["RECOVERING"],
+                                    Result = rs["RESULT"].ToString()
+                                });
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error getting ErroredJobs. {0}", ex.Message);
+                }
+            }
+
+            return retval;
+        }
     }
 }

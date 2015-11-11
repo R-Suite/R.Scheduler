@@ -10,8 +10,8 @@ NuGet pack "%OUTDIR%R.Scheduler\R.Scheduler.nuspec"
 NuGet pack "%OUTDIR%R.Scheduler.Contracts\R.Scheduler.Contracts.nuspec"
 
 
-nuget.exe push R.Scheduler.0.3.7.nupkg
-::nuget.exe push R.Scheduler.Contracts.0.3.6.nupkg
+nuget.exe push R.Scheduler.0.3.10.nupkg
+nuget.exe push R.Scheduler.Contracts.0.3.9.nupkg
 
            
 @ECHO === === === === === === === ===

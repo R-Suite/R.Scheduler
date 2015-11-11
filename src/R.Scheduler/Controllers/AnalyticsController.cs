@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using System.Web.Http;
+using AutoMapper;
 using Common.Logging;
 using Quartz;
 using R.Scheduler.Contracts.Model;
@@ -17,6 +18,7 @@ namespace R.Scheduler.Controllers
         public AnalyticsController()
         {
             _analytics = ObjectFactory.GetInstance<IAnalytics>();
+            Mapper.CreateMap<AuditLog, FireInstance>();
         }
 
         /// <summary>
@@ -58,6 +60,29 @@ namespace R.Scheduler.Controllers
             IEnumerable<ITrigger> quartzFiredTriggers = _analytics.GetFiredTriggers();
 
             return TriggerHelper.GetTriggerDetails(quartzFiredTriggers);
+        }
+
+        /// <summary>
+        /// Get executing jobs
+        /// </summary>
+        /// <returns></returns>
+        [AcceptVerbs("GET")]
+        [Route("api/erroredJobs")]
+        public IList<FireInstance> GetErroredJobs(int count)
+        {
+            Logger.Info("Entered AnalyticsController.GetErroredJobs().");
+
+            var erroredJobs = _analytics.GetErroredJobs(count);
+
+            IList<FireInstance> erroredFireInstances = new List<FireInstance>();
+
+            foreach (AuditLog erroredJob in erroredJobs)
+            {
+                var fi = Mapper.Map<FireInstance>(erroredJob);
+                erroredFireInstances.Add(fi);
+            }
+
+            return erroredFireInstances;
         }
     }
 }

@@ -12,5 +12,6 @@ namespace R.Scheduler.Contracts.JobTypes.WebRequest.Model
         public string Method { get; set; }
         public string Uri { get; set; }
         public string Body { get; set; }
+        public string ContentType { get; set; }
     }
 }

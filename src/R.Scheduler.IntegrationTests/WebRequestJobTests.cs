@@ -39,6 +39,7 @@ namespace R.Scheduler.IntegrationTests
                 IJobDetail jobDetail = new JobDetailImpl("jobsettings", typeof (IJob));
                 jobDetail.JobDataMap.Add("actionType", "http");
                 jobDetail.JobDataMap.Add("method", "GET");
+                jobDetail.JobDataMap.Add("contentType", "text/plain");
                 jobDetail.JobDataMap.Add("uri", BaseHostingAddress + "/testapi/test?JobName=TestJob&FireInstanceId={$FireInstanceId}");
                 _mockJobExecutionContext.SetupGet(p => p.MergedJobDataMap).Returns(jobDetail.JobDataMap);
 

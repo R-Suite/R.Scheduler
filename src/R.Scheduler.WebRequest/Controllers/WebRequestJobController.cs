@@ -41,6 +41,7 @@ namespace R.Scheduler.WebRequest.Controllers
                                                         JobGroup = jobDetail.Key.Group,
                                                         SchedulerName = _schedulerCore.SchedulerName,
                                                         Uri = jobDetail.JobDataMap.GetString("uri"),
+                                                        ContentType = "text/plain"
                                                     }).ToList();
 
         }
@@ -75,7 +76,8 @@ namespace R.Scheduler.WebRequest.Controllers
                 Uri = jobDetail.JobDataMap.GetString("uri"),
                 ActionType = jobDetail.JobDataMap.GetString("actionType"),
                 Method = jobDetail.JobDataMap.GetString("method"),
-                Body = jobDetail.JobDataMap.GetString("body")
+                Body = jobDetail.JobDataMap.GetString("body"),
+                ContentType = jobDetail.JobDataMap.GetString("contenType")
             };
         }
 
@@ -95,7 +97,8 @@ namespace R.Scheduler.WebRequest.Controllers
                 {"uri", model.Uri},
                 {"actionType", model.ActionType},
                 {"method", model.Method},
-                {"body", model.Body}
+                {"body", model.Body},
+                {"contentType", model.ContentType}
             };
 
             return base.CreateJob(model, typeof(WebRequestJob), dataMap);

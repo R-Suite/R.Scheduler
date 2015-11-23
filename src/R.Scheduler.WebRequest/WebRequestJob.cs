@@ -25,6 +25,9 @@ namespace R.Scheduler.WebRequest
         /// <summary> The (POST/PUT) request body. Optional.</summary>
         public const string Body = "body";
 
+        /// <summary> The content type. Optional.</summary>
+        public const string ContentType = "contentType";
+
         /// <summary>
         /// Ctor used by Scheduler engine
         /// </summary>
@@ -41,6 +44,7 @@ namespace R.Scheduler.WebRequest
             string method = GetRequiredParameter(data, Method);
             string uri = GetRequiredParameter(data, Uri);
             string body = GetOptionalParameter(data, Body) ?? string.Empty;
+            string contentType = GetOptionalParameter(data, ContentType) ?? "text/plain";
 
             // Parse tokens in uri. This allows passing context property values, such as FireInstanceId, in the query string
             var r = new Regex(Regex.Escape("{$") + "(.*?)" + Regex.Escape("}"));
@@ -85,7 +89,7 @@ namespace R.Scheduler.WebRequest
             if (method.ToUpper() == "PUT" || method.ToUpper() == "POST")
             {
                 byte[] byteArray = Encoding.UTF8.GetBytes(body);
-                request.ContentType = "text/plain";
+                request.ContentType = contentType;
                 request.ContentLength = byteArray.Length;
 
                 dataStream = request.GetRequestStream();

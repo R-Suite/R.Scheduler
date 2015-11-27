@@ -110,16 +110,23 @@ namespace R.Scheduler.Core
         /// <param name="jobGroup"></param>
         /// <param name="jobType"></param>
         /// <param name="dataMap"><see cref="jobType"/> specific parameters</param>
-        public void CreateJob(string jobName, string jobGroup, Type jobType, Dictionary<string, object> dataMap )
+        /// <param name="description"></param>
+        public void CreateJob(string jobName, string jobGroup, Type jobType, Dictionary<string, object> dataMap, string description)
         {
             // Use DefaultGroup if jobGroup is null or empty
             jobGroup = (!string.IsNullOrEmpty(jobGroup)) ? jobGroup : JobKey.DefaultGroup;
 
-            IJobDetail jobDetail = new JobDetailImpl(jobName, jobGroup, jobType, true, false);
+            var jobbuilder = JobBuilder.Create(jobType);
+            IJobDetail jobDetail = jobbuilder.WithDescription(description)
+                .WithIdentity(jobName, jobGroup).StoreDurably(true).RequestRecovery(false)
+                .Build();
+
+            //IJobDetail jobDetail = new JobDetailImpl(jobName, jobGroup, jobType, true, false);
             foreach (var mapItem in dataMap)
             {
                 jobDetail.JobDataMap.Add(mapItem.Key, mapItem.Value);
             }
+
             _scheduler.AddJob(jobDetail, true);
         }
 

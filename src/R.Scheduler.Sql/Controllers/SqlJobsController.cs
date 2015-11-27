@@ -84,7 +84,8 @@ namespace R.Scheduler.Sql.Controllers
                 CommandStyle = jobDetail.JobDataMap.GetString("commandStyle"),
                 ProviderAssemblyName = jobDetail.JobDataMap.GetString("providerAssemblyName"),
                 NonQueryCommand = jobDetail.JobDataMap.GetString("nonQueryCommand"),
-                DataAdapterClass = jobDetail.JobDataMap.GetString("dataAdapterClass")
+                DataAdapterClass = jobDetail.JobDataMap.GetString("dataAdapterClass"),
+                Description = jobDetail.Description
             };
         }
 
@@ -110,7 +111,7 @@ namespace R.Scheduler.Sql.Controllers
                 {"dataAdapterClass", model.DataAdapterClass}
             };
 
-            return base.CreateJob(model, typeof(SqlJob), dataMap);
+            return base.CreateJob(model, typeof(SqlJob), dataMap, model.Description);
         }
     }
 }

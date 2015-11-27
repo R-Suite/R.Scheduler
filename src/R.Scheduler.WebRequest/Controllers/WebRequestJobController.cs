@@ -77,12 +77,13 @@ namespace R.Scheduler.WebRequest.Controllers
                 ActionType = jobDetail.JobDataMap.GetString("actionType"),
                 Method = jobDetail.JobDataMap.GetString("method"),
                 Body = jobDetail.JobDataMap.GetString("body"),
-                ContentType = jobDetail.JobDataMap.GetString("contenType")
+                ContentType = jobDetail.JobDataMap.GetString("contentType"),
+                Description = jobDetail.Description
             };
         }
 
         /// <summary>
-        /// Create new FtpJob without any triggers
+        /// Create new WebRequest without any triggers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -101,7 +102,7 @@ namespace R.Scheduler.WebRequest.Controllers
                 {"contentType", model.ContentType}
             };
 
-            return base.CreateJob(model, typeof(WebRequestJob), dataMap);
+            return base.CreateJob(model, typeof(WebRequestJob), dataMap, model.Description);
         }
     }
 }

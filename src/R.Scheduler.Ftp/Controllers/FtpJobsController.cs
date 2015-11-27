@@ -80,6 +80,7 @@ namespace R.Scheduler.Ftp.Controllers
                 RemoteDirectoryPath = jobDetail.JobDataMap.GetString("remoteDirectoryPath"),
                 FileExtensions = jobDetail.JobDataMap.GetString("fileExtensions"),
                 CutOffTimeSpan = jobDetail.JobDataMap.GetString("cutOffTimeSpan"),
+                Description = jobDetail.Description
             };
         }
 
@@ -106,7 +107,7 @@ namespace R.Scheduler.Ftp.Controllers
                 {"cutOffTimeSpan", model.CutOffTimeSpan}
             };
 
-            return base.CreateJob(model, typeof(FtpDownloadJob), dataMap);
+            return base.CreateJob(model, typeof(FtpDownloadJob), dataMap, model.Description);
         }
     }
 }

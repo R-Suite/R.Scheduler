@@ -40,8 +40,31 @@ namespace R.Scheduler.Controllers
                                                         JobGroup = jobDetail.Key.Group,
                                                         JobType = jobDetail.JobType.Name,
                                                         SchedulerName = _schedulerCore.SchedulerName,
+                                                        Description = jobDetail.Description
                                                     }).ToList();
 
+        }
+
+        /// <summary>
+        /// Get all the jobs regardless of the job type
+        /// </summary>
+        /// <returns></returns>
+        [AcceptVerbs("GET")]
+        [Route("api/jobs/{jobName}/{jobGroup}")]
+        public BaseJob Get(string jobName, string jobGroup)
+        {
+            Logger.Info("Entered JobsController.Get().");
+
+            var jobDetail = _schedulerCore.GetJobDetail(jobName, jobGroup);
+
+            return new BaseJob
+            {
+                JobName = jobDetail.Key.Name,
+                JobGroup = jobDetail.Key.Group,
+                JobType = jobDetail.JobType.Name,
+                SchedulerName = _schedulerCore.SchedulerName,
+                Description = jobDetail.Description
+            };
         }
 
         /// <summary>

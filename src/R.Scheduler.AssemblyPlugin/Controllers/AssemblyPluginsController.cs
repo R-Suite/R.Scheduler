@@ -73,7 +73,8 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
                 JobName = jobDetail.Key.Name,
                 JobGroup = jobDetail.Key.Group,
                 SchedulerName = _schedulerCore.SchedulerName,
-                AssemblyPath = jobDetail.JobDataMap.GetString("pluginPath")
+                AssemblyPath = jobDetail.JobDataMap.GetString("pluginPath"),
+                Description = jobDetail.Description
             };
         }
 
@@ -93,7 +94,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
                 {"pluginPath", model.AssemblyPath},
             };
 
-            return base.CreateJob(model, typeof(AssemblyPluginJob), dataMap);
+            return base.CreateJob(model, typeof(AssemblyPluginJob), dataMap, model.Description);
         }
     }
 }

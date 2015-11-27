@@ -107,7 +107,8 @@ namespace R.Scheduler.Controllers
                 Username = jobDetail.JobDataMap.GetString("smtp_username"),
                 SmtpHost = jobDetail.JobDataMap.GetString("smtp_host"),
                 SmtpPort = jobDetail.JobDataMap.GetString("smtp_port"),
-                Sender = jobDetail.JobDataMap.GetString("sender")
+                Sender = jobDetail.JobDataMap.GetString("sender"),
+                Description = jobDetail.Description
             };
         }
 
@@ -137,7 +138,7 @@ namespace R.Scheduler.Controllers
                 {"encoding", model.Encoding}
             };
 
-            return base.CreateJob(model, typeof(SendMailJob), dataMap);
+            return base.CreateJob(model, typeof(SendMailJob), dataMap, model.Description);
         }
     }
 }

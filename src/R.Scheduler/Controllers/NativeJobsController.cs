@@ -95,7 +95,8 @@ namespace R.Scheduler.Controllers
                 Parameters = jobDetail.JobDataMap.GetString("parameters"),
                 WaitForProcess = jobDetail.JobDataMap.GetBooleanValueFromString("waitForProcess"),
                 ConsumeStreams = jobDetail.JobDataMap.GetBooleanValueFromString("consumeStreams"),
-                WorkingDirectory = jobDetail.JobDataMap.GetString("workingDirectory")
+                WorkingDirectory = jobDetail.JobDataMap.GetString("workingDirectory"),
+                Description = jobDetail.Description
             };
         }
 
@@ -119,7 +120,7 @@ namespace R.Scheduler.Controllers
                 {"workingDirectory", model.WorkingDirectory}
             };
 
-            return base.CreateJob(model, typeof(NativeJob), dataMap);
+            return base.CreateJob(model, typeof(NativeJob), dataMap, model.Description);
         }
     }
 }

@@ -20,13 +20,13 @@ namespace R.Scheduler.Core
             _schedulerCore = ObjectFactory.GetInstance<ISchedulerCore>();
         }
 
-        protected QueryResponse CreateJob(BaseJob model, Type jobType, Dictionary<string, object> dataMap)
+        protected QueryResponse CreateJob(BaseJob model, Type jobType, Dictionary<string, object> dataMap, string description = null)
         {
             var response = new QueryResponse { Valid = true };
 
             try
             {
-                _schedulerCore.CreateJob(model.JobName, model.JobGroup, jobType, dataMap);
+                _schedulerCore.CreateJob(model.JobName, model.JobGroup, jobType, dataMap, description);
             }
             catch (Exception ex)
             {

@@ -8,7 +8,7 @@ GO
 CREATE TABLE [dbo].[RSCHED_AUDIT_HISTORY](
 	[TIME_STAMP] [datetime2](7) NOT NULL,
 	[ACTION] [nchar](200) NOT NULL,
-	[FIRE_INSTANCE_ID] [nchar](200) NULL,
+	[FIRE_INSTANCE_ID] [nchar](200) NOT NULL,
 	[JOB_NAME] [nchar](200) NULL,
 	[JOB_GROUP] [nchar](200) NULL,
 	[JOB_TYPE] [nchar](200) NULL,

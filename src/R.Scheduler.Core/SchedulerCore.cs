@@ -113,6 +113,14 @@ namespace R.Scheduler.Core
         /// <param name="description"></param>
         public void CreateJob(string jobName, string jobGroup, Type jobType, Dictionary<string, object> dataMap, string description)
         {
+            if (jobName.Contains("/") || 
+                (!string.IsNullOrEmpty(jobGroup) && jobGroup.Contains("/")) || 
+                jobName.Contains("\\") || 
+                (!string.IsNullOrEmpty(jobGroup) && jobGroup.Contains("\\")))
+            {
+                throw new Exception(@"JobName and JobGroup cannot contain '/' (forward slash) or '\' (back slash)");
+            }
+
             // Use DefaultGroup if jobGroup is null or empty
             jobGroup = (!string.IsNullOrEmpty(jobGroup)) ? jobGroup : JobKey.DefaultGroup;
 

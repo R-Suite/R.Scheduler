@@ -28,7 +28,7 @@ namespace R.Scheduler.Controllers
         [Route("api/calendars/{name}")]
         public QueryResponse Delete(string name)
         {
-            Logger.InfoFormat("Entered CalendarsController.Delete(). name = {0}", name);
+            Logger.DebugFormat("Entered CalendarsController.Delete(). name = {0}", name);
 
             var response = new QueryResponse { Valid = true };
 

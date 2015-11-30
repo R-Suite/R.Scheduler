@@ -30,7 +30,7 @@ namespace R.Scheduler.Controllers
         [Route("api/triggers")]
         public IList<TriggerDetails> Get(string jobName, string jobGroup)
         {
-            Logger.InfoFormat("Entered TriggersController.Get(). jobName = {0}, jobName = {1}", jobName, jobGroup);
+            Logger.DebugFormat("Entered TriggersController.Get(). jobName = {0}, jobName = {1}", jobName, jobGroup);
 
             IEnumerable<ITrigger> quartzTriggers = _schedulerCore.GetTriggersOfJob(jobName, jobGroup);
 
@@ -45,7 +45,7 @@ namespace R.Scheduler.Controllers
         [Route("api/fireTimes")]
         public IList<TriggerFireTime> Get(DateTime start, DateTime end)
         {
-            Logger.Info("Entered TriggersController.Get()");
+            Logger.Debug("Entered TriggersController.Get()");
 
             IEnumerable<TriggerFireTime> fireTimes = _schedulerCore.GetFireTimesBetween(start, end);
 
@@ -95,7 +95,7 @@ namespace R.Scheduler.Controllers
         [Route("api/cronTriggers")]
         public QueryResponse Post([FromBody] CronTrigger model)
         {
-            Logger.InfoFormat("Entered TriggersController.Post(). Name = {0}", model.Name);
+            Logger.DebugFormat("Entered TriggersController.Post(). Name = {0}", model.Name);
 
             var response = new QueryResponse { Valid = true };
 
@@ -137,7 +137,7 @@ namespace R.Scheduler.Controllers
         [Route("api/triggers/schedule")]
         public QueryResponse Unschedule(string jobName, string jobGroup)
         {
-            Logger.InfoFormat("Entered TriggersController.Unschedule(). jobName = {0}, jobName = {1}", jobName, jobGroup);
+            Logger.DebugFormat("Entered TriggersController.Unschedule(). jobName = {0}, jobName = {1}", jobName, jobGroup);
 
             var response = new QueryResponse { Valid = true };
 
@@ -172,7 +172,7 @@ namespace R.Scheduler.Controllers
         [Route("api/triggers")]
         public QueryResponse DeleteTrigger(string triggerName, string triggerGroup)
         {
-            Logger.InfoFormat("Entered TriggersController.DeleteTrigger(). triggerGroup = {0}, triggerGroup = {1}", triggerName, triggerGroup);
+            Logger.DebugFormat("Entered TriggersController.DeleteTrigger(). triggerGroup = {0}, triggerGroup = {1}", triggerName, triggerGroup);
 
             var response = new QueryResponse { Valid = true };
 

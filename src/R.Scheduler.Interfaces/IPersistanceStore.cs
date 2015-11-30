@@ -10,5 +10,6 @@ namespace R.Scheduler.Interfaces
         int GetTriggerCount();
         IList<TriggerKey> GetFiredTriggers();
         IEnumerable<AuditLog> GetErroredJobs(int count);
+        IEnumerable<AuditLog> GetExecutedJobs(int count);
     }
 }

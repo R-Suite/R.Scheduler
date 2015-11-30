@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Reflection;
 using Common.Logging;
 using Quartz;
+using Quartz.Util;
 using R.Scheduler.Interfaces;
 
 namespace R.Scheduler.Persistance
@@ -177,8 +179,6 @@ namespace R.Scheduler.Persistance
 
         public IEnumerable<AuditLog> GetErroredJobs(int count)
         {
-            IList<AuditLog> retval = new List<AuditLog>();
-
             if (count > 1000)
             {
                 Logger.Warn("Max number of AuditLogs to fetch is 1000");
@@ -187,6 +187,30 @@ namespace R.Scheduler.Persistance
 
             string sql = string.Format(@"SELECT TOP {0} * FROM [RSCHED_AUDIT_HISTORY] WHERE [EXECUTION_EXCEPTION] <> '' AND [ACTION] = 'JobWasExecuted' order by [TIME_STAMP] DESC", count);
 
+            IEnumerable<AuditLog> retval = GetAuditLogs(sql);
+
+            return retval;
+        }
+
+        public IEnumerable<AuditLog> GetExecutedJobs(int count)
+        {
+            if (count > 1000)
+            {
+                Logger.Warn("Max number of AuditLogs to fetch is 1000");
+                count = 1000;
+            }
+
+            string sql = string.Format(@"SELECT TOP {0} * FROM [RSCHED_AUDIT_HISTORY] WHERE [ACTION] = 'JobWasExecuted' order by [TIME_STAMP] DESC", count);
+
+            IEnumerable<AuditLog> retval = GetAuditLogs(sql);
+
+            return retval;
+        }
+
+        private IEnumerable<AuditLog> GetAuditLogs(string sql)
+        {
+            IList<AuditLog> retval = new List<AuditLog>();
+
             using (var con = new SqlConnection(_connectionString))
             {
                 try
@@ -194,23 +218,23 @@ namespace R.Scheduler.Persistance
                     con.Open();
                     using (var command = new SqlCommand(sql, con))
                     {
-                        using (SqlDataReader rs = command.ExecuteReader())
+                        using (IDataReader rs = command.ExecuteReader())
                         {
                             while (rs.Read())
                             {
                                 retval.Add(new AuditLog
                                 {
-                                    TimeStamp = (DateTime)rs["TIME_STAMP"],
-                                    Action = rs["ACTION"].ToString(),
+                                    TimeStamp = (DateTime) rs["TIME_STAMP"],
+                                    Action = rs.GetString("ACTION"),
                                     ExecutionException = rs["EXECUTION_EXCEPTION"].ToString(),
                                     FireInstanceId = rs["FIRE_INSTANCE_ID"].ToString(),
                                     FireTimeUtc = (DateTimeOffset?) rs["FIRE_TIME_UTC"],
-                                    JobGroup = rs["JOB_GROUP"].ToString(),
-                                    JobName = rs["JOB_NAME"].ToString(),
-                                    JobType = rs["JOB_TYPE"].ToString(),
-                                    TriggerName = rs["TRIGGER_NAME"].ToString(),
-                                    TriggerGroup = rs["TRIGGER_GROUP"].ToString(),
-                                    JobRunTime = new TimeSpan((long)rs["JOB_RUN_TIME"]),
+                                    JobGroup = rs.GetString("JOB_GROUP"),
+                                    JobName = rs.GetString("JOB_NAME"),
+                                    JobType = rs.GetString("JOB_TYPE"),
+                                    TriggerName = rs.GetString("TRIGGER_NAME"),
+                                    TriggerGroup = rs.GetString("TRIGGER_GROUP"),
+                                    JobRunTime = new TimeSpan((long) rs["JOB_RUN_TIME"]),
                                     ScheduledFireTimeUtc = (DateTimeOffset?) rs["SCHEDULED_FIRE_TIME_UTC"],
                                     Params = rs["PARAMS"].ToString(),
                                     RefireCount = (int) rs["REFIRE_COUNT"],
@@ -223,10 +247,9 @@ namespace R.Scheduler.Persistance
                 }
                 catch (Exception ex)
                 {
-                    Logger.ErrorFormat("Error getting ErroredJobs. {0}", ex.Message);
+                    Logger.ErrorFormat("Error getting AuditLogs. {0}", ex.Message);
                 }
             }
-
             return retval;
         }
     }

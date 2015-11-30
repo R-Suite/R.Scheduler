@@ -53,7 +53,7 @@ namespace R.Scheduler.Controllers
         [Route("api/jobs/{jobName}/{jobGroup}")]
         public BaseJob Get(string jobName, string jobGroup)
         {
-            Logger.Info("Entered JobsController.Get().");
+            Logger.Debug("Entered JobsController.Get().");
 
             var jobDetail = _schedulerCore.GetJobDetail(jobName, jobGroup);
 
@@ -77,7 +77,7 @@ namespace R.Scheduler.Controllers
         [Route("api/jobs/execution")]
         public QueryResponse Execute(string jobName, string jobGroup)
         {
-            Logger.InfoFormat("Entered JobsController.Execute(). jobName = {0}, jobGroup = {1}", jobName, jobGroup);
+            Logger.DebugFormat("Entered JobsController.Execute(). jobName = {0}, jobGroup = {1}", jobName, jobGroup);
 
             var response = new QueryResponse { Valid = true };
 
@@ -112,7 +112,7 @@ namespace R.Scheduler.Controllers
         [Route("api/jobs")]
         public QueryResponse Delete(string jobName, string jobGroup)
         {
-            Logger.InfoFormat("Entered JobsController.Delete(). jobName = {0}, jobGroup = {1}", jobName, jobGroup);
+            Logger.DebugFormat("Entered JobsController.Delete(). jobName = {0}, jobGroup = {1}", jobName, jobGroup);
 
             var response = new QueryResponse { Valid = true };
 

@@ -29,7 +29,7 @@ namespace R.Scheduler.Controllers
         [Route("api/jobCount")]
         public int GetJobCount()
         {
-            Logger.Info("Entered AnalyticsController.GetJobCount().");
+            Logger.Debug("Entered AnalyticsController.GetJobCount().");
 
             return _analytics.GetJobCount();
         }
@@ -42,7 +42,7 @@ namespace R.Scheduler.Controllers
         [Route("api/triggerCount")]
         public int GetTriggerCount()
         {
-            Logger.Info("Entered AnalyticsController.GetTriggerCount().");
+            Logger.Debug("Entered AnalyticsController.GetTriggerCount().");
 
             return _analytics.GetTriggerCount();
         }
@@ -63,20 +63,43 @@ namespace R.Scheduler.Controllers
         }
 
         /// <summary>
-        /// Get executing jobs
+        /// Get errored jobs
         /// </summary>
         /// <returns></returns>
         [AcceptVerbs("GET")]
         [Route("api/erroredJobs")]
         public IList<FireInstance> GetErroredJobs(int count)
         {
-            Logger.Info("Entered AnalyticsController.GetErroredJobs().");
+            Logger.Debug("Entered AnalyticsController.GetErroredJobs().");
 
             var erroredJobs = _analytics.GetErroredJobs(count);
 
             IList<FireInstance> erroredFireInstances = new List<FireInstance>();
 
             foreach (AuditLog erroredJob in erroredJobs)
+            {
+                var fi = Mapper.Map<FireInstance>(erroredJob);
+                erroredFireInstances.Add(fi);
+            }
+
+            return erroredFireInstances;
+        }
+
+        /// <summary>
+        /// Get executed jobs
+        /// </summary>
+        /// <returns></returns>
+        [AcceptVerbs("GET")]
+        [Route("api/executedJobs")]
+        public IList<FireInstance> GetExecutedJobs(int count)
+        {
+            Logger.Debug("Entered AnalyticsController.GetExecutedJobs().");
+
+            var executedJobs = _analytics.GetExecutedJobs(count);
+
+            IList<FireInstance> erroredFireInstances = new List<FireInstance>();
+
+            foreach (AuditLog erroredJob in executedJobs)
             {
                 var fi = Mapper.Map<FireInstance>(erroredJob);
                 erroredFireInstances.Add(fi);

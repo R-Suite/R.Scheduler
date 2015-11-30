@@ -196,8 +196,6 @@ namespace R.Scheduler.Persistance
 
         public IEnumerable<AuditLog> GetErroredJobs(int count)
         {
-            IList<AuditLog> retval = new List<AuditLog>();
-
             if (count > 1000)
             {
                 Logger.Warn("Max number of AuditLogs to fetch is 1000");
@@ -205,6 +203,30 @@ namespace R.Scheduler.Persistance
             }
 
             string sql = string.Format(@"SELECT * FROM rsched_audit_history WHERE execution_exception <> '' AND action = 'JobWasExecuted' order by time_stamp desc limit {0}", count);
+
+            IEnumerable<AuditLog> retval = GetAuditLogs(sql);
+
+            return retval;
+        }
+
+        public IEnumerable<AuditLog> GetExecutedJobs(int count)
+        {
+            if (count > 1000)
+            {
+                Logger.Warn("Max number of AuditLogs to fetch is 1000");
+                count = 1000;
+            }
+
+            string sql = string.Format(@"SELECT * FROM rsched_audit_history WHERE action = 'JobWasExecuted' order by time_stamp desc limit {0}", count);
+
+            IEnumerable<AuditLog> retval = GetAuditLogs(sql);
+
+            return retval;
+        }
+
+        private IEnumerable<AuditLog> GetAuditLogs(string sql)
+        {
+            IList<AuditLog> retval = new List<AuditLog>();
 
             using (var con = new NpgsqlConnection(_connectionString))
             {
@@ -219,21 +241,21 @@ namespace R.Scheduler.Persistance
                             {
                                 retval.Add(new AuditLog
                                 {
-                                    TimeStamp = (DateTime)rs["time_stamp"],
+                                    TimeStamp = (DateTime) rs["time_stamp"],
                                     Action = rs["action"].ToString(),
                                     ExecutionException = rs["execution_exception"].ToString(),
                                     FireInstanceId = rs["fire_instance_id"].ToString(),
-                                    FireTimeUtc = (DateTimeOffset?)rs["fire_time_utc"],
+                                    FireTimeUtc = (DateTimeOffset?) rs["fire_time_utc"],
                                     JobGroup = rs["job_group"].ToString(),
                                     JobName = rs["job_name"].ToString(),
                                     JobType = rs["job_type"].ToString(),
                                     TriggerName = rs["trigger_name"].ToString(),
                                     TriggerGroup = rs["trigger_group"].ToString(),
-                                    JobRunTime = new TimeSpan((long)rs["job_run_time"]),
-                                    ScheduledFireTimeUtc = (DateTimeOffset?)rs["scheduled_fire_time_utc"],
+                                    JobRunTime = new TimeSpan((long) rs["job_run_time"]),
+                                    ScheduledFireTimeUtc = (DateTimeOffset?) rs["scheduled_fire_time_utc"],
                                     Params = rs["params"].ToString(),
-                                    RefireCount = (int)rs["refire_count"],
-                                    Recovering = (bool)rs["recovering"],
+                                    RefireCount = (int) rs["refire_count"],
+                                    Recovering = (bool) rs["recovering"],
                                     Result = rs["result"].ToString()
                                 });
                             }
@@ -242,10 +264,9 @@ namespace R.Scheduler.Persistance
                 }
                 catch (Exception ex)
                 {
-                    Logger.ErrorFormat("Error getting ErroredJobs. {0}", ex.Message);
+                    Logger.ErrorFormat("Error getting AuditLogs. {0}", ex.Message);
                 }
             }
-
             return retval;
         }
     }

@@ -35,7 +35,7 @@ namespace R.Scheduler.Controllers
         [Route("api/nativeJobs")]
         public IEnumerable<NativeExecJob> Get()
         {
-            Logger.Info("Entered NativeJobsController.Get().");
+            Logger.Debug("Entered NativeJobsController.Get().");
 
             IEnumerable<IJobDetail> jobDetails = null;
 
@@ -72,7 +72,7 @@ namespace R.Scheduler.Controllers
         [Route("api/nativeJobs")]
         public NativeExecJob Get(string jobName, string jobGroup)
         {
-            Logger.Info("Entered NativeJobsController.Get().");
+            Logger.Debug("Entered NativeJobsController.Get().");
 
             IJobDetail jobDetail;
 
@@ -82,7 +82,7 @@ namespace R.Scheduler.Controllers
             }
             catch (Exception ex)
             {
-                Logger.Info(string.Format("Error getting JobDetail: {0}", ex.Message));
+                Logger.Debug(string.Format("Error getting JobDetail: {0}", ex.Message));
                 return null;
             }
 
@@ -109,7 +109,7 @@ namespace R.Scheduler.Controllers
         [Route("api/nativeJobs")]
         public QueryResponse Post([FromBody]NativeExecJob model)
         {
-            Logger.InfoFormat("Entered NativeJobsController.Post(). Job Name = {0}", model.JobName);
+            Logger.DebugFormat("Entered NativeJobsController.Post(). Job Name = {0}", model.JobName);
 
             var dataMap = new Dictionary<string, object>
             {

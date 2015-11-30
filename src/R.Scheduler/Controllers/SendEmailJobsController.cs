@@ -35,7 +35,7 @@ namespace R.Scheduler.Controllers
         [Route("api/emails")]
         public IEnumerable<EmailJob> Get()
         {
-            Logger.Info("Entered SendEmailJobsController.Get().");
+            Logger.Debug("Entered SendEmailJobsController.Get().");
 
             IEnumerable<IJobDetail> jobDetails = null;
 
@@ -78,7 +78,7 @@ namespace R.Scheduler.Controllers
         [Route("api/emails")]
         public EmailJob Get(string jobName, string jobGroup)
         {
-            Logger.Info("Entered SendEmailJobsController.Get().");
+            Logger.Debug("Entered SendEmailJobsController.Get().");
 
             IJobDetail jobDetail;
 
@@ -121,7 +121,7 @@ namespace R.Scheduler.Controllers
         [Route("api/emails")]
         public QueryResponse Post([FromBody]EmailJob model)
         {
-            Logger.InfoFormat("Entered EmailsController.Post(). Job Name = {0}", model.JobName);
+            Logger.DebugFormat("Entered EmailsController.Post(). Job Name = {0}", model.JobName);
 
             var dataMap = new Dictionary<string, object>
             {

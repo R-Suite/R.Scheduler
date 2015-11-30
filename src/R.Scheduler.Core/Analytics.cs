@@ -50,5 +50,10 @@ namespace R.Scheduler.Core
         {
             return _persistanceStore.GetErroredJobs(count);
         }
+
+        public IEnumerable<AuditLog> GetExecutedJobs(int count)
+        {
+            return _persistanceStore.GetExecutedJobs(count);
+        }
     }
 }

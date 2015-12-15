@@ -17,7 +17,7 @@ namespace R.Scheduler.TestHost
             {
                 config.EnableWebApiSelfHost = true;
                 config.PersistanceStoreType = PersistanceStoreType.SqlServer;
-                config.ConnectionString = "Server=localhost; DataBase=RufferScheduler;Trusted_Connection=True;";
+                config.ConnectionString = "Server=RUFFER-F330852; DataBase=RufferScheduler;Trusted_Connection=True;";
                 //config.CustomFtpLibraryAssemblyName = "R.Scheduler.FakeFtpLib";
             });
         }

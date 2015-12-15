@@ -32,32 +32,33 @@ namespace R.Scheduler.Sql.Controllers
         {
             Logger.Debug("Entered SqlJobsController.Get().");
 
-            var jobDetails = _schedulerCore.GetJobDetails(typeof(SqlJob));
+            var jobDetailsMap = _schedulerCore.GetJobDetails(typeof(SqlJob));
 
-            return jobDetails.Select(jobDetail =>
+            return jobDetailsMap.Select(mapItem =>
                                                     new Contracts.JobTypes.Sql.Model.SqlJob
                                                     {
-                                                        JobName = jobDetail.Key.Name,
-                                                        JobGroup = jobDetail.Key.Group,
+                                                        Id = mapItem.Value,
+                                                        JobName = mapItem.Key.Key.Name,
+                                                        JobGroup = mapItem.Key.Key.Group,
                                                         SchedulerName = _schedulerCore.SchedulerName,
-                                                        ConnectionString = jobDetail.JobDataMap.GetString("connectionString"),
-                                                        CommandClass = jobDetail.JobDataMap.GetString("commandClass"),
-                                                        ConnectionClass = jobDetail.JobDataMap.GetString("connectionClass"),
-                                                        CommandStyle = jobDetail.JobDataMap.GetString("commandStyle"),
-                                                        ProviderAssemblyName = jobDetail.JobDataMap.GetString("providerAssemblyName"),
-                                                        NonQueryCommand = jobDetail.JobDataMap.GetString("nonQueryCommand"),
-                                                        DataAdapterClass = jobDetail.JobDataMap.GetString("dataAdapterClass")
+                                                        ConnectionString = mapItem.Key.JobDataMap.GetString("connectionString"),
+                                                        CommandClass = mapItem.Key.JobDataMap.GetString("commandClass"),
+                                                        ConnectionClass = mapItem.Key.JobDataMap.GetString("connectionClass"),
+                                                        CommandStyle = mapItem.Key.JobDataMap.GetString("commandStyle"),
+                                                        ProviderAssemblyName = mapItem.Key.JobDataMap.GetString("providerAssemblyName"),
+                                                        NonQueryCommand = mapItem.Key.JobDataMap.GetString("nonQueryCommand"),
+                                                        DataAdapterClass = mapItem.Key.JobDataMap.GetString("dataAdapterClass")
                                                     }).ToList();
 
         }
 
         /// <summary>
-        /// Get job details of <see cref="jobName"/>
+        /// Get job details of <see cref="SqlJob"/>
         /// </summary>
         /// <returns></returns>
         [AcceptVerbs("GET")]
-        [Route("api/sqlJobs")]
-        public Contracts.JobTypes.Sql.Model.SqlJob Get(string jobName, string jobGroup)
+        [Route("api/sqlJobs/{id}")]
+        public Contracts.JobTypes.Sql.Model.SqlJob Get(Guid id)
         {
             Logger.Debug("Entered SqlJobsController.Get().");
 
@@ -65,7 +66,7 @@ namespace R.Scheduler.Sql.Controllers
 
             try
             {
-                jobDetail = _schedulerCore.GetJobDetail(jobName, jobGroup);
+                jobDetail = _schedulerCore.GetJobDetail(id);
             }
             catch (Exception ex)
             {
@@ -75,6 +76,7 @@ namespace R.Scheduler.Sql.Controllers
 
             return new Contracts.JobTypes.Sql.Model.SqlJob()
             {
+                Id = id,
                 JobName = jobDetail.Key.Name,
                 JobGroup = jobDetail.Key.Group,
                 SchedulerName = _schedulerCore.SchedulerName,

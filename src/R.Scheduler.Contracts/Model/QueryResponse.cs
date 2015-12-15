@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace R.Scheduler.Contracts.Model
 {
@@ -6,5 +7,6 @@ namespace R.Scheduler.Contracts.Model
     {
         public bool Valid { get; set; }
         public List<Error> Errors { get; set; }
+        public Guid Id { get; set; }
     }
 }

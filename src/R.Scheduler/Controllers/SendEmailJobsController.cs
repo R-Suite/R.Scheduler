@@ -37,11 +37,11 @@ namespace R.Scheduler.Controllers
         {
             Logger.Debug("Entered SendEmailJobsController.Get().");
 
-            IEnumerable<IJobDetail> jobDetails = null;
+            IDictionary<IJobDetail, Guid> jobDetailsMap;
 
             try
             {
-                jobDetails = _schedulerCore.GetJobDetails(typeof(SendMailJob));
+                jobDetailsMap = _schedulerCore.GetJobDetails(typeof(SendMailJob));
             }
             catch (Exception ex)
             {
@@ -49,34 +49,35 @@ namespace R.Scheduler.Controllers
                 return null;
             }
 
-            return jobDetails.Select(jobDetail =>
+            return jobDetailsMap.Select(mapItem =>
                                                     new EmailJob
                                                     {
-                                                        JobName = jobDetail.Key.Name,
-                                                        JobGroup = jobDetail.Key.Group,
+                                                        Id = mapItem.Value,
+                                                        JobName = mapItem.Key.Key.Name,
+                                                        JobGroup = mapItem.Key.Key.Group,
                                                         SchedulerName = _schedulerCore.SchedulerName,
-                                                        Subject = jobDetail.JobDataMap.GetString("subject"),
-                                                        Body = jobDetail.JobDataMap.GetString("message"),
-                                                        CcRecipient = jobDetail.JobDataMap.GetString("cc_recipient"),
-                                                        Encoding = jobDetail.JobDataMap.GetString("encoding"),
-                                                        Password = jobDetail.JobDataMap.GetString("smtp_password"),
-                                                        Recipient = jobDetail.JobDataMap.GetString("recipient"),
-                                                        ReplyTo = jobDetail.JobDataMap.GetString("reply_to"),
-                                                        Username = jobDetail.JobDataMap.GetString("smtp_username"),
-                                                        SmtpHost = jobDetail.JobDataMap.GetString("smtp_host"),
-                                                        SmtpPort = jobDetail.JobDataMap.GetString("smtp_port"),
-                                                        Sender = jobDetail.JobDataMap.GetString("sender")
+                                                        Subject = mapItem.Key.JobDataMap.GetString("subject"),
+                                                        Body = mapItem.Key.JobDataMap.GetString("message"),
+                                                        CcRecipient = mapItem.Key.JobDataMap.GetString("cc_recipient"),
+                                                        Encoding = mapItem.Key.JobDataMap.GetString("encoding"),
+                                                        Password = mapItem.Key.JobDataMap.GetString("smtp_password"),
+                                                        Recipient = mapItem.Key.JobDataMap.GetString("recipient"),
+                                                        ReplyTo = mapItem.Key.JobDataMap.GetString("reply_to"),
+                                                        Username = mapItem.Key.JobDataMap.GetString("smtp_username"),
+                                                        SmtpHost = mapItem.Key.JobDataMap.GetString("smtp_host"),
+                                                        SmtpPort = mapItem.Key.JobDataMap.GetString("smtp_port"),
+                                                        Sender = mapItem.Key.JobDataMap.GetString("sender")
                                                     }).ToList();
 
         }
 
         /// <summary>
-        /// Get job details of <see cref="jobName"/>
+        /// Get job details of <see cref="EmailJob"/>
         /// </summary>
         /// <returns></returns>
         [AcceptVerbs("GET")]
-        [Route("api/emails")]
-        public EmailJob Get(string jobName, string jobGroup)
+        [Route("api/emails/{id}")]
+        public EmailJob Get(Guid id)
         {
             Logger.Debug("Entered SendEmailJobsController.Get().");
 
@@ -84,7 +85,7 @@ namespace R.Scheduler.Controllers
 
             try
             {
-                jobDetail = _schedulerCore.GetJobDetail(jobName, jobGroup);
+                jobDetail = _schedulerCore.GetJobDetail(id);
             }
             catch (Exception ex)
             {
@@ -94,6 +95,7 @@ namespace R.Scheduler.Controllers
 
             return new EmailJob
             {
+                Id = id,
                 JobName = jobDetail.Key.Name,
                 JobGroup = jobDetail.Key.Group,
                 SchedulerName = _schedulerCore.SchedulerName,

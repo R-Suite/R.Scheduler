@@ -14,19 +14,21 @@ namespace R.Scheduler.UnitTests
     public class SchedulerCoreTests
     {
         private readonly Mock<IScheduler> _mockScheduler = new Mock<IScheduler>();
+        private readonly Mock<IPersistanceStore> _mockPersistanceStore = new Mock<IPersistanceStore>();
 
         [Fact]
         public void ShouldDeleteJobInDefaultJobGroupsWhenJobGroupIsNotSpecifiedInRemoveJob()
         {
             // Arrange
+            Guid jobId = Guid.NewGuid();
             _mockScheduler.Setup(x => x.GetJobGroupNames()).Returns(new List<string> { "Group1", "DEFAULT" });
             _mockScheduler.Setup(x => x.CheckExists(It.IsAny<JobKey>())).Returns(true);
+            _mockPersistanceStore.Setup(x => x.GetJobKey(jobId)).Returns(new JobKey("TestJob", "DEFAULT"));
 
-
-            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object);
+            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object, _mockPersistanceStore.Object);
 
             // Act 
-            schedulerCore.RemoveJob("TestJob", "DEFAULT");
+            schedulerCore.RemoveJob(jobId);
 
             // Assert
             _mockScheduler.Verify(x => x.DeleteJob(It.Is<JobKey>(i => i.Name == "TestJob" && i.Group == "DEFAULT")),Times.Exactly(1));
@@ -36,13 +38,15 @@ namespace R.Scheduler.UnitTests
         public void ShouldDeleteJobInJobGroupWhenJobGroupIsSpecifiedInRemoveJob()
         {
             // Arrange
+            Guid jobId = Guid.NewGuid();
             _mockScheduler.Setup(x => x.CheckExists(It.IsAny<JobKey>())).Returns(true);
+            _mockPersistanceStore.Setup(x => x.GetJobKey(jobId)).Returns(new JobKey("TestJob", "Group1"));
 
 
-            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object);
+            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object, _mockPersistanceStore.Object);
 
             // Act 
-            schedulerCore.RemoveJob("TestJob", "Group1");
+            schedulerCore.RemoveJob(jobId);
 
             // Assert
             _mockScheduler.Verify(x => x.DeleteJob(It.Is<JobKey>(i => i.Name == "TestJob")), Times.Once);
@@ -53,14 +57,15 @@ namespace R.Scheduler.UnitTests
         public void ShouldDeleteTriggerInDefaultTriggerGroupsWhenTriggerGroupIsNotSpecifiedInRemoveTrigger()
         {
             // Arrange
+            Guid triggerId = Guid.NewGuid();
+            _mockPersistanceStore.Setup(x => x.GetTriggerKey(triggerId)).Returns(new TriggerKey("TestTrigger", "DEFAULT"));
             _mockScheduler.Setup(x => x.GetTriggerGroupNames()).Returns(new List<string> { "DEFAULT", "Group2" });
             _mockScheduler.Setup(x => x.CheckExists(It.IsAny<TriggerKey>())).Returns(true);
 
-
-            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object);
+            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object, _mockPersistanceStore.Object);
 
             // Act 
-            schedulerCore.RemoveTrigger("TestTrigger", "DEFAULT");
+            schedulerCore.RemoveTrigger(triggerId);
 
             // Assert
             _mockScheduler.Verify(x => x.UnscheduleJob(It.Is<TriggerKey>(i => i.Name == "TestTrigger" && i.Group == "DEFAULT")), Times.Exactly(1));
@@ -70,13 +75,13 @@ namespace R.Scheduler.UnitTests
         public void ShouldDeleteTriggerInTriggerGroupWhenTriggerGroupIsSpecifiedInRemoveTrigger()
         {
             // Arrange
+            Guid triggerId = Guid.NewGuid();
             _mockScheduler.Setup(x => x.CheckExists(It.IsAny<TriggerKey>())).Returns(true);
-
-
-            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object);
+            _mockPersistanceStore.Setup(x => x.GetTriggerKey(triggerId)).Returns(new TriggerKey("TestTrigger", "Group1"));
+            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object, _mockPersistanceStore.Object);
 
             // Act 
-            schedulerCore.RemoveTrigger("TestTrigger", "Group1");
+            schedulerCore.RemoveTrigger(triggerId);
 
             // Assert
             _mockScheduler.Verify(x => x.UnscheduleJob(It.Is<TriggerKey>(i => i.Name == "TestTrigger")), Times.Once);
@@ -100,7 +105,7 @@ namespace R.Scheduler.UnitTests
             _mockScheduler.Setup(x => x.GetJobDetail(It.IsAny<JobKey>())).Returns(noOpJob);
             _mockScheduler.Setup(x => x.CheckExists(It.IsAny<JobKey>())).Returns(true);
 
-            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object);
+            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object, _mockPersistanceStore.Object);
             
             // Act 
             schedulerCore.ScheduleTrigger(myTrigger);
@@ -126,7 +131,7 @@ namespace R.Scheduler.UnitTests
             _mockScheduler.Setup(x => x.GetJobDetail(It.IsAny<JobKey>())).Returns(noOpJob);
             _mockScheduler.Setup(x => x.CheckExists(It.IsAny<JobKey>())).Returns(true);
 
-            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object);
+            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object, _mockPersistanceStore.Object);
 
             // Act 
             schedulerCore.ScheduleTrigger(myTrigger);
@@ -152,7 +157,7 @@ namespace R.Scheduler.UnitTests
             _mockScheduler.Setup(x => x.GetJobDetail(It.IsAny<JobKey>())).Returns(noOpJob);
             _mockScheduler.Setup(x => x.CheckExists(It.IsAny<JobKey>())).Returns(true);
 
-            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object);
+            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object, _mockPersistanceStore.Object);
 
             // Act 
             schedulerCore.ScheduleTrigger(myTrigger);

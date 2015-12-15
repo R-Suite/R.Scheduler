@@ -30,29 +30,30 @@ namespace R.Scheduler.WebRequest.Controllers
         [Route("api/webRequests")]
         public IEnumerable<Contracts.JobTypes.WebRequest.Model.WebRequestJob> Get()
         {
-            Logger.Info("Entered WebRequestJobController.Get().");
+            Logger.Debug("Entered WebRequestJobController.Get().");
 
-            var jobDetails = _schedulerCore.GetJobDetails(typeof(WebRequestJob));
+            var jobDetailsMap = _schedulerCore.GetJobDetails(typeof(WebRequestJob));
 
-            return jobDetails.Select(jobDetail =>
+            return jobDetailsMap.Select(mapItem =>
                                                     new Contracts.JobTypes.WebRequest.Model.WebRequestJob
                                                     {
-                                                        JobName = jobDetail.Key.Name,
-                                                        JobGroup = jobDetail.Key.Group,
+                                                        Id = mapItem.Value,
+                                                        JobName = mapItem.Key.Key.Name,
+                                                        JobGroup = mapItem.Key.Key.Group,
                                                         SchedulerName = _schedulerCore.SchedulerName,
-                                                        Uri = jobDetail.JobDataMap.GetString("uri"),
-                                                        ContentType = "text/plain"
+                                                        Uri = mapItem.Key.JobDataMap.GetString("uri"),
+                                                        ContentType = mapItem.Key.JobDataMap.GetString("contentType")
                                                     }).ToList();
 
         }
 
         /// <summary>
-        /// Get job details of <see cref="jobName"/>
+        /// Get job details of <see cref="WebRequestJob"/>
         /// </summary>
         /// <returns></returns>
         [AcceptVerbs("GET")]
-        [Route("api/webRequests")]
-        public Contracts.JobTypes.WebRequest.Model.WebRequestJob Get(string jobName, string jobGroup)
+        [Route("api/webRequests/{id}")]
+        public Contracts.JobTypes.WebRequest.Model.WebRequestJob Get(Guid id)
         {
             Logger.Info("Entered WebRequestJobController.Get().");
 
@@ -60,7 +61,7 @@ namespace R.Scheduler.WebRequest.Controllers
 
             try
             {
-                jobDetail = _schedulerCore.GetJobDetail(jobName, jobGroup);
+                jobDetail = _schedulerCore.GetJobDetail(id);
             }
             catch (Exception ex)
             {
@@ -70,6 +71,7 @@ namespace R.Scheduler.WebRequest.Controllers
 
             return new Contracts.JobTypes.WebRequest.Model.WebRequestJob
             {
+                Id = id,
                 JobName = jobDetail.Key.Name,
                 JobGroup = jobDetail.Key.Group,
                 SchedulerName = _schedulerCore.SchedulerName,

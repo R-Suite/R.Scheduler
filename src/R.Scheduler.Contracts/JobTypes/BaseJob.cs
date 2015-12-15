@@ -1,7 +1,10 @@
-﻿namespace R.Scheduler.Contracts.JobTypes
+﻿using System;
+
+namespace R.Scheduler.Contracts.JobTypes
 {
     public class BaseJob
     {
+        public Guid Id { get; set; }
         public string JobName { get; set; }
         public string JobGroup { get; set; }
         public string JobType { get; set; }

@@ -31,36 +31,37 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         [Route("api/plugins")]
         public IEnumerable<PluginJob> Get()
         {
-            Logger.Info("Entered AssemblyPluginsController.Get().");
+            Logger.Debug("Entered AssemblyPluginsController.Get().");
 
-            var jobDetails = _schedulerCore.GetJobDetails(typeof(AssemblyPluginJob));
+            var jobDetailsMap = _schedulerCore.GetJobDetails(typeof(AssemblyPluginJob));
 
-            return jobDetails.Select(jobDetail =>
+            return jobDetailsMap.Select(mapItem =>
                                                     new PluginJob
                                                     {
-                                                        JobName = jobDetail.Key.Name,
-                                                        JobGroup = jobDetail.Key.Group,
+                                                        Id = mapItem.Value,
+                                                        JobName = mapItem.Key.Key.Name,
+                                                        JobGroup = mapItem.Key.Key.Group,
                                                         SchedulerName = _schedulerCore.SchedulerName,
-                                                        AssemblyPath = jobDetail.JobDataMap.GetString("pluginPath"),
+                                                        AssemblyPath = mapItem.Key.JobDataMap.GetString("pluginPath"),
                                                     }).ToList();
 
         }
 
         /// <summary>
-        /// Get job details of <see cref="jobName"/>
+        /// Get job details of <see cref="PluginJob"/>
         /// </summary>
         /// <returns></returns>
         [AcceptVerbs("GET")]
-        [Route("api/plugins")]
-        public PluginJob Get(string jobName, string jobGroup)
+        [Route("api/plugins/{id}")]
+        public PluginJob Get(Guid id)
         {
-            Logger.Info("Entered AssemblyPluginsController.Get().");
+            Logger.Debug("Entered AssemblyPluginsController.Get().");
 
             IJobDetail jobDetail;
 
             try
             {
-                jobDetail = _schedulerCore.GetJobDetail(jobName, jobGroup);
+                jobDetail = _schedulerCore.GetJobDetail(id);
             }
             catch (Exception ex)
             {
@@ -70,6 +71,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
 
             return new PluginJob
             {
+                Id = id,
                 JobName = jobDetail.Key.Name,
                 JobGroup = jobDetail.Key.Group,
                 SchedulerName = _schedulerCore.SchedulerName,
@@ -87,7 +89,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         [Route("api/plugins")]
         public QueryResponse Post([FromBody]PluginJob model)
         {
-            Logger.InfoFormat("Entered AssemblyPluginsController.Post(). Job Name = {0}", model.JobName);
+            Logger.DebugFormat("Entered AssemblyPluginsController.Post(). Job Name = {0}", model.JobName);
 
             var dataMap = new Dictionary<string, object>
             {

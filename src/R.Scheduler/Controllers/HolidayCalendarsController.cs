@@ -28,13 +28,14 @@ namespace R.Scheduler.Controllers
         [Route("api/holidayCalendars")]
         public QueryResponse Post([FromBody]HolidayCalendar model)
         {
-            Logger.InfoFormat("Entered HolidayCalendarsController.Post(). Calendar Name = {0}", model.Name);
+            Logger.DebugFormat("Entered HolidayCalendarsController.Post(). Calendar Name = {0}", model.Name);
 
             var response = new QueryResponse { Valid = true };
 
             try
             {
-                _schedulerCore.AddHolidayCalendar(model.Name, model.Description, model.DatesExcluded);
+                var id = _schedulerCore.AddHolidayCalendar(model.Name, model.Description, model.DatesExcluded);
+                response.Id = id;
             }
             catch (Exception ex)
             {
@@ -56,20 +57,20 @@ namespace R.Scheduler.Controllers
         /// <summary>
         /// Modify new HolidayCalendar
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="id"></param>
         /// <param name="model"></param>
         /// <returns></returns>
         [AcceptVerbs("PUT")]
-        [Route("api/holidayCalendars/{name}")]
-        public QueryResponse Put(string name, [FromBody]HolidayCalendar model)
+        [Route("api/holidayCalendars/{id}")]
+        public QueryResponse Put(Guid id, [FromBody]HolidayCalendar model)
         {
-            Logger.InfoFormat("Entered HolidayCalendarsController.Put(). Calendar Name = {0}", name);
+            Logger.DebugFormat("Entered HolidayCalendarsController.Put(). Calendar id = {0}", id);
 
             var response = new QueryResponse { Valid = true };
 
             try
             {
-                _schedulerCore.AddHolidayCalendar(name, model.Description, model.DatesExcluded);
+                _schedulerCore.AmendHolidayCalendar(id, model.Description, model.DatesExcluded);
             }
             catch (Exception ex)
             {
@@ -91,20 +92,20 @@ namespace R.Scheduler.Controllers
         /// <summary>
         /// Update HolidayCalendar with exclusion date
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="id"></param>
         /// <param name="date"></param>
         /// <returns></returns>
         [AcceptVerbs("POST")]
-        [Route("api/holidayCalendars/{name}")]
-        public QueryResponse PostExclusionDate(string name, [FromBody]DateTime date)
+        [Route("api/holidayCalendars/{id}")]
+        public QueryResponse PostExclusionDate(Guid id, [FromBody]DateTime date)
         {
-            Logger.InfoFormat("Entered HolidayCalendarsController.PostExclusionDate(). Calendar Name = {0}, ExclusionDate = {1}", name, date);
+            Logger.DebugFormat("Entered HolidayCalendarsController.PostExclusionDate(). Calendar id = {0}, ExclusionDate = {1}", id, date);
 
-            var response = new QueryResponse { Valid = true };
+            var response = new QueryResponse {Valid = true, Id = id};
 
             try
             {
-                _schedulerCore.AddHolidayCalendarExclusionDates(name, new List<DateTime> { date });
+                _schedulerCore.AddHolidayCalendarExclusionDates(id, new List<DateTime> { date });
             }
             catch (Exception ex)
             {

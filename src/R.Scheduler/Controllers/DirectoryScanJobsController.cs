@@ -35,11 +35,11 @@ namespace R.Scheduler.Controllers
         {
             Logger.Info("Entered DirectoryScanJobsController.Get().");
 
-            IEnumerable<IJobDetail> jobDetails = null;
+            IDictionary<IJobDetail, Guid> jobDetailsMap;
 
             try
             {
-                jobDetails = _schedulerCore.GetJobDetails(typeof(NativeJob));
+                jobDetailsMap = _schedulerCore.GetJobDetails(typeof(NativeJob));
             }
             catch (Exception ex)
             {
@@ -47,27 +47,28 @@ namespace R.Scheduler.Controllers
                 return null;
             }
 
-            return jobDetails.Select(jobDetail =>
+            return jobDetailsMap.Select(jobDetail =>
                                                     new Contracts.JobTypes.DirectoryScan.Model.DirectoryScanJob
                                                     {
-                                                        JobName = jobDetail.Key.Name,
-                                                        JobGroup = jobDetail.Key.Group,
+                                                        Id = jobDetail.Value,
+                                                        JobName = jobDetail.Key.Key.Name,
+                                                        JobGroup = jobDetail.Key.Key.Group,
                                                         SchedulerName = _schedulerCore.SchedulerName,
-                                                        DirectoryName = jobDetail.JobDataMap.GetString("DIRECTORY_NAME"),
-                                                        CallbackUrl = jobDetail.JobDataMap.GetString("CALLBACK_URL"),
-                                                        MinimumUpdateAge = jobDetail.JobDataMap.GetLong("MINIMUM_UPDATE_AGE"),
-                                                        LastModifiedTime = jobDetail.JobDataMap.GetDateTime("LAST_MODIFIED_TIME"),
+                                                        DirectoryName = jobDetail.Key.JobDataMap.GetString("DIRECTORY_NAME"),
+                                                        CallbackUrl = jobDetail.Key.JobDataMap.GetString("CALLBACK_URL"),
+                                                        MinimumUpdateAge = jobDetail.Key.JobDataMap.GetLong("MINIMUM_UPDATE_AGE"),
+                                                        LastModifiedTime = jobDetail.Key.JobDataMap.GetDateTime("LAST_MODIFIED_TIME"),
                                                     }).ToList();
 
         }
 
         /// <summary>
-        /// Get job details of <see cref="jobName"/>
+        /// Get job details of <see cref="Contracts.JobTypes.DirectoryScan.Model.DirectoryScanJob"/>
         /// </summary>
         /// <returns></returns>
         [AcceptVerbs("GET")]
-        [Route("api/dirScanJobs")]
-        public Contracts.JobTypes.DirectoryScan.Model.DirectoryScanJob Get(string jobName, string jobGroup)
+        [Route("api/dirScanJobs/{id}")]
+        public Contracts.JobTypes.DirectoryScan.Model.DirectoryScanJob Get(Guid id)
         {
             Logger.Info("Entered DirectoryScanJobsController.Get().");
 
@@ -75,7 +76,7 @@ namespace R.Scheduler.Controllers
 
             try
             {
-                jobDetail = _schedulerCore.GetJobDetail(jobName, jobGroup);
+                jobDetail = _schedulerCore.GetJobDetail(id);
             }
             catch (Exception ex)
             {
@@ -85,6 +86,7 @@ namespace R.Scheduler.Controllers
 
             return new Contracts.JobTypes.DirectoryScan.Model.DirectoryScanJob
             {
+                Id = id,
                 JobName = jobDetail.Key.Name,
                 JobGroup = jobDetail.Key.Group,
                 SchedulerName = _schedulerCore.SchedulerName,

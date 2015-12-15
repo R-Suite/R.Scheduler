@@ -56,5 +56,40 @@ namespace R.Scheduler.Persistance
         {
             throw new NotImplementedException();
         }
+
+        public Guid UpsertJobKeyIdMap(string jobName, string jobGroup)
+        {
+            throw new NotImplementedException();
+        }
+
+        public JobKey GetJobKey(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Guid GetJobId(JobKey jobKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TriggerKey GetTriggerKey(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Guid UpsertTriggerKeyIdMap(string triggerName, string triggerGroup)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Guid UpsertCalendarIdMap(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetCalendarName(Guid id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

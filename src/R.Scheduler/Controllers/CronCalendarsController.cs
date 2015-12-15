@@ -29,13 +29,14 @@ namespace R.Scheduler.Controllers
         [Route("api/cronCalendars")]
         public QueryResponse Post([FromBody]CronCalendar model)
         {
-            Logger.InfoFormat("Entered CronCalendarsController.Post(). Calendar Name = {0}", model.Name);
+            Logger.DebugFormat("Entered CronCalendarsController.Post(). Calendar Name = {0}", model.Name);
 
             var response = new QueryResponse { Valid = true };
 
             try
             {
-                _schedulerCore.AddCronCalendar(model.Name, model.Description, model.CronExpression);
+                var id = _schedulerCore.AddCronCalendar(model.Name, model.Description, model.CronExpression);
+                response.Id = id;
             }
             catch (Exception ex)
             {
@@ -57,20 +58,20 @@ namespace R.Scheduler.Controllers
         /// <summary>
         /// Modify CronCalendar
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="id"></param>
         /// <param name="model"></param>
         /// <returns></returns>
         [AcceptVerbs("PUT")]
-        [Route("api/cronCalendars/{name}")]
-        public QueryResponse Put(string name, [FromBody]CronCalendar model)
+        [Route("api/cronCalendars/{id}")]
+        public QueryResponse Put(Guid id, [FromBody]CronCalendar model)
         {
-            Logger.InfoFormat("Entered CronCalendarsController.Put(). Calendar Name = {0}", name);
+            Logger.DebugFormat("Entered CronCalendarsController.Put(). Calendar id = {0}", id);
 
-            var response = new QueryResponse { Valid = true };
+            var response = new QueryResponse { Valid = true, Id = id};
 
             try
             {
-                _schedulerCore.AddCronCalendar(name, model.Description, model.CronExpression);
+                _schedulerCore.AmendCronCalendar(id, model.Description, model.CronExpression);
             }
             catch (Exception ex)
             {

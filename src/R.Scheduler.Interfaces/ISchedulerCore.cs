@@ -9,31 +9,35 @@ namespace R.Scheduler.Interfaces
     {
         string SchedulerName { get; }
 
-        IEnumerable<IJobDetail> GetJobDetails(Type jobType = null);
+        IDictionary<IJobDetail, Guid> GetJobDetails(Type jobType = null);
 
-        IJobDetail GetJobDetail(string jobName, string jobGroup);
+        IJobDetail GetJobDetail(Guid id);
 
-        void ExecuteJob(string jobName, string groupName);
+        void ExecuteJob(Guid jobId);
 
-        void CreateJob(string jobName, string groupName, Type jobType, Dictionary<string, object> dataMap, string description);
+        Guid CreateJob(string jobName, string groupName, Type jobType, Dictionary<string, object> dataMap, string description);
 
-        void RemoveJobTriggers(string jobName, string groupName);
+        void RemoveJobTriggers(Guid jobId);
 
-        void RemoveJob(string jobName, string jobGroup);
+        void RemoveJob(Guid jobId);
 
-        void RemoveTrigger(string triggerName, string groupName);
+        void RemoveTrigger(Guid triggerId);
 
-        void ScheduleTrigger(BaseTrigger myTrigger);
+        Guid ScheduleTrigger(BaseTrigger myTrigger);
 
-        IEnumerable<ITrigger> GetTriggersOfJob(string jobName, string jobGroup);
+        IEnumerable<ITrigger> GetTriggersOfJob(Guid id);
 
         IEnumerable<TriggerFireTime> GetFireTimesBetween(DateTime start, DateTime end);
 
-        void AddHolidayCalendar(string name, string description, IList<DateTime> daysExcludedUtc = null);
+        Guid AddHolidayCalendar(string name, string description, IList<DateTime> daysExcludedUtc = null);
 
-        void AddHolidayCalendarExclusionDates(string name, IList<DateTime> daysExcludedUtc);
+        void AddHolidayCalendarExclusionDates(Guid id, IList<DateTime> daysExcludedUtc);
 
-        void AddCronCalendar(string name, string description, string cronExpression);
+        Guid AddCronCalendar(string name, string description, string cronExpression);
+
+        void AmendCronCalendar(Guid id, string description, string cronExpression);
+
+        void AmendHolidayCalendar(Guid id, string description, IList<DateTime> datesExcluded);
 
         bool DeleteCalendar(string name);
     }

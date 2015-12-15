@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Web.Http;
 using Common.Logging;
+using Quartz;
 using R.Scheduler.Contracts.JobTypes;
 using R.Scheduler.Contracts.Model;
 using R.Scheduler.Interfaces;
@@ -31,34 +32,36 @@ namespace R.Scheduler.Controllers
         {
             Logger.Info("Entered JobsController.Get().");
 
-            var jobDetails = _schedulerCore.GetJobDetails();
+            IDictionary<IJobDetail, Guid> jobDetailsMap = _schedulerCore.GetJobDetails();
 
-            return jobDetails.Select(jobDetail =>
+            return jobDetailsMap.Select(mapItem =>
                                                     new BaseJob
                                                     {
-                                                        JobName = jobDetail.Key.Name,
-                                                        JobGroup = jobDetail.Key.Group,
-                                                        JobType = jobDetail.JobType.Name,
+                                                        Id = mapItem.Value,
+                                                        JobName = mapItem.Key.Key.Name,
+                                                        JobGroup = mapItem.Key.Key.Group,
+                                                        JobType = mapItem.Key.JobType.Name,
                                                         SchedulerName = _schedulerCore.SchedulerName,
-                                                        Description = jobDetail.Description
+                                                        Description = mapItem.Key.Description
                                                     }).ToList();
 
         }
 
         /// <summary>
-        /// Get all the jobs regardless of the job type
+        /// Get the job specified by id
         /// </summary>
         /// <returns></returns>
         [AcceptVerbs("GET")]
-        [Route("api/jobs/{jobName}/{jobGroup}")]
-        public BaseJob Get(string jobName, string jobGroup)
+        [Route("api/jobs/{id}")]
+        public BaseJob Get(Guid id)
         {
             Logger.Debug("Entered JobsController.Get().");
 
-            var jobDetail = _schedulerCore.GetJobDetail(jobName, jobGroup);
+            var jobDetail = _schedulerCore.GetJobDetail(id);
 
             return new BaseJob
             {
+                Id = id,
                 JobName = jobDetail.Key.Name,
                 JobGroup = jobDetail.Key.Group,
                 JobType = jobDetail.JobType.Name,
@@ -70,20 +73,19 @@ namespace R.Scheduler.Controllers
         /// <summary>
         /// Schedules a temporary job for an immediate execution
         /// </summary>
-        /// <param name="jobName"></param>
-        /// <param name="jobGroup"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
         [AcceptVerbs("POST")]
-        [Route("api/jobs/execution")]
-        public QueryResponse Execute(string jobName, string jobGroup)
+        [Route("api/jobs/{id}")]
+        public QueryResponse Execute(Guid id)
         {
-            Logger.DebugFormat("Entered JobsController.Execute(). jobName = {0}, jobGroup = {1}", jobName, jobGroup);
+            Logger.DebugFormat("Entered JobsController.Execute(). id = {0}", id);
 
             var response = new QueryResponse { Valid = true };
 
             try
             {
-                _schedulerCore.ExecuteJob(jobName, jobGroup);
+                _schedulerCore.ExecuteJob(id);
             }
             catch (Exception ex)
             {
@@ -105,20 +107,19 @@ namespace R.Scheduler.Controllers
         /// <summary>
         /// Remove job and all associated triggers.
         /// </summary>
-        /// <param name="jobName"></param>
-        /// <param name="jobGroup"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
         [AcceptVerbs("DELETE")]
-        [Route("api/jobs")]
-        public QueryResponse Delete(string jobName, string jobGroup)
+        [Route("api/jobs/{id}")]
+        public QueryResponse Delete(Guid id)
         {
-            Logger.DebugFormat("Entered JobsController.Delete(). jobName = {0}, jobGroup = {1}", jobName, jobGroup);
+            Logger.DebugFormat("Entered JobsController.Delete(). id = {0}", id);
 
-            var response = new QueryResponse { Valid = true };
+            var response = new QueryResponse { Valid = true, Id = id };
 
             try
             {
-                _schedulerCore.RemoveJob(jobName, jobGroup);
+                _schedulerCore.RemoveJob(id);
             }
             catch (Exception ex)
             {

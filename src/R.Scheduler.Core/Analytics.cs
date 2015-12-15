@@ -20,7 +20,6 @@ namespace R.Scheduler.Core
         {
             _scheduler = scheduler;
             _persistanceStore = ObjectFactory.GetInstance<IPersistanceStore>();
-            ObjectFactory.GetInstance<ISchedulerCore>();
         }
 
         public int GetJobCount()

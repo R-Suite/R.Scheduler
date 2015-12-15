@@ -224,6 +224,69 @@ namespace R.Scheduler.Persistance
             return retval;
         }
 
+        public Guid UpsertJobKeyIdMap(string jobName, string jobGroup)
+        {
+            throw new NotImplementedException();
+        }
+
+        public JobKey GetJobKey(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Guid GetJobId(JobKey jobKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TriggerKey GetTriggerKey(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Guid UpsertTriggerKeyIdMap(string triggerName, string triggerGroup)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Guid UpsertCalendarIdMap(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetCalendarName(Guid id)
+        {
+            string name = null;
+
+            const string sql = @"SELECT calendar_name FROM rsched_calendar_id_name_map] WHERE id = :id";
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            {
+                try
+                {
+                    con.Open();
+                    using (var command = new NpgsqlCommand(sql, con))
+                    {
+                        command.Parameters.Add(new NpgsqlParameter("id", NpgsqlDbType.Uuid));
+                        command.Parameters[1].Value = id;
+                        using (NpgsqlDataReader rs = command.ExecuteReader())
+                        {
+                            if (rs.Read())
+                            {
+                                name = rs.GetString(0);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error getting calendar name. {0}", ex.Message);
+                }
+            }
+
+            return name;
+        }
+
         private IEnumerable<AuditLog> GetAuditLogs(string sql)
         {
             IList<AuditLog> retval = new List<AuditLog>();

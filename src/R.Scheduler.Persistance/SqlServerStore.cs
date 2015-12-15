@@ -207,6 +207,320 @@ namespace R.Scheduler.Persistance
             return retval;
         }
 
+        /// <summary>
+        /// Insert JobKey and return new id.
+        /// Return existing id if job key laready exists. 
+        /// </summary>
+        /// <param name="jobName"></param>
+        /// <param name="jobGroup"></param>
+        public Guid UpsertJobKeyIdMap(string jobName, string jobGroup)
+        {
+            var retval = Guid.Empty;
+
+            const string sql = @"SELECT [ID] FROM [RSCHED_JOB_ID_KEY_MAP] WHERE [JOB_NAME] = @jobName AND [JOB_GROUP] = @jobGroup";
+
+            using (var con = new SqlConnection(_connectionString))
+            {
+                con.Open();
+                SqlTransaction trans = con.BeginTransaction();
+
+                try
+                {
+                    using (var command = new SqlCommand(sql, con, trans))
+                    {
+                        command.Parameters.AddWithValue("@jobName", jobName);
+                        command.Parameters.AddWithValue("@jobGroup", jobGroup);
+
+                        using (IDataReader dr = command.ExecuteReader())
+                        {
+                            if (dr.Read())
+                            {
+                                retval = dr.GetGuid(0);
+                            }
+                        }
+                    }
+
+                    // JobKey does not exist
+                    if (retval == Guid.Empty)
+                    {
+                        retval = Guid.NewGuid();
+                        const string sqlInsert = @"INSERT INTO RSCHED_JOB_ID_KEY_MAP([ID]
+                                                               ,[JOB_NAME]
+                                                               ,[JOB_GROUP]) 
+                                                            VALUES (
+                                                                @id, 
+                                                                @jobName, 
+                                                                @jobGroup);";
+                        using (var command = new SqlCommand(sqlInsert, con, trans))
+                        {
+                            command.Parameters.AddWithValue("@id", retval);
+                            command.Parameters.AddWithValue("@jobName", jobName);
+                            command.Parameters.AddWithValue("@jobGroup", jobGroup);
+
+                            command.ExecuteScalar();
+                        }
+                    }
+
+                    trans.Commit(); 
+                }
+                catch (Exception ex)
+                {
+                    trans.Rollback();
+                    Logger.ErrorFormat("Error persisting Id-JobKey Map. {0}", ex.Message);
+                    throw;
+                }
+            }
+
+            return retval;
+        }
+
+        public JobKey GetJobKey(Guid id)
+        {
+            JobKey key = null;
+
+            const string sql = @"SELECT [JOB_NAME], [JOB_GROUP] FROM [RSCHED_JOB_ID_KEY_MAP] WHERE [ID] = @id";
+
+            using (var con = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    con.Open();
+                    using (var command = new SqlCommand(sql, con))
+                    {
+                        command.Parameters.AddWithValue("id", id);
+                        using (SqlDataReader rs = command.ExecuteReader())
+                        {
+                            if (rs.Read())
+                            {
+                                key = new JobKey(rs.GetString(0), rs.GetString(1));
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error getting JobKeys. {0}", ex.Message);
+                }
+            }
+
+            return key;
+        }
+
+        public Guid GetJobId(JobKey jobKey)
+        {
+            Guid id = Guid.Empty;
+
+            const string sql = @"SELECT [ID] FROM [RSCHED_JOB_ID_KEY_MAP] WHERE [JOB_NAME] = @jobName AND [JOB_GROUP] = @jobGroup";
+
+            using (var con = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    con.Open();
+                    using (var command = new SqlCommand(sql, con))
+                    {
+                        command.Parameters.AddWithValue("jobName", jobKey.Name);
+                        command.Parameters.AddWithValue("jobGroup", jobKey.Group);
+                        using (SqlDataReader rs = command.ExecuteReader())
+                        {
+                            if (rs.Read())
+                            {
+                                id = rs.GetGuid(0);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error getting Job Id. {0}", ex.Message);
+                }
+            }
+
+            return id;
+        }
+
+        public TriggerKey GetTriggerKey(Guid id)
+        {
+            TriggerKey key = null;
+
+            const string sql = @"SELECT [TRIGGER_NAME], [TRIGGER_GROUP] FROM [RSCHED_TRIGGER_ID_KEY_MAP] WHERE [ID] = @id";
+
+            using (var con = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    con.Open();
+                    using (var command = new SqlCommand(sql, con))
+                    {
+                        command.Parameters.AddWithValue("id", id);
+                        using (SqlDataReader rs = command.ExecuteReader())
+                        {
+                            if (rs.Read())
+                            {
+                                key = new TriggerKey(rs.GetString(0), rs.GetString(1));
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error getting TriggerKeys. {0}", ex.Message);
+                }
+            }
+
+            return key;
+        }
+
+        public Guid UpsertTriggerKeyIdMap(string triggerName, string triggerGroup)
+        {
+            var retval = Guid.Empty;
+
+            const string sql = @"SELECT [ID] FROM [RSCHED_TRIGGER_ID_KEY_MAP] WHERE [TRIGGER_NAME] = @triggerName AND [TRIGGER_GROUP] = @triggerGroup";
+
+            using (var con = new SqlConnection(_connectionString))
+            {
+                con.Open();
+                SqlTransaction trans = con.BeginTransaction();
+
+                try
+                {
+                    using (var command = new SqlCommand(sql, con, trans))
+                    {
+                        command.Parameters.AddWithValue("@triggerName", triggerName);
+                        command.Parameters.AddWithValue("@triggerGroup", triggerGroup);
+
+                        using (IDataReader dr = command.ExecuteReader())
+                        {
+                            if (dr.Read())
+                            {
+                                retval = dr.GetGuid(0);
+                            }
+                        }
+                    }
+
+                    // TriggerKey does not exist
+                    if (retval == Guid.Empty)
+                    {
+                        retval = Guid.NewGuid();
+                        const string sqlInsert = @"INSERT INTO RSCHED_TRIGGER_ID_KEY_MAP([ID]
+                                                               ,[TRIGGER_NAME]
+                                                               ,[TRIGGER_GROUP]) 
+                                                            VALUES (
+                                                                @id, 
+                                                                @triggerName, 
+                                                                @triggerGroup);";
+                        using (var command = new SqlCommand(sqlInsert, con, trans))
+                        {
+                            command.Parameters.AddWithValue("@id", retval);
+                            command.Parameters.AddWithValue("@triggerName", triggerName);
+                            command.Parameters.AddWithValue("@triggerGroup", triggerGroup);
+
+                            command.ExecuteScalar();
+                        }
+                    }
+
+                    trans.Commit();
+                }
+                catch (Exception ex)
+                {
+                    trans.Rollback();
+                    Logger.ErrorFormat("Error persisting Id-TriggerKey Map. {0}", ex.Message);
+                    throw;
+                }
+            }
+
+            return retval;
+        }
+
+        public Guid UpsertCalendarIdMap(string name)
+        {
+            var retval = Guid.Empty;
+
+            const string sql = @"SELECT [ID] FROM [RSCHED_CALENDAR_ID_NAME_MAP] WHERE [CALENDAR_NAME] = @calendarName";
+
+            using (var con = new SqlConnection(_connectionString))
+            {
+                con.Open();
+                SqlTransaction trans = con.BeginTransaction();
+
+                try
+                {
+                    using (var command = new SqlCommand(sql, con, trans))
+                    {
+                        command.Parameters.AddWithValue("@calendarName", name);
+
+                        using (IDataReader dr = command.ExecuteReader())
+                        {
+                            if (dr.Read())
+                            {
+                                retval = dr.GetGuid(0);
+                            }
+                        }
+                    }
+
+                    // CalendarName does not exist
+                    if (retval == Guid.Empty)
+                    {
+                        retval = Guid.NewGuid();
+                        const string sqlInsert = @"INSERT INTO RSCHED_CALENDAR_ID_NAME_MAP([ID]
+                                                               ,[CALENDAR_NAME]) 
+                                                            VALUES (
+                                                                @id, 
+                                                                @calendarName);";
+                        using (var command = new SqlCommand(sqlInsert, con, trans))
+                        {
+                            command.Parameters.AddWithValue("@id", retval);
+                            command.Parameters.AddWithValue("@calendarName", name);
+
+                            command.ExecuteScalar();
+                        }
+                    }
+
+                    trans.Commit();
+                }
+                catch (Exception ex)
+                {
+                    trans.Rollback();
+                    Logger.ErrorFormat("Error persisting Id-CalendarName Map. {0}", ex.Message);
+                    throw;
+                }
+            }
+
+            return retval;
+        }
+
+        public string GetCalendarName(Guid id)
+        {
+            string name = null;
+
+            const string sql = @"SELECT [CALENDAR_NAME] FROM [RSCHED_CALENDAR_ID_NAME_MAP] WHERE [ID] = @id";
+
+            using (var con = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    con.Open();
+                    using (var command = new SqlCommand(sql, con))
+                    {
+                        command.Parameters.AddWithValue("id", id);
+                        using (SqlDataReader rs = command.ExecuteReader())
+                        {
+                            if (rs.Read())
+                            {
+                                name = rs.GetString(0);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error getting calendar name. {0}", ex.Message);
+                }
+            }
+
+            return name;
+        }
+
         private IEnumerable<AuditLog> GetAuditLogs(string sql)
         {
             IList<AuditLog> retval = new List<AuditLog>();

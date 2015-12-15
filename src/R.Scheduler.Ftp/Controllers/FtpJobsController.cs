@@ -32,26 +32,27 @@ namespace R.Scheduler.Ftp.Controllers
         {
             Logger.Debug("Entered FtpJobsController.Get().");
 
-            var jobDetails = _schedulerCore.GetJobDetails(typeof(FtpDownloadJob));
+            var jobDetailsMap = _schedulerCore.GetJobDetails(typeof(FtpDownloadJob));
 
-            return jobDetails.Select(jobDetail =>
+            return jobDetailsMap.Select(mapItem =>
                                                     new Contracts.JobTypes.Ftp.Model.FtpDownloadJob
                                                     {
-                                                        JobName = jobDetail.Key.Name,
-                                                        JobGroup = jobDetail.Key.Group,
+                                                        Id = mapItem.Value,
+                                                        JobName = mapItem.Key.Key.Name,
+                                                        JobGroup = mapItem.Key.Key.Group,
                                                         SchedulerName = _schedulerCore.SchedulerName,
-                                                        FtpHost = jobDetail.JobDataMap.GetString("ftpHost"),
+                                                        FtpHost = mapItem.Key.JobDataMap.GetString("ftpHost"),
                                                     }).ToList();
 
         }
 
         /// <summary>
-        /// Get job details of <see cref="jobName"/>
+        /// Get job details of <see cref="FtpDownloadJob"/>
         /// </summary>
         /// <returns></returns>
         [AcceptVerbs("GET")]
-        [Route("api/ftpDownloads")]
-        public Contracts.JobTypes.Ftp.Model.FtpDownloadJob Get(string jobName, string jobGroup)
+        [Route("api/ftpDownloads/{id}")]
+        public Contracts.JobTypes.Ftp.Model.FtpDownloadJob Get(Guid id)
         {
             Logger.Debug("Entered FtpJobsController.Get().");
 
@@ -59,7 +60,7 @@ namespace R.Scheduler.Ftp.Controllers
 
             try
             {
-                jobDetail = _schedulerCore.GetJobDetail(jobName, jobGroup);
+                jobDetail = _schedulerCore.GetJobDetail(id);
             }
             catch (Exception ex)
             {
@@ -69,6 +70,7 @@ namespace R.Scheduler.Ftp.Controllers
 
             return new Contracts.JobTypes.Ftp.Model.FtpDownloadJob
             {
+                Id = id,
                 JobName = jobDetail.Key.Name,
                 JobGroup = jobDetail.Key.Group,
                 SchedulerName = _schedulerCore.SchedulerName,

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Web.Http;
 using AutoMapper;
@@ -57,7 +58,7 @@ namespace R.Scheduler.Controllers
         {
             Logger.Info("Entered AnalyticsController.GetFiredTriggers().");
 
-            IEnumerable<ITrigger> quartzFiredTriggers = _analytics.GetFiredTriggers();
+            IEnumerable<KeyValuePair<ITrigger, Guid>> quartzFiredTriggers = _analytics.GetFiredTriggers();
 
             return TriggerHelper.GetTriggerDetails(quartzFiredTriggers);
         }

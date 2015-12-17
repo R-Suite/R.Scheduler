@@ -103,7 +103,7 @@ namespace R.Scheduler.Controllers
         }
 
         /// <summary>
-        /// Create new SendMailJob without any triggers
+        /// Create new <see cref="NativeExecJob"/> without any triggers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -113,6 +113,25 @@ namespace R.Scheduler.Controllers
         {
             Logger.DebugFormat("Entered NativeJobsController.Post(). Job Name = {0}", model.JobName);
 
+            return CreateJob(model);
+        }
+
+        /// <summary>
+        /// Update <see cref="NativeExecJob"/>
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [AcceptVerbs("PUT")]
+        [Route("api/nativeJobs/{id}")]
+        public QueryResponse Put([FromBody]NativeExecJob model)
+        {
+            Logger.DebugFormat("Entered NativeJobsController.Put(). Job Name = {0}", model.JobName);
+
+            return CreateJob(model);
+        }
+
+        private QueryResponse CreateJob(NativeExecJob model)
+        {
             var dataMap = new Dictionary<string, object>
             {
                 {"command", model.Command},
@@ -122,7 +141,7 @@ namespace R.Scheduler.Controllers
                 {"workingDirectory", model.WorkingDirectory}
             };
 
-            return base.CreateJob(model, typeof(NativeJob), dataMap, model.Description);
+            return base.CreateJob(model, typeof (NativeJob), dataMap, model.Description);
         }
     }
 }

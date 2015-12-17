@@ -16,6 +16,7 @@ namespace R.Scheduler.Interfaces
         JobKey GetJobKey(Guid id);
         Guid GetJobId(JobKey jobKey);
         TriggerKey GetTriggerKey(Guid id);
+        Guid GetTriggerId(TriggerKey triggerKey);
         Guid UpsertTriggerKeyIdMap(string triggerName, string triggerGroup);
         Guid UpsertCalendarIdMap(string name);
         string GetCalendarName(Guid id);

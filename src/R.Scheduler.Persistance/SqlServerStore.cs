@@ -98,6 +98,10 @@ namespace R.Scheduler.Persistance
             }
         }
 
+        /// <summary>
+        /// Get number of jobs setup in the scheduler
+        /// </summary>
+        /// <returns></returns>
         public int GetJobDetailsCount()
         {
             int retval = 0;
@@ -122,6 +126,10 @@ namespace R.Scheduler.Persistance
             return retval;
         }
 
+        /// <summary>
+        /// Get number of triggers setup in the scheduler
+        /// </summary>
+        /// <returns></returns>
         public int GetTriggerCount()
         {
             int retval = 0;
@@ -146,6 +154,10 @@ namespace R.Scheduler.Persistance
             return retval;
         }
 
+        /// <summary>
+        /// Get currently executing triggers
+        /// </summary>
+        /// <returns></returns>
         public IList<TriggerKey> GetFiredTriggers()
         {
             IList<TriggerKey> keys = new List<TriggerKey>();
@@ -177,6 +189,11 @@ namespace R.Scheduler.Persistance
             return keys;
         }
 
+        /// <summary>
+        /// Get <see cref="count"/> of most recently failed jobs
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
         public IEnumerable<AuditLog> GetErroredJobs(int count)
         {
             if (count > 1000)
@@ -185,13 +202,18 @@ namespace R.Scheduler.Persistance
                 count = 1000;
             }
 
-            string sql = string.Format(@"SELECT TOP {0} * FROM [RSCHED_AUDIT_HISTORY] WHERE [EXECUTION_EXCEPTION] <> '' AND [ACTION] = 'JobWasExecuted' order by [TIME_STAMP] DESC", count);
+            string sql = string.Format(@"SELECT TOP {0} a.*, m.[ID] as 'JOB_ID' FROM [RSCHED_AUDIT_HISTORY] a, [RSCHED_JOB_ID_KEY_MAP] m WHERE a.[EXECUTION_EXCEPTION] <> '' AND a.[ACTION] = 'JobWasExecuted' AND a.[JOB_NAME] = m.[JOB_NAME] AND a.[JOB_GROUP] = m.[JOB_GROUP] order by a.[TIME_STAMP] DESC", count);
 
             IEnumerable<AuditLog> retval = GetAuditLogs(sql);
 
             return retval;
         }
 
+        /// <summary>
+        /// Get <see cref="count"/> of most recently executed jobs
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
         public IEnumerable<AuditLog> GetExecutedJobs(int count)
         {
             if (count > 1000)
@@ -200,7 +222,7 @@ namespace R.Scheduler.Persistance
                 count = 1000;
             }
 
-            string sql = string.Format(@"SELECT TOP {0} * FROM [RSCHED_AUDIT_HISTORY] WHERE [ACTION] = 'JobWasExecuted' order by [TIME_STAMP] DESC", count);
+            string sql = string.Format(@"SELECT TOP {0} a.*, m.[ID] as 'JOB_ID'  FROM [RSCHED_AUDIT_HISTORY] a, [RSCHED_JOB_ID_KEY_MAP] m WHERE a.[ACTION] = 'JobWasExecuted' AND a.[JOB_NAME] = m.[JOB_NAME] AND a.[JOB_GROUP] = m.[JOB_GROUP] order by a.[TIME_STAMP] DESC", count);
 
             IEnumerable<AuditLog> retval = GetAuditLogs(sql);
 
@@ -274,6 +296,11 @@ namespace R.Scheduler.Persistance
             return retval;
         }
 
+        /// <summary>
+        /// Get JobKey mapped to specified id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public JobKey GetJobKey(Guid id)
         {
             JobKey key = null;
@@ -306,6 +333,11 @@ namespace R.Scheduler.Persistance
             return key;
         }
 
+        /// <summary>
+        /// Get JobId mapped to specified job key
+        /// </summary>
+        /// <param name="jobKey"></param>
+        /// <returns></returns>
         public Guid GetJobId(JobKey jobKey)
         {
             Guid id = Guid.Empty;
@@ -339,6 +371,11 @@ namespace R.Scheduler.Persistance
             return id;
         }
 
+        /// <summary>
+        /// Get TriggerKey mapped to specified id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public TriggerKey GetTriggerKey(Guid id)
         {
             TriggerKey key = null;
@@ -371,6 +408,51 @@ namespace R.Scheduler.Persistance
             return key;
         }
 
+        /// <summary>
+        /// Get TriggerId mapped to specified trigger key
+        /// </summary>
+        /// <param name="triggerKey"></param>
+        /// <returns></returns>
+        public Guid GetTriggerId(TriggerKey triggerKey)
+        {
+            Guid id = Guid.Empty;
+
+            const string sql = @"SELECT [ID] FROM [RSCHED_TRIGGER_ID_KEY_MAP] WHERE [TRIGGER_NAME] = @triggerName AND [TRIGGER_GROUP] = @triggerGroup";
+
+            using (var con = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    con.Open();
+                    using (var command = new SqlCommand(sql, con))
+                    {
+                        command.Parameters.AddWithValue("triggerName", triggerKey.Name);
+                        command.Parameters.AddWithValue("triggerGroup", triggerKey.Group);
+                        using (SqlDataReader rs = command.ExecuteReader())
+                        {
+                            if (rs.Read())
+                            {
+                                id = rs.GetGuid(0);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error getting Trigger Id. {0}", ex.Message);
+                }
+            }
+
+            return id;
+        }
+
+        /// <summary>
+        /// Insert trigger key and return a new trigger id.
+        /// If trigger key already exists, do nothing and return existing trigger id.
+        /// </summary>
+        /// <param name="triggerName"></param>
+        /// <param name="triggerGroup"></param>
+        /// <returns></returns>
         public Guid UpsertTriggerKeyIdMap(string triggerName, string triggerGroup)
         {
             var retval = Guid.Empty;
@@ -432,6 +514,12 @@ namespace R.Scheduler.Persistance
             return retval;
         }
 
+        /// <summary>
+        /// Insert calendar name and return a new id.
+        /// If calendar name already exists, do nothing and return existing id.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public Guid UpsertCalendarIdMap(string name)
         {
             var retval = Guid.Empty;
@@ -489,6 +577,11 @@ namespace R.Scheduler.Persistance
             return retval;
         }
 
+        /// <summary>
+        /// Get calendar name mapped to specified id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public string GetCalendarName(Guid id)
         {
             string name = null;
@@ -553,7 +646,8 @@ namespace R.Scheduler.Persistance
                                     Params = rs["PARAMS"].ToString(),
                                     RefireCount = (int) rs["REFIRE_COUNT"],
                                     Recovering = (bool) rs["RECOVERING"],
-                                    Result = rs["RESULT"].ToString()
+                                    Result = rs["RESULT"].ToString(),
+                                    JobId = (Guid)rs["JOB_ID"]
                                 });
                             }
                         }

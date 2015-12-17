@@ -85,7 +85,7 @@ namespace R.Scheduler.WebRequest.Controllers
         }
 
         /// <summary>
-        /// Create new WebRequest without any triggers
+        /// Create new <see cref="WebRequestJob"/> without any triggers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -95,6 +95,25 @@ namespace R.Scheduler.WebRequest.Controllers
         {
             Logger.InfoFormat("Entered WebRequestJobController.Post(). Job Name = {0}", model.JobName);
 
+            return CreateJob(model);
+        }
+
+        /// <summary>
+        /// Update <see cref="WebRequestJob"/>
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [AcceptVerbs("PUT")]
+        [Route("api/webRequests/{id}")]
+        public QueryResponse Put([FromBody]Contracts.JobTypes.WebRequest.Model.WebRequestJob model)
+        {
+            Logger.InfoFormat("Entered WebRequestJobController.Put(). Job Name = {0}", model.JobName);
+
+            return CreateJob(model);
+        }
+
+        private QueryResponse CreateJob(Contracts.JobTypes.WebRequest.Model.WebRequestJob model)
+        {
             var dataMap = new Dictionary<string, object>
             {
                 {"uri", model.Uri},
@@ -104,7 +123,7 @@ namespace R.Scheduler.WebRequest.Controllers
                 {"contentType", model.ContentType}
             };
 
-            return base.CreateJob(model, typeof(WebRequestJob), dataMap, model.Description);
+            return base.CreateJob(model, typeof (WebRequestJob), dataMap, model.Description);
         }
     }
 }

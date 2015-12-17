@@ -25,7 +25,7 @@ namespace R.Scheduler.Interfaces
 
         Guid ScheduleTrigger(BaseTrigger myTrigger);
 
-        IEnumerable<ITrigger> GetTriggersOfJob(Guid id);
+        IDictionary<ITrigger, Guid> GetTriggersOfJob(Guid id);
 
         IEnumerable<TriggerFireTime> GetFireTimesBetween(DateTime start, DateTime end);
 

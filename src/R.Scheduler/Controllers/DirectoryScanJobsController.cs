@@ -12,6 +12,7 @@ using R.Scheduler.Core;
 using R.Scheduler.DirectoryScan;
 using R.Scheduler.Interfaces;
 using StructureMap;
+using DirectoryScanJob = R.Scheduler.Contracts.JobTypes.DirectoryScan.Model.DirectoryScanJob;
 
 namespace R.Scheduler.Controllers
 {
@@ -98,7 +99,7 @@ namespace R.Scheduler.Controllers
         }
 
         /// <summary>
-        /// Create new SendMailJob without any triggers
+        /// Create new <see cref="DirectoryScanJob" /> without any triggers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -108,13 +109,32 @@ namespace R.Scheduler.Controllers
         {
             Logger.InfoFormat("Entered DirectoryScanJobsController.Post(). Job Name = {0}", model.JobName);
 
+            return CreateJob(model);
+        }
+
+        /// <summary>
+        /// Update <see cref="DirectoryScanJob" />
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [AcceptVerbs("PUT")]
+        [Route("api/dirScanJobs/{id}")]
+        public QueryResponse Put([FromBody]Contracts.JobTypes.DirectoryScan.Model.DirectoryScanJob model)
+        {
+            Logger.InfoFormat("Entered DirectoryScanJobsController.Put(). Job Name = {0}", model.JobName);
+
+            return CreateJob(model);
+        }
+
+        private QueryResponse CreateJob(DirectoryScanJob model)
+        {
             Uri uriResult;
             bool validUri = Uri.TryCreate(model.CallbackUrl, UriKind.Absolute, out uriResult) &&
-                          (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+                            (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
 
             if (!validUri)
             {
-                var response = new QueryResponse { Valid = false };
+                var response = new QueryResponse {Valid = false};
                 response.Errors = new List<Error>
                 {
                     new Error
@@ -136,7 +156,7 @@ namespace R.Scheduler.Controllers
                 {"LAST_MODIFIED_TIME", model.LastModifiedTime.ToString("o")}
             };
 
-            return base.CreateJob(model, typeof(RDirectoryScanJob), dataMap);
+            return base.CreateJob(model, typeof (RDirectoryScanJob), dataMap);
         }
     }
 }

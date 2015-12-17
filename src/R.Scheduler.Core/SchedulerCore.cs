@@ -7,7 +7,6 @@ using Quartz.Impl.Matchers;
 using Quartz.Spi;
 using R.Scheduler.Contracts.Model;
 using R.Scheduler.Interfaces;
-using StructureMap;
 
 namespace R.Scheduler.Core
 {
@@ -26,7 +25,6 @@ namespace R.Scheduler.Core
         {
             _scheduler = scheduler;
             _persistanceStore = persistanceStore;
-            //_persistanceStore = ObjectFactory.GetInstance<IPersistanceStore>();
         }
 
         /// <summary>
@@ -140,6 +138,10 @@ namespace R.Scheduler.Core
             return id;
         }
 
+        /// <summary>
+        /// Deletes the specified job and all the asociated triggers.
+        /// </summary>
+        /// <param name="jobId"></param>
         public void RemoveJob(Guid jobId)
         {
             var jobKey = _persistanceStore.GetJobKey(jobId);
@@ -293,11 +295,22 @@ namespace R.Scheduler.Core
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public IEnumerable<ITrigger> GetTriggersOfJob(Guid id)
+        public IDictionary<ITrigger, Guid> GetTriggersOfJob(Guid id)
         {
+            IDictionary<ITrigger, Guid> triggers = new Dictionary<ITrigger, Guid>();
+
             var jobKey = _persistanceStore.GetJobKey(id);
 
-            return _scheduler.GetTriggersOfJob(jobKey);
+            var jobTriggers = _scheduler.GetTriggersOfJob(jobKey);
+
+            foreach (var jobTrigger in jobTriggers)
+            {
+                var triggerId = _persistanceStore.GetTriggerId(jobTrigger.Key);
+
+                triggers.Add(jobTrigger, triggerId);
+            }
+
+            return triggers;
         }
 
         /// <summary>
@@ -424,6 +437,12 @@ namespace R.Scheduler.Core
             _scheduler.AddCalendar(name, cronCal, true, true);
         }
 
+        /// <summary>
+        /// Amends existing <see cref="HolidayCalendar"/>
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="description"></param>
+        /// <param name="datesExcluded"></param>
         public void AmendHolidayCalendar(Guid id, string description, IList<DateTime> datesExcluded)
         {
             var name = _persistanceStore.GetCalendarName(id);

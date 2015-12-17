@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Quartz;
 
 namespace R.Scheduler.Interfaces
@@ -7,7 +8,7 @@ namespace R.Scheduler.Interfaces
     {
         int GetJobCount();
         int GetTriggerCount();
-        IEnumerable<ITrigger> GetFiredTriggers();
+        IEnumerable<KeyValuePair<ITrigger, Guid>> GetFiredTriggers();
         IEnumerable<AuditLog> GetErroredJobs(int count);
         IEnumerable<AuditLog> GetExecutedJobs(int count);
     }

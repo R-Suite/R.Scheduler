@@ -77,6 +77,11 @@ namespace R.Scheduler.Persistance
             throw new NotImplementedException();
         }
 
+        public Guid GetTriggerId(TriggerKey triggerKey)
+        {
+            throw new NotImplementedException();
+        }
+
         public Guid UpsertTriggerKeyIdMap(string triggerName, string triggerGroup)
         {
             throw new NotImplementedException();

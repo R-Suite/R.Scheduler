@@ -31,7 +31,7 @@ namespace R.Scheduler.Controllers
         {
             Logger.DebugFormat("Entered TriggersController.Get(). jobId = {0}", jobId);
 
-            IEnumerable<ITrigger> quartzTriggers = _schedulerCore.GetTriggersOfJob(jobId);
+            IDictionary<ITrigger, Guid> quartzTriggers = _schedulerCore.GetTriggersOfJob(jobId);
 
             return TriggerHelper.GetTriggerDetails(quartzTriggers);
         }

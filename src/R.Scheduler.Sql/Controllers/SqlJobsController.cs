@@ -92,7 +92,7 @@ namespace R.Scheduler.Sql.Controllers
         }
 
         /// <summary>
-        /// Create new SqlJob without any triggers
+        /// Create new <see cref="SqlJob"/> without any triggers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -102,6 +102,25 @@ namespace R.Scheduler.Sql.Controllers
         {
             Logger.DebugFormat("Entered SqlJobsController.Post(). Job Name = {0}", model.JobName);
 
+            return CreateJob(model);
+        }
+
+        /// <summary>
+        /// Update <see cref="SqlJob"/>
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [AcceptVerbs("PUT")]
+        [Route("api/sqlJobs/{id}")]
+        public QueryResponse Put([FromBody]Contracts.JobTypes.Sql.Model.SqlJob model)
+        {
+            Logger.DebugFormat("Entered SqlJobsController.Put(). Job Name = {0}", model.JobName);
+
+            return CreateJob(model);
+        }
+
+        private QueryResponse CreateJob(Contracts.JobTypes.Sql.Model.SqlJob model)
+        {
             var dataMap = new Dictionary<string, object>
             {
                 {"connectionString", model.ConnectionString},
@@ -113,7 +132,7 @@ namespace R.Scheduler.Sql.Controllers
                 {"dataAdapterClass", model.DataAdapterClass}
             };
 
-            return base.CreateJob(model, typeof(SqlJob), dataMap, model.Description);
+            return base.CreateJob(model, typeof (SqlJob), dataMap, model.Description);
         }
     }
 }

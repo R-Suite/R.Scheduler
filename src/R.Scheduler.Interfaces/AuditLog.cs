@@ -7,6 +7,7 @@ namespace R.Scheduler.Interfaces
         public DateTime TimeStamp { get; set; }
         public string Action { get; set; }
         public string FireInstanceId { get; set; }
+        public Guid JobId { get; set; }
         public string JobName { get; set; }
         public string JobGroup { get; set; }
         public string JobType { get; set; }

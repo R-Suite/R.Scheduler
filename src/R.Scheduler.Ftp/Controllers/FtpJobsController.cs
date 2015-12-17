@@ -87,7 +87,7 @@ namespace R.Scheduler.Ftp.Controllers
         }
 
         /// <summary>
-        /// Create new FtpJob without any triggers
+        /// Create new <see cref="FtpDownloadJob"/> without any triggers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -97,6 +97,25 @@ namespace R.Scheduler.Ftp.Controllers
         {
             Logger.DebugFormat("Entered FtpJobsController.Post(). Job Name = {0}", model.JobName);
 
+            return CreateJob(model);
+        }
+
+        /// <summary>
+        /// Update <see cref="FtpDownloadJob"/>
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [AcceptVerbs("PUT")]
+        [Route("api/ftpDownloads/{id}")]
+        public QueryResponse Put([FromBody]Contracts.JobTypes.Ftp.Model.FtpDownloadJob model)
+        {
+            Logger.DebugFormat("Entered FtpJobsController.Put(). Job Name = {0}", model.JobName);
+
+            return CreateJob(model);
+        }
+
+        private QueryResponse CreateJob(Contracts.JobTypes.Ftp.Model.FtpDownloadJob model)
+        {
             var dataMap = new Dictionary<string, object>
             {
                 {"ftpHost", model.FtpHost},
@@ -109,7 +128,7 @@ namespace R.Scheduler.Ftp.Controllers
                 {"cutOffTimeSpan", model.CutOffTimeSpan}
             };
 
-            return base.CreateJob(model, typeof(FtpDownloadJob), dataMap, model.Description);
+            return base.CreateJob(model, typeof (FtpDownloadJob), dataMap, model.Description);
         }
     }
 }

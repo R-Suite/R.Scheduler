@@ -41,9 +41,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Common.Logging.Core.3.3.0\lib\net40\Common.Logging.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Npgsql, Version=3.0.3.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Npgsql.3.0.3\lib\net45\Npgsql.dll</HintPath>
+    <Reference Include="Npgsql, Version=3.0.4.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Npgsql.3.0.4\lib\net45\Npgsql.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Quartz, Version=2.3.3.0, Culture=neutral, PublicKeyToken=f6b8c98a402cc8a4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

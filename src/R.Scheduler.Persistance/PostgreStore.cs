@@ -115,6 +115,10 @@ namespace R.Scheduler.Persistance
             }
         }
 
+        /// <summary>
+        /// Get number of jobs setup in the scheduler
+        /// </summary>
+        /// <returns></returns>
         public int GetJobDetailsCount()
         {
             long retval = 0;
@@ -139,6 +143,10 @@ namespace R.Scheduler.Persistance
             return (int) retval;
         }
 
+        /// <summary>
+        /// Get number of triggers setup in the scheduler
+        /// </summary>
+        /// <returns></returns>
         public int GetTriggerCount()
         {
             long retval = 0;
@@ -163,6 +171,10 @@ namespace R.Scheduler.Persistance
             return (int)retval;
         }
 
+        /// <summary>
+        /// Get currently executing triggers
+        /// </summary>
+        /// <returns></returns>
         public IList<TriggerKey> GetFiredTriggers()
         {
             IList<TriggerKey> keys = new List<TriggerKey>();
@@ -194,6 +206,11 @@ namespace R.Scheduler.Persistance
             return keys;
         }
 
+        /// <summary>
+        /// Get <see cref="count"/> of most recently failed jobs
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
         public IEnumerable<AuditLog> GetErroredJobs(int count)
         {
             if (count > 1000)
@@ -202,13 +219,18 @@ namespace R.Scheduler.Persistance
                 count = 1000;
             }
 
-            string sql = string.Format(@"SELECT * FROM rsched_audit_history WHERE execution_exception <> '' AND action = 'JobWasExecuted' order by time_stamp desc limit {0}", count);
+            string sql = string.Format(@"SELECT a.*, m.id as ""job_id"" FROM rsched_audit_history a, rsched_job_id_key_map m WHERE a.execution_exception <> '' AND a.action = 'JobWasExecuted' AND a.job_name = m.job_name AND a.job_group = m.job_group order by a.time_stamp desc limit {0}", count);
 
             IEnumerable<AuditLog> retval = GetAuditLogs(sql);
 
             return retval;
         }
 
+        /// <summary>
+        /// Get <see cref="count"/> of most recently executed jobs
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
         public IEnumerable<AuditLog> GetExecutedJobs(int count)
         {
             if (count > 1000)
@@ -217,48 +239,97 @@ namespace R.Scheduler.Persistance
                 count = 1000;
             }
 
-            string sql = string.Format(@"SELECT * FROM rsched_audit_history WHERE action = 'JobWasExecuted' order by time_stamp desc limit {0}", count);
+            string sql = string.Format(@"SELECT a.*, m.id as ""job_id"" FROM rsched_audit_history a, rsched_job_id_key_map m WHERE a.action = 'JobWasExecuted' AND a.job_name = m.job_name AND a.job_group = m.job_group order by a.time_stamp desc limit {0}", count);
 
             IEnumerable<AuditLog> retval = GetAuditLogs(sql);
 
             return retval;
         }
 
+        /// <summary>
+        /// Insert JobKey and return new id.
+        /// Return existing id if job key laready exists. 
+        /// </summary>
+        /// <param name="jobName"></param>
+        /// <param name="jobGroup"></param>
+        /// <returns></returns>
         public Guid UpsertJobKeyIdMap(string jobName, string jobGroup)
         {
-            throw new NotImplementedException();
+            var retval = Guid.Empty;
+
+            const string sql = @"SELECT id FROM rsched_job_id_key_map WHERE job_name = :jobName AND job_group = :jobGroup";
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            {
+                con.Open();
+                NpgsqlTransaction trans = con.BeginTransaction();
+
+                try
+                {
+                    using (var command = new NpgsqlCommand(sql, con, trans))
+                    {
+                        command.Parameters.Add(new NpgsqlParameter("jobName", NpgsqlDbType.Varchar));
+                        command.Parameters.Add(new NpgsqlParameter("jobGroup", NpgsqlDbType.Varchar));
+                        command.Parameters[0].Value = jobName;
+                        command.Parameters[1].Value = jobGroup;
+
+                        using (NpgsqlDataReader dr = command.ExecuteReader())
+                        {
+                            if (dr.Read())
+                            {
+                                retval = dr.GetGuid(0);
+                            }
+                        }
+                    }
+
+                    // TriggerKey does not exist
+                    if (retval == Guid.Empty)
+                    {
+                        retval = Guid.NewGuid();
+                        const string sqlInsert = @"INSERT INTO rsched_job_id_key_map(id
+                                                               ,job_name
+                                                               ,job_group) 
+                                                            VALUES (
+                                                                :id, 
+                                                                :jobName, 
+                                                                :jobGroup);";
+                        using (var command = new NpgsqlCommand(sqlInsert, con, trans))
+                        {
+                            command.Parameters.Add(new NpgsqlParameter("id", NpgsqlDbType.Uuid));
+                            command.Parameters.Add(new NpgsqlParameter("jobName", NpgsqlDbType.Varchar));
+                            command.Parameters.Add(new NpgsqlParameter("jobGroup", NpgsqlDbType.Varchar));
+                            command.Parameters[0].Value = retval;
+                            command.Parameters[1].Value = jobName;
+                            command.Parameters[2].Value = jobGroup;
+
+
+                            command.ExecuteScalar();
+                        }
+                    }
+
+                    trans.Commit();
+                }
+                catch (Exception ex)
+                {
+                    trans.Rollback();
+                    Logger.ErrorFormat("Error persisting Id-JobKey Map. {0}", ex.Message);
+                    throw;
+                }
+            }
+
+            return retval;
         }
 
+        /// <summary>
+        /// Get JobKey mapped to specified id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public JobKey GetJobKey(Guid id)
         {
-            throw new NotImplementedException();
-        }
+            JobKey key = null;
 
-        public Guid GetJobId(JobKey jobKey)
-        {
-            throw new NotImplementedException();
-        }
-
-        public TriggerKey GetTriggerKey(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Guid UpsertTriggerKeyIdMap(string triggerName, string triggerGroup)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Guid UpsertCalendarIdMap(string name)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string GetCalendarName(Guid id)
-        {
-            string name = null;
-
-            const string sql = @"SELECT calendar_name FROM rsched_calendar_id_name_map] WHERE id = :id";
+            const string sql = @"SELECT job_name, job_group FROM rsched_job_id_key_map WHERE id = :id";
 
             using (var con = new NpgsqlConnection(_connectionString))
             {
@@ -268,7 +339,302 @@ namespace R.Scheduler.Persistance
                     using (var command = new NpgsqlCommand(sql, con))
                     {
                         command.Parameters.Add(new NpgsqlParameter("id", NpgsqlDbType.Uuid));
-                        command.Parameters[1].Value = id;
+                        command.Parameters[0].Value = id;
+
+                        using (NpgsqlDataReader rs = command.ExecuteReader())
+                        {
+                            if (rs.Read())
+                            {
+                                key = new JobKey(rs.GetString(0), rs.GetString(1));
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error getting JobKeys. {0}", ex.Message);
+                }
+            }
+
+            return key;
+        }
+
+        /// <summary>
+        /// Get JobId mapped to specified job key
+        /// </summary>
+        /// <param name="jobKey"></param>
+        /// <returns></returns>
+        public Guid GetJobId(JobKey jobKey)
+        {
+            Guid id = Guid.Empty;
+
+            const string sql = @"SELECT id FROM rsched_job_id_key_map WHERE job_name = :jobName AND job_group = :jobGroup";
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            {
+                try
+                {
+                    con.Open();
+                    using (var command = new NpgsqlCommand(sql, con))
+                    {
+                        command.Parameters.Add(new NpgsqlParameter("jobName", NpgsqlDbType.Varchar));
+                        command.Parameters.Add(new NpgsqlParameter("jobGroup", NpgsqlDbType.Varchar));
+                        command.Parameters[0].Value = jobKey.Name;
+                        command.Parameters[1].Value = jobKey.Group;
+                        using (NpgsqlDataReader rs = command.ExecuteReader())
+                        {
+                            if (rs.Read())
+                            {
+                                id = rs.GetGuid(0);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error getting Job Id. {0}", ex.Message);
+                }
+            }
+
+            return id;
+        }
+
+        /// <summary>
+        /// Get TriggerKey mapped to specified id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public TriggerKey GetTriggerKey(Guid id)
+        {
+            TriggerKey key = null;
+
+            const string sql = @"SELECT trigger_name, trigger_group FROM rsched_trigger_id_key_map WHERE id = :id";
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            {
+                try
+                {
+                    con.Open();
+                    using (var command = new NpgsqlCommand(sql, con))
+                    {
+                        command.Parameters.Add(new NpgsqlParameter("id", NpgsqlDbType.Uuid));
+                        command.Parameters[0].Value = id;
+
+                        using (NpgsqlDataReader rs = command.ExecuteReader())
+                        {
+                            if (rs.Read())
+                            {
+                                key = new TriggerKey(rs.GetString(0), rs.GetString(1));
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error getting TriggerKeys. {0}", ex.Message);
+                }
+            }
+
+            return key;
+        }
+
+        /// <summary>
+        /// Get TriggerId mapped to specified trigger key
+        /// </summary>
+        /// <param name="triggerKey"></param>
+        /// <returns></returns>
+        public Guid GetTriggerId(TriggerKey triggerKey)
+        {
+            Guid id = Guid.Empty;
+
+            const string sql = @"SELECT id FROM rsched_trigger_id_key_map WHERE trigger_name = :triggerName AND trigger_group = :triggerGroup";
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            {
+                try
+                {
+                    con.Open();
+                    using (var command = new NpgsqlCommand(sql, con))
+                    {
+                        command.Parameters.Add(new NpgsqlParameter("triggerName", NpgsqlDbType.Varchar));
+                        command.Parameters.Add(new NpgsqlParameter("triggerGroup", NpgsqlDbType.Varchar));
+                        command.Parameters[0].Value = triggerKey.Name;
+                        command.Parameters[1].Value = triggerKey.Group;
+                        using (NpgsqlDataReader rs = command.ExecuteReader())
+                        {
+                            if (rs.Read())
+                            {
+                                id = rs.GetGuid(0);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error getting Trigger Id. {0}", ex.Message);
+                }
+            }
+
+            return id;
+        }
+
+        /// <summary>
+        /// Insert trigger key and return a new trigger id.
+        /// If trigger key already exists, do nothing and return existing trigger id.
+        /// </summary>
+        /// <param name="triggerName"></param>
+        /// <param name="triggerGroup"></param>
+        /// <returns></returns>
+        public Guid UpsertTriggerKeyIdMap(string triggerName, string triggerGroup)
+        {
+            var retval = Guid.Empty;
+
+            const string sql = @"SELECT id FROM rsched_trigger_id_key_map WHERE trigger_name = :triggerName AND trigger_group = :triggerGroup";
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            {
+                con.Open();
+                NpgsqlTransaction trans = con.BeginTransaction();
+
+                try
+                {
+                    using (var command = new NpgsqlCommand(sql, con, trans))
+                    {
+                        command.Parameters.Add(new NpgsqlParameter("triggerName", NpgsqlDbType.Varchar));
+                        command.Parameters.Add(new NpgsqlParameter("triggerGroup", NpgsqlDbType.Varchar));
+                        command.Parameters[0].Value = triggerName;
+                        command.Parameters[1].Value = triggerGroup;
+
+                        using (NpgsqlDataReader dr = command.ExecuteReader())
+                        {
+                            if (dr.Read())
+                            {
+                                retval = dr.GetGuid(0);
+                            }
+                        }
+                    }
+
+                    // TriggerKey does not exist
+                    if (retval == Guid.Empty)
+                    {
+                        retval = Guid.NewGuid();
+                        const string sqlInsert = @"INSERT INTO rsched_trigger_id_key_map(id
+                                                               ,trigger_name
+                                                               ,trigger_group) 
+                                                            VALUES (
+                                                                :id, 
+                                                                :triggerName, 
+                                                                :triggerGroup);";
+                        using (var command = new NpgsqlCommand(sqlInsert, con, trans))
+                        {
+                            command.Parameters.Add(new NpgsqlParameter("id", NpgsqlDbType.Uuid));
+                            command.Parameters.Add(new NpgsqlParameter("triggerName", NpgsqlDbType.Varchar));
+                            command.Parameters.Add(new NpgsqlParameter("triggerGroup", NpgsqlDbType.Varchar));
+                            command.Parameters[0].Value = retval;
+                            command.Parameters[1].Value = triggerName;
+                            command.Parameters[2].Value = triggerGroup;
+
+
+                            command.ExecuteScalar();
+                        }
+                    }
+
+                    trans.Commit();
+                }
+                catch (Exception ex)
+                {
+                    trans.Rollback();
+                    Logger.ErrorFormat("Error persisting Id-TriggerKey Map. {0}", ex.Message);
+                    throw;
+                }
+            }
+
+            return retval;
+        }
+
+        /// <summary>
+        /// Insert calendar name and return a new id.
+        /// If calendar name already exists, do nothing and return existing id.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public Guid UpsertCalendarIdMap(string name)
+        {
+            var retval = Guid.Empty;
+
+            const string sql = @"SELECT id FROM rsched_calendar_id_name_map WHERE calendar_name = :calendarName";
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            {
+                con.Open();
+                NpgsqlTransaction trans = con.BeginTransaction();
+
+                try
+                {
+                    using (var command = new NpgsqlCommand(sql, con, trans))
+                    {
+                        command.Parameters.Add(new NpgsqlParameter("calendarName", NpgsqlDbType.Varchar));
+                        command.Parameters[0].Value = name;
+
+                        using (NpgsqlDataReader dr = command.ExecuteReader())
+                        {
+                            if (dr.Read())
+                            {
+                                retval = dr.GetGuid(0);
+                            }
+                        }
+                    }
+
+                    // CalendarName does not exist
+                    if (retval == Guid.Empty)
+                    {
+                        retval = Guid.NewGuid();
+                        const string sqlInsert = @"INSERT INTO rsched_calendar_id_name_map(id,calendar_name) 
+                                                          VALUES (:id, :calendarName);";
+                        using (var command = new NpgsqlCommand(sqlInsert, con, trans))
+                        {
+                            command.Parameters.Add(new NpgsqlParameter("id", NpgsqlDbType.Uuid));
+                            command.Parameters.Add(new NpgsqlParameter("calendarName", NpgsqlDbType.Varchar));
+                            command.Parameters[0].Value = retval;
+                            command.Parameters[1].Value = name;
+
+                            command.ExecuteScalar();
+                        }
+                    }
+
+                    trans.Commit();
+                }
+                catch (Exception ex)
+                {
+                    trans.Rollback();
+                    Logger.ErrorFormat("Error persisting Id-CalendarName Map. {0}", ex.Message);
+                    throw;
+                }
+            }
+
+            return retval;
+        }
+
+        /// <summary>
+        /// Get calendar name mapped to specified id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public string GetCalendarName(Guid id)
+        {
+            string name = null;
+
+            const string sql = @"SELECT calendar_name FROM rsched_calendar_id_name_map WHERE id = :id";
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            {
+                try
+                {
+                    con.Open();
+                    using (var command = new NpgsqlCommand(sql, con))
+                    {
+                        command.Parameters.Add(new NpgsqlParameter("id", NpgsqlDbType.Uuid));
+                        command.Parameters[0].Value = id;
                         using (NpgsqlDataReader rs = command.ExecuteReader())
                         {
                             if (rs.Read())
@@ -302,24 +668,30 @@ namespace R.Scheduler.Persistance
                         {
                             while (rs.Read())
                             {
+                                Guid jobId;
+                                if (!Guid.TryParse(rs["job_id"].ToString(), out jobId))
+                                {
+                                    jobId = Guid.Empty;
+                                }
                                 retval.Add(new AuditLog
                                 {
                                     TimeStamp = (DateTime) rs["time_stamp"],
                                     Action = rs["action"].ToString(),
                                     ExecutionException = rs["execution_exception"].ToString(),
                                     FireInstanceId = rs["fire_instance_id"].ToString(),
-                                    FireTimeUtc = (DateTimeOffset?) rs["fire_time_utc"],
+                                    FireTimeUtc = DateTime.SpecifyKind((DateTime)rs["fire_time_utc"], DateTimeKind.Utc),
                                     JobGroup = rs["job_group"].ToString(),
                                     JobName = rs["job_name"].ToString(),
                                     JobType = rs["job_type"].ToString(),
                                     TriggerName = rs["trigger_name"].ToString(),
                                     TriggerGroup = rs["trigger_group"].ToString(),
                                     JobRunTime = new TimeSpan((long) rs["job_run_time"]),
-                                    ScheduledFireTimeUtc = (DateTimeOffset?) rs["scheduled_fire_time_utc"],
+                                    ScheduledFireTimeUtc = DateTime.SpecifyKind((DateTime)rs["scheduled_fire_time_utc"], DateTimeKind.Utc),
                                     Params = rs["params"].ToString(),
                                     RefireCount = (int) rs["refire_count"],
                                     Recovering = (bool) rs["recovering"],
-                                    Result = rs["result"].ToString()
+                                    Result = rs["result"].ToString(),
+                                    JobId = jobId
                                 });
                             }
                         }

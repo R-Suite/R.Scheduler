@@ -91,12 +91,31 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         {
             Logger.DebugFormat("Entered AssemblyPluginsController.Post(). Job Name = {0}", model.JobName);
 
+            return CreateJob(model);
+        }
+
+        /// <summary>
+        /// Update AssemblyPluginJob
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [AcceptVerbs("PUT")]
+        [Route("api/plugins/{id}")]
+        public QueryResponse Put([FromBody]PluginJob model)
+        {
+            Logger.DebugFormat("Entered AssemblyPluginsController.Put(). Job Name = {0}", model.JobName);
+
+            return CreateJob(model);
+        }
+
+        private QueryResponse CreateJob(PluginJob model)
+        {
             var dataMap = new Dictionary<string, object>
             {
                 {"pluginPath", model.AssemblyPath},
             };
 
-            return base.CreateJob(model, typeof(AssemblyPluginJob), dataMap, model.Description);
+            return base.CreateJob(model, typeof (AssemblyPluginJob), dataMap, model.Description);
         }
     }
 }

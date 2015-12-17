@@ -7,12 +7,13 @@ namespace R.Scheduler.Controllers
 {
     public class TriggerHelper
     {
-        public static IList<TriggerDetails> GetTriggerDetails(IEnumerable<ITrigger> quartzTriggers)
+        public static IList<TriggerDetails> GetTriggerDetails(IEnumerable<KeyValuePair<ITrigger, Guid>> quartzTriggers)
         {
             IList<TriggerDetails> triggerDetails = new List<TriggerDetails>();
 
-            foreach (ITrigger quartzTrigger in quartzTriggers)
+            foreach (KeyValuePair<ITrigger, Guid> trigger in quartzTriggers)
             {
+                ITrigger quartzTrigger = trigger.Key;
                 var triggerType = "InstructionNotSet";
                 var misfireInstruction = string.Empty;
                 if (quartzTrigger is ICronTrigger)
@@ -66,6 +67,7 @@ namespace R.Scheduler.Controllers
                 var previousFireTimeUtc = quartzTrigger.GetPreviousFireTimeUtc();
                 triggerDetails.Add(new TriggerDetails
                 {
+                    Id = trigger.Value,
                     Name = quartzTrigger.Key.Name,
                     Group = quartzTrigger.Key.Group,
                     JobName = quartzTrigger.JobKey.Name,

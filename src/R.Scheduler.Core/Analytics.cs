@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
-using Common.Logging;
+﻿using System;
+using System.Collections.Generic;
 using Quartz;
 using R.Scheduler.Interfaces;
-using StructureMap;
 
 namespace R.Scheduler.Core
 {
@@ -12,44 +10,66 @@ namespace R.Scheduler.Core
     /// </summary>
     public class Analytics : IAnalytics
     {
-        private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly IScheduler _scheduler;
         private readonly IPersistanceStore _persistanceStore;
 
-        public Analytics(IScheduler scheduler)
+        public Analytics(IScheduler scheduler, IPersistanceStore persistanceStore)
         {
             _scheduler = scheduler;
-            _persistanceStore = ObjectFactory.GetInstance<IPersistanceStore>();
+            _persistanceStore = persistanceStore;
         }
 
+        /// <summary>
+        /// Get number of job setup in scheduler
+        /// </summary>
+        /// <returns></returns>
         public int GetJobCount()
         {
             return _persistanceStore.GetJobDetailsCount();
         }
 
+        /// <summary>
+        /// Get number of triggers setup in scheduler
+        /// </summary>
+        /// <returns></returns>
         public int GetTriggerCount()
         {
             return _persistanceStore.GetTriggerCount();
         }
 
-        public IEnumerable<ITrigger> GetFiredTriggers()
+        /// <summary>
+        /// Get currently executing triggers mapped to trigger ids
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<KeyValuePair<ITrigger, Guid>> GetFiredTriggers()
         {
-            IList<ITrigger> retval = new List<ITrigger>();
-            var firedTriggers = _persistanceStore.GetFiredTriggers();
+            IDictionary<ITrigger, Guid> retval = new Dictionary<ITrigger, Guid>();
+            IList<TriggerKey> firedTriggers = _persistanceStore.GetFiredTriggers();
 
             foreach (var firedTrigger in firedTriggers)
             {
-                retval.Add(_scheduler.GetTrigger(firedTrigger));
+                var triggerId = _persistanceStore.GetTriggerId(firedTrigger);
+                retval.Add(_scheduler.GetTrigger(firedTrigger), triggerId);
             }
 
             return retval;
         }
 
+        /// <summary>
+        /// Get a specified number of most recently failed jobs
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
         public IEnumerable<AuditLog> GetErroredJobs(int count)
         {
             return _persistanceStore.GetErroredJobs(count);
         }
 
+        /// <summary>
+        /// Get a specified number of most recently executed jobs
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
         public IEnumerable<AuditLog> GetExecutedJobs(int count)
         {
             return _persistanceStore.GetExecutedJobs(count);

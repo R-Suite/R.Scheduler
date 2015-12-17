@@ -115,7 +115,7 @@ namespace R.Scheduler.Controllers
         }
 
         /// <summary>
-        /// Create new SendMailJob without any triggers
+        /// Create new <see cref="SendMailJob"/> without any triggers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -125,6 +125,25 @@ namespace R.Scheduler.Controllers
         {
             Logger.DebugFormat("Entered EmailsController.Post(). Job Name = {0}", model.JobName);
 
+            return CreateJob(model);
+        }
+
+        /// <summary>
+        /// Update <see cref="SendMailJob"/>
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [AcceptVerbs("PUT")]
+        [Route("api/emails/{id}")]
+        public QueryResponse Put([FromBody]EmailJob model)
+        {
+            Logger.DebugFormat("Entered EmailsController.Put(). Job Name = {0}", model.JobName);
+
+            return CreateJob(model);
+        }
+
+        private QueryResponse CreateJob(EmailJob model)
+        {
             var dataMap = new Dictionary<string, object>
             {
                 {"message", model.Body},
@@ -140,7 +159,7 @@ namespace R.Scheduler.Controllers
                 {"encoding", model.Encoding}
             };
 
-            return base.CreateJob(model, typeof(SendMailJob), dataMap, model.Description);
+            return base.CreateJob(model, typeof (SendMailJob), dataMap, model.Description);
         }
     }
 }

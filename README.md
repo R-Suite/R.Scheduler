@@ -64,7 +64,7 @@ POST /api/simpleTriggers
 #### Execute Job
 
 ```c#
-POST /api/jobs/execution?JobName=MyJob&JobGroup=DEFAULT
+POST /api/jobs/{id}
 {}
 ```
 

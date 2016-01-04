@@ -62,6 +62,11 @@ namespace R.Scheduler.Persistance
             throw new NotImplementedException();
         }
 
+        public void RemoveJobKeyIdMap(string jobName, string jobGroup)
+        {
+            throw new NotImplementedException();
+        }
+
         public JobKey GetJobKey(Guid id)
         {
             throw new NotImplementedException();
@@ -83,6 +88,11 @@ namespace R.Scheduler.Persistance
         }
 
         public Guid UpsertTriggerKeyIdMap(string triggerName, string triggerGroup)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveTriggerKeyIdMap(string triggerName, string triggerGroup)
         {
             throw new NotImplementedException();
         }

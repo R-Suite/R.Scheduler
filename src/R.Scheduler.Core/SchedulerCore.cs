@@ -101,6 +101,9 @@ namespace R.Scheduler.Core
             foreach (var trigger in triggers)
             {
                 _scheduler.UnscheduleJob(trigger.Key);
+
+                // remove trigger key id map entry
+                _persistanceStore.RemoveTriggerKeyIdMap(trigger.Key.Name, trigger.Key.Group);
             }
         }
 
@@ -149,6 +152,9 @@ namespace R.Scheduler.Core
             if (_scheduler.CheckExists(jobKey))
             {
                 _scheduler.DeleteJob(jobKey);
+
+                // remove job key id map entry
+                _persistanceStore.RemoveJobKeyIdMap(jobKey.Name, jobKey.Group);
             }
             else
             {
@@ -167,6 +173,9 @@ namespace R.Scheduler.Core
             if (_scheduler.CheckExists(triggerKey))
             {
                 _scheduler.UnscheduleJob(triggerKey);
+
+                // remove trigger key id map entry
+                _persistanceStore.RemoveTriggerKeyIdMap(triggerKey.Name, triggerKey.Group);
             }
             else
             {

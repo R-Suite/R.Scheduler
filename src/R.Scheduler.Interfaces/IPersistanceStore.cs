@@ -13,11 +13,13 @@ namespace R.Scheduler.Interfaces
         IEnumerable<AuditLog> GetErroredJobs(int count);
         IEnumerable<AuditLog> GetExecutedJobs(int count);
         Guid UpsertJobKeyIdMap(string jobName, string jobGroup);
+        void RemoveJobKeyIdMap(string jobName, string jobGroup);
         JobKey GetJobKey(Guid id);
         Guid GetJobId(JobKey jobKey);
         TriggerKey GetTriggerKey(Guid id);
         Guid GetTriggerId(TriggerKey triggerKey);
         Guid UpsertTriggerKeyIdMap(string triggerName, string triggerGroup);
+        void RemoveTriggerKeyIdMap(string triggerName, string triggerGroup);
         Guid UpsertCalendarIdMap(string name);
         string GetCalendarName(Guid id);
     }

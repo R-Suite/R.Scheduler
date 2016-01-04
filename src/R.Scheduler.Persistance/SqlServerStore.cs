@@ -297,6 +297,36 @@ namespace R.Scheduler.Persistance
         }
 
         /// <summary>
+        /// Delete jobKey-id map.
+        /// </summary>
+        /// <param name="jobName"></param>
+        /// <param name="jobGroup"></param>
+        public void RemoveJobKeyIdMap(string jobName, string jobGroup)
+        {
+            const string sql = @"DELETE FROM [RSCHED_JOB_ID_KEY_MAP] WHERE [JOB_NAME] = @jobName AND [JOB_GROUP] = @jobGroup";
+
+            using (var con = new SqlConnection(_connectionString))
+            {
+                con.Open();
+
+                try
+                {
+                    using (var command = new SqlCommand(sql, con))
+                    {
+                        command.Parameters.AddWithValue("@jobName", jobName);
+                        command.Parameters.AddWithValue("@jobGroup", jobGroup);
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error deleting Id-JobKey Map. {0}", ex.Message);
+                }
+            }
+        }
+
+        /// <summary>
         /// Get JobKey mapped to specified id
         /// </summary>
         /// <param name="id"></param>
@@ -447,12 +477,35 @@ namespace R.Scheduler.Persistance
         }
 
         /// <summary>
-        /// Insert trigger key and return a new trigger id.
-        /// If trigger key already exists, do nothing and return existing trigger id.
+        /// Delete triggerKey - id map.
         /// </summary>
         /// <param name="triggerName"></param>
         /// <param name="triggerGroup"></param>
-        /// <returns></returns>
+        public void RemoveTriggerKeyIdMap(string triggerName, string triggerGroup)
+        {
+            const string sql = @"DELETE FROM [RSCHED_TRIGGER_ID_KEY_MAP] WHERE [TRIGGER_NAME] = @triggerName AND [TRIGGER_GROUP] = @triggerGroup";
+
+            using (var con = new SqlConnection(_connectionString))
+            {
+                con.Open();
+
+                try
+                {
+                    using (var command = new SqlCommand(sql, con))
+                    {
+                        command.Parameters.AddWithValue("@triggerName", triggerName);
+                        command.Parameters.AddWithValue("@triggerGroup", triggerGroup);
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error deleting Id-TriggerKey Map. {0}", ex.Message);
+                }
+            }
+        }
+
         public Guid UpsertTriggerKeyIdMap(string triggerName, string triggerGroup)
         {
             var retval = Guid.Empty;

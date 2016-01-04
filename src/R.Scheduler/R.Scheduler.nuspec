@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>R.Scheduler</id>
-    <version>1.0.0-pre</version>
+    <version>1.0.1-pre</version>
     <title>R.Scheduler</title>
     <authors>Jakub Pachansky</authors>
     <owners>Jakub Pachansky,Tim Watson</owners>
@@ -10,7 +10,7 @@
     <description>A simple, easy to use job execution engine built on top of Quartz Enterprise Scheduler .NET</description>
     <language>en-GB</language>
     <projectUrl>https://github.com/R-Suite/R.Scheduler</projectUrl>
-    <copyright>Copyright 2015 R.Scheduler. All rights reserved</copyright>
+    <copyright>Copyright 2016 R.Scheduler. All rights reserved</copyright>
     <tags>Scheduler,R Scheduler,Quartz, Quartz net,R.Scheduler,Quartz Scheduler,RScheduler,Scheduling</tags>
     <dependencies>
       <dependency id="R.Scheduler.Contracts" version="1.0.0-pre" />

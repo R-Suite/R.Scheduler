@@ -320,6 +320,33 @@ namespace R.Scheduler.Persistance
             return retval;
         }
 
+        public void RemoveJobKeyIdMap(string jobName, string jobGroup)
+        {
+            const string sql = @"DELETE FROM rsched_job_id_key_map WHERE job_name = :jobName AND job_group = :jobGroup";
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            {
+                con.Open();
+
+                try
+                {
+                    using (var command = new NpgsqlCommand(sql, con))
+                    {
+                        command.Parameters.Add(new NpgsqlParameter("jobName", NpgsqlDbType.Varchar));
+                        command.Parameters.Add(new NpgsqlParameter("jobGroup", NpgsqlDbType.Varchar));
+                        command.Parameters[0].Value = jobName;
+                        command.Parameters[1].Value = jobGroup;
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error persisting Id-JobKey Map. {0}", ex.Message);
+                }
+            }
+        }
+
         /// <summary>
         /// Get JobKey mapped to specified id
         /// </summary>
@@ -550,6 +577,33 @@ namespace R.Scheduler.Persistance
             }
 
             return retval;
+        }
+
+        public void RemoveTriggerKeyIdMap(string triggerName, string triggerGroup)
+        {
+            const string sql = @"DELETE FROM rsched_trigger_id_key_map WHERE trigger_name = :triggerName AND trigger_group = :triggerGroup";
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            {
+                con.Open();
+
+                try
+                {
+                    using (var command = new NpgsqlCommand(sql, con))
+                    {
+                        command.Parameters.Add(new NpgsqlParameter("triggerName", NpgsqlDbType.Varchar));
+                        command.Parameters.Add(new NpgsqlParameter("triggerGroup", NpgsqlDbType.Varchar));
+                        command.Parameters[0].Value = triggerName;
+                        command.Parameters[1].Value = triggerGroup;
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error persisting Id-TriggerKey Map. {0}", ex.Message);
+                }
+            }
         }
 
         /// <summary>

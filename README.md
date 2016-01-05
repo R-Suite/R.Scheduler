@@ -36,16 +36,41 @@ IScheduler sched = R.Scheduler.Scheduler.Instance();
 sched.Start();
 ```
 
-#### Create New Job
+#### Create New [WebRequestJob] Job
 
 ```c#
-POST /api/dirScanJobs
+POST /api/webRequests
 {
     "JobName": "MyJob",
-    "DirectoryName": "C:/MyFiles",
-    "MinimumUpdateAge": 10000,
-    "CallbackUrl": "http://myendpoint:6000/",
-    "LastModifiedTime": "01/01/2015"
+    "ActionType": "HTTP",
+    "Method": "POST",
+    "Uri": "http://localhost:6001/api/myEndpoint",
+    "Body": "",
+    "ContentType": "application/json"
+}
+```
+The result of the above index operation is:
+```c#
+{
+    "Id": "207379FE-9F7F-483C-8D26-A5369F073369",
+    "Valid": "True",
+    "Errors": []
+}
+```
+
+#### Get Job
+
+```c#
+GET /api/jobs/207379FE-9F7F-483C-8D26-A5369F073369
+```
+The result of the above index operation is:
+```c#
+{
+    "Id": "207379FE-9F7F-483C-8D26-A5369F073369",
+    "JobName": "MyJob",
+    "JobGroup": "DEFAULT",
+    "JobType": "WebRequestJob",
+    "Description": ""
 }
 ```
 
@@ -60,12 +85,26 @@ POST /api/simpleTriggers
     "RepeatInterval": "0:00:01:00"
 }
 ```
+***
+```c#
+{
+    "Id": "C0BD2811-6AD5-4120-90F2-900AA668FDCC",
+    "Valid": "True",
+    "Errors": []
+}
+```
 
 #### Execute Job
 
 ```c#
-POST /api/jobs/{id}
+POST /api/jobs/207379FE-9F7F-483C-8D26-A5369F073369
 {}
+```
+***
+```c#
+{
+    "Valid": "True",
+}
 ```
 
 #### Supported Quartz.net Functionality

@@ -49,7 +49,7 @@ POST /api/webRequests
     "ContentType": "application/json"
 }
 ```
-The result of the above index operation is:
+The result of the above operation is:
 ```c#
 {
     "Id": "207379FE-9F7F-483C-8D26-A5369F073369",
@@ -63,7 +63,7 @@ The result of the above index operation is:
 ```c#
 GET /api/jobs/207379FE-9F7F-483C-8D26-A5369F073369
 ```
-The result of the above index operation is:
+The result of the above operation is:
 ```c#
 {
     "Id": "207379FE-9F7F-483C-8D26-A5369F073369",

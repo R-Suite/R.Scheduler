@@ -36,7 +36,7 @@ IScheduler sched = R.Scheduler.Scheduler.Instance();
 sched.Start();
 ```
 
-#### Create New [WebRequestJob] Job
+#### Create New [WebRequest] Job
 
 ```c#
 POST /api/webRequests

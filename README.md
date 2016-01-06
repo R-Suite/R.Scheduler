@@ -107,6 +107,13 @@ POST /api/jobs/207379FE-9F7F-483C-8D26-A5369F073369
 }
 ```
 
+#### Delete Job
+
+```c#
+DELETE /api/jobs/207379FE-9F7F-483C-8D26-A5369F073369
+{}
+```
+
 #### Supported Quartz.net Functionality
 
 - Jobs: 

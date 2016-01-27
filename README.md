@@ -10,13 +10,29 @@ Public (Web) API is relatively stable but minor changes are likely in future ver
 
 ## Getting Started
 
+#### Setup Database
+
+Create a set of database **tables for Quartz.NET**. Use table-creation SQL scripts in   
+https://github.com/R-Suite/R.Scheduler/blob/master/database/quartz/tables_postgres.sql or   
+https://github.com/R-Suite/R.Scheduler/blob/master/database/quartz/tables_sqlServer.sql  
+
+Create a set of database **tables for R.Scheduler**. Use table-creation SQL scripts in  
+https://github.com/R-Suite/R.Scheduler/blob/master/database/rscheduler/tables_postgres.sql or     
+https://github.com/R-Suite/R.Scheduler/blob/master/database/rscheduler/tables_sqlServer.sql  
+
 
 #### Simple Configuration
 
 Calling initialize with no parameters will **create and start** an instance of the Scheduler with default configuration options.
 
 ```c#
-R.Scheduler.Scheduler.Initialize();
+public class Program
+{
+    private static void Main(string[] args)
+    {
+        R.Scheduler.Scheduler.Initialize();
+    }
+}
 ```
 
 #### Custom Configuration
@@ -24,16 +40,22 @@ R.Scheduler.Scheduler.Initialize();
 Initialize also takes a single lambda/action parameter for custom configuration. In this case we choose not to start the Scheduler automatically. Instead, we create a scheduler instance and start the instance explicitly after the Scheduler initialization.
 
 ```c#
-R.Scheduler.Scheduler.Initialize(config =>
+public class Program
 {
-    config.AutoStart = false;
-    config.CustomFtpLibraryAssemblyName = "MyFtpLib.dll";
-    config.PersistanceStoreType = PersistanceStoreType.Postgre;
-    config.ConnectionString = "Server=localhost;Port=5432;Database=Scheduler;User Id=xxx;Password=xxx;";
-});
+    private static void Main(string[] args)
+    {
+        R.Scheduler.Scheduler.Initialize(config =>
+        {
+            config.AutoStart = false;
+            config.CustomFtpLibraryAssemblyName = "MyFtpLib.dll";
+            config.PersistanceStoreType = PersistanceStoreType.Postgre;
+            config.ConnectionString = "Server=localhost;Port=5432;Database=Scheduler;User Id=xxx;Password=xxx;";
+        });
 
-IScheduler sched = R.Scheduler.Scheduler.Instance();
-sched.Start();
+        IScheduler sched = R.Scheduler.Scheduler.Instance();
+        sched.Start();
+    }
+}
 ```
 
 #### Create New [WebRequest] Job
@@ -105,6 +127,13 @@ POST /api/jobs/207379FE-9F7F-483C-8D26-A5369F073369
 {
     "Valid": "True",
 }
+```
+
+#### Delete Job
+
+```c#
+DELETE /api/jobs/207379FE-9F7F-483C-8D26-A5369F073369
+{}
 ```
 
 #### Supported Quartz.net Functionality

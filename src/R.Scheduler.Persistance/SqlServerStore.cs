@@ -231,7 +231,7 @@ namespace R.Scheduler.Persistance
 
         /// <summary>
         /// Insert JobKey and return new id.
-        /// Return existing id if job key laready exists. 
+        /// Return existing id if job key already exists. 
         /// </summary>
         /// <param name="jobName"></param>
         /// <param name="jobGroup"></param>

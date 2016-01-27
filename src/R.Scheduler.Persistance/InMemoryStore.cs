@@ -14,6 +14,7 @@ namespace R.Scheduler.Persistance
     {
         private static readonly ObjectCache Cache = MemoryCache.Default;
         private CacheItemPolicy _policy;
+        private static readonly object SyncRoot = new Object();
 
         public InMemoryStore()
         {
@@ -57,9 +58,43 @@ namespace R.Scheduler.Persistance
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Insert JobKey and return new id.
+        /// Return existing id if job key already exists. 
+        /// </summary>
+        /// <param name="jobName"></param>
+        /// <param name="jobGroup"></param>
+        /// <returns></returns>
         public Guid UpsertJobKeyIdMap(string jobName, string jobGroup)
         {
-            throw new NotImplementedException();
+            Guid retval = Guid.NewGuid();
+
+            const string cacheKey = "RSCHED_JOB_ID_KEY_MAP";
+            string jobKey = jobName + "|" + jobGroup;
+
+            lock (SyncRoot)
+            {
+                IDictionary<string, Guid> cacheValue;
+                if (Cache.Contains(cacheKey))
+                {
+                    cacheValue = (IDictionary<string, Guid>) Cache.Get(cacheKey);
+                    if (cacheValue.ContainsKey(jobKey))
+                    {
+                        retval = cacheValue[jobKey];
+                    }
+                    else
+                    {
+                        cacheValue.Add(jobKey, retval);
+                    }
+                }
+                else
+                {
+                    cacheValue = new Dictionary<string, Guid> {{jobKey, retval}};
+                    Cache.Add(cacheKey, cacheValue, ObjectCache.InfiniteAbsoluteExpiration);
+                }
+            }
+
+            return retval;
         }
 
         public void RemoveJobKeyIdMap(string jobName, string jobGroup)
@@ -67,9 +102,31 @@ namespace R.Scheduler.Persistance
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Get JobKey mapped to specified id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public JobKey GetJobKey(Guid id)
         {
-            throw new NotImplementedException();
+            JobKey retval = null;
+            const string cacheKey = "RSCHED_JOB_ID_KEY_MAP";
+
+            if (Cache.Contains(cacheKey))
+            {
+                var cacheValue = (IDictionary<string, Guid>)Cache.Get(cacheKey);
+
+                foreach (var mapItem in cacheValue)
+                {
+                    if (mapItem.Value == id)
+                    {
+                        retval = new JobKey(mapItem.Key.Split('|')[0], mapItem.Key.Split('|')[1]);
+                        break;
+                    }
+                }
+            }
+
+            return retval;
         }
 
         public Guid GetJobId(JobKey jobKey)

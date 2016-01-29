@@ -40,5 +40,7 @@ namespace R.Scheduler.Interfaces
         void AmendHolidayCalendar(Guid id, string description, IList<DateTime> datesExcluded);
 
         bool DeleteCalendar(string name);
+
+        IEnumerable<string> GetCalendarNames();
     }
 }

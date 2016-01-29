@@ -477,5 +477,14 @@ namespace R.Scheduler.Core
         {
             return _scheduler.DeleteCalendar(name);
         }
+
+        /// <summary>
+        /// Get list of calendar names
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<string> GetCalendarNames()
+        {
+            return _scheduler.GetCalendarNames();
+        }
     }
 }

@@ -158,7 +158,7 @@ namespace R.Scheduler.Persistance
         /// Get currently executing triggers
         /// </summary>
         /// <returns></returns>
-        public IList<TriggerKey> GetFiredTriggers()
+        public IEnumerable<TriggerKey> GetFiredTriggers()
         {
             IList<TriggerKey> keys = new List<TriggerKey>();
 
@@ -506,6 +506,13 @@ namespace R.Scheduler.Persistance
             }
         }
 
+        /// <summary>
+        /// Insert trigger key and return a new trigger id.
+        /// If trigger key already exists, do nothing and return existing trigger id.
+        /// </summary>
+        /// <param name="triggerName"></param>
+        /// <param name="triggerGroup"></param>
+        /// <returns></returns>
         public Guid UpsertTriggerKeyIdMap(string triggerName, string triggerGroup)
         {
             var retval = Guid.Empty;
@@ -665,6 +672,43 @@ namespace R.Scheduler.Persistance
             }
 
             return name;
+        }
+
+        /// <summary>
+        /// Get calendar id mapped to specified name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public Guid GetCalendarId(string name)
+        {
+            Guid id = Guid.Empty;
+
+            const string sql = @"SELECT [ID] FROM [RSCHED_CALENDAR_ID_NAME_MAP] WHERE [CALENDAR_NAME] = @name";
+
+            using (var con = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    con.Open();
+                    using (var command = new SqlCommand(sql, con))
+                    {
+                        command.Parameters.AddWithValue("name", name);
+                        using (SqlDataReader rs = command.ExecuteReader())
+                        {
+                            if (rs.Read())
+                            {
+                                id = rs.GetGuid(0);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error getting calendar id. {0}", ex.Message);
+                }
+            }
+
+            return id;
         }
 
         private IEnumerable<AuditLog> GetAuditLogs(string sql)

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Web.Http;
 using Common.Logging;
+using Quartz;
 using R.Scheduler.Contracts.Calendars.Holiday.Model;
 using R.Scheduler.Contracts.Model;
 using R.Scheduler.Interfaces;
+using StructureMap;
 
 namespace R.Scheduler.Controllers
 {
@@ -14,9 +17,9 @@ namespace R.Scheduler.Controllers
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         readonly ISchedulerCore _schedulerCore;
 
-        public HolidayCalendarsController(ISchedulerCore schedulerCore)
+        public HolidayCalendarsController()
         {
-            _schedulerCore = schedulerCore;
+            _schedulerCore = ObjectFactory.GetInstance<ISchedulerCore>();
         }
 
         /// <summary>
@@ -122,6 +125,39 @@ namespace R.Scheduler.Controllers
             }
 
             return response;
+        }
+
+        /// <summary>
+        /// Get <see cref="HolidayCalendar"/>
+        /// </summary>
+        /// <returns></returns>
+        [AcceptVerbs("GET")]
+        [Route("api/holidayCalendars/{id}")]
+        public HolidayCalendar Get(Guid id)
+        {
+            Logger.Debug("Entered HolidayCalendarsController.Get().");
+
+            Quartz.Impl.Calendar.HolidayCalendar calendar;
+
+            string calendarName;
+
+            try
+            {
+                calendar = (Quartz.Impl.Calendar.HolidayCalendar) _schedulerCore.GetCalendar(id, out calendarName);
+            }
+            catch (Exception ex)
+            {
+                Logger.Debug(string.Format("Error getting JobDetail: {0}", ex.Message));
+                return null;
+            }
+
+            return new HolidayCalendar
+            {
+                Id = id,
+                Name = calendarName,
+                DatesExcluded = calendar.ExcludedDates.ToList(),
+                Description = calendar.Description
+            };
         }
     }
 }

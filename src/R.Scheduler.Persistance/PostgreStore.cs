@@ -175,7 +175,7 @@ namespace R.Scheduler.Persistance
         /// Get currently executing triggers
         /// </summary>
         /// <returns></returns>
-        public IList<TriggerKey> GetFiredTriggers()
+        public IEnumerable<TriggerKey> GetFiredTriggers()
         {
             IList<TriggerKey> keys = new List<TriggerKey>();
 
@@ -320,6 +320,11 @@ namespace R.Scheduler.Persistance
             return retval;
         }
 
+        /// <summary>
+        /// Delete JobKey id mapping
+        /// </summary>
+        /// <param name="jobName"></param>
+        /// <param name="jobGroup"></param>
         public void RemoveJobKeyIdMap(string jobName, string jobGroup)
         {
             const string sql = @"DELETE FROM rsched_job_id_key_map WHERE job_name = :jobName AND job_group = :jobGroup";
@@ -579,6 +584,11 @@ namespace R.Scheduler.Persistance
             return retval;
         }
 
+        /// <summary>
+        /// Delete TriggerKey id mapping
+        /// </summary>
+        /// <param name="triggerName"></param>
+        /// <param name="triggerGroup"></param>
         public void RemoveTriggerKeyIdMap(string triggerName, string triggerGroup)
         {
             const string sql = @"DELETE FROM rsched_trigger_id_key_map WHERE trigger_name = :triggerName AND trigger_group = :triggerGroup";
@@ -705,6 +715,44 @@ namespace R.Scheduler.Persistance
             }
 
             return name;
+        }
+
+        /// <summary>
+        ///  Get calendar id mapped to specified name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public Guid GetCalendarId(string name)
+        {
+            Guid guid = Guid.Empty;
+
+            const string sql = @"SELECT id FROM rsched_calendar_id_name_map WHERE calendar_name = :name";
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            {
+                try
+                {
+                    con.Open();
+                    using (var command = new NpgsqlCommand(sql, con))
+                    {
+                        command.Parameters.Add(new NpgsqlParameter("name", NpgsqlDbType.Uuid));
+                        command.Parameters[0].Value = name;
+                        using (NpgsqlDataReader rs = command.ExecuteReader())
+                        {
+                            if (rs.Read())
+                            {
+                                guid = rs.GetGuid(0);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error getting calendar id. {0}", ex.Message);
+                }
+            }
+
+            return guid;
         }
 
         private IEnumerable<AuditLog> GetAuditLogs(string sql)

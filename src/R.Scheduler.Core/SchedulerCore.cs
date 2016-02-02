@@ -472,19 +472,45 @@ namespace R.Scheduler.Core
         /// <summary>
         /// Delete Calendar
         /// </summary>
-        /// <param name="name"></param>
-        public bool DeleteCalendar(string name)
+        /// <param name="id"></param>
+        public bool DeleteCalendar(Guid id)
         {
+            var name = _persistanceStore.GetCalendarName(id);
+
             return _scheduler.DeleteCalendar(name);
         }
 
         /// <summary>
-        /// Get list of calendar names
+        /// Get Calendar
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="name"></param>
+        public ICalendar GetCalendar(Guid id, out string name)
+        {
+            name = _persistanceStore.GetCalendarName(id);
+
+            return _scheduler.GetCalendar(name);
+        }
+
+        /// <summary>
+        /// Get dictionary of ICalendar and (calendar) Name/Id pairs
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<string> GetCalendarNames()
+        public IDictionary<ICalendar, KeyValuePair<string, Guid>> GetCalendars()
         {
-            return _scheduler.GetCalendarNames();
+            var retval = new Dictionary<ICalendar, KeyValuePair<string, Guid>>();
+
+            var calNames =  _scheduler.GetCalendarNames();
+
+            foreach (var calName in calNames)
+            {
+                var quartzCal = _scheduler.GetCalendar(calName);
+                var calId = _persistanceStore.GetCalendarId(calName);
+
+                retval.Add(quartzCal, new KeyValuePair<string, Guid>(calName, calId));
+            }
+
+            return retval;
         }
     }
 }

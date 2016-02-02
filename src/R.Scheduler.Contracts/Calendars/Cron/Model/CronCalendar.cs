@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace R.Scheduler.Contracts.Calendars.Cron.Model
+﻿namespace R.Scheduler.Contracts.Calendars.Cron.Model
 {
-    public class CronCalendar
+    public class CronCalendar : BaseCalendar
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
         public string CronExpression { get; set; }
     }
 }

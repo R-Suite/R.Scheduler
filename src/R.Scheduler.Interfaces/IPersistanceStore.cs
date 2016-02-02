@@ -9,7 +9,7 @@ namespace R.Scheduler.Interfaces
         void InsertAuditLog(AuditLog log);
         int GetJobDetailsCount();
         int GetTriggerCount();
-        IList<TriggerKey> GetFiredTriggers();
+        IEnumerable<TriggerKey> GetFiredTriggers();
         IEnumerable<AuditLog> GetErroredJobs(int count);
         IEnumerable<AuditLog> GetExecutedJobs(int count);
         Guid UpsertJobKeyIdMap(string jobName, string jobGroup);
@@ -22,5 +22,6 @@ namespace R.Scheduler.Interfaces
         void RemoveTriggerKeyIdMap(string triggerName, string triggerGroup);
         Guid UpsertCalendarIdMap(string name);
         string GetCalendarName(Guid id);
+        Guid GetCalendarId(string name);
     }
 }

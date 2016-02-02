@@ -44,7 +44,7 @@ namespace R.Scheduler.Core
         public IEnumerable<KeyValuePair<ITrigger, Guid>> GetFiredTriggers()
         {
             IDictionary<ITrigger, Guid> retval = new Dictionary<ITrigger, Guid>();
-            IList<TriggerKey> firedTriggers = _persistanceStore.GetFiredTriggers();
+            IEnumerable<TriggerKey> firedTriggers = _persistanceStore.GetFiredTriggers();
 
             foreach (var firedTrigger in firedTriggers)
             {

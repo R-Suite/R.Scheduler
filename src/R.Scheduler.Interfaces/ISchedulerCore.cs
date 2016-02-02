@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Quartz;
+using Quartz.Impl.Calendar;
 using R.Scheduler.Contracts.Model;
 
 namespace R.Scheduler.Interfaces
@@ -39,8 +40,10 @@ namespace R.Scheduler.Interfaces
 
         void AmendHolidayCalendar(Guid id, string description, IList<DateTime> datesExcluded);
 
-        bool DeleteCalendar(string name);
+        bool DeleteCalendar(Guid id);
 
-        IEnumerable<string> GetCalendarNames();
+        ICalendar GetCalendar(Guid id, out string name);
+
+        IDictionary<ICalendar, KeyValuePair<string, Guid>> GetCalendars();
     }
 }

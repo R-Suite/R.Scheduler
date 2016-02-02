@@ -43,7 +43,7 @@ namespace R.Scheduler.Persistance
             throw new NotImplementedException();
         }
 
-        public IList<TriggerKey> GetFiredTriggers()
+        public IEnumerable<TriggerKey> GetFiredTriggers()
         {
             throw new NotImplementedException();
         }
@@ -159,9 +159,58 @@ namespace R.Scheduler.Persistance
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Get calendar name mapped to specified id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public string GetCalendarName(Guid id)
         {
-            throw new NotImplementedException();
+            string retval = null;
+            const string cacheKey = "RSCHED_CALENDAR_ID_KEY_MAP";
+
+            if (Cache.Contains(cacheKey))
+            {
+                var cacheValue = (IDictionary<string, Guid>)Cache.Get(cacheKey);
+
+                foreach (var mapItem in cacheValue)
+                {
+                    if (mapItem.Value == id)
+                    {
+                        retval = mapItem.Key;
+                        break;
+                    }
+                }
+            }
+
+            return retval;
+        }
+
+        /// <summary>
+        /// Get calendar id mapped to specified name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public Guid GetCalendarId(string name)
+        {
+            Guid retval = Guid.Empty;
+            const string cacheKey = "RSCHED_CALENDAR_ID_KEY_MAP";
+
+            if (Cache.Contains(cacheKey))
+            {
+                var cacheValue = (IDictionary<string, Guid>)Cache.Get(cacheKey);
+
+                foreach (var mapItem in cacheValue)
+                {
+                    if (mapItem.Key == name)
+                    {
+                        retval = mapItem.Value;
+                        break;
+                    }
+                }
+            }
+
+            return retval;
         }
     }
 }

@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Calendars\BaseCalendar.cs" />
     <Compile Include="Calendars\Cron\Model\CronCalendar.cs" />
     <Compile Include="Calendars\Holiday\Model\HolidayCalendar.cs" />
     <Compile Include="JobTypes\AssemblyPlugin\BaseJobPlugin.cs" />

@@ -735,7 +735,7 @@ namespace R.Scheduler.Persistance
                     con.Open();
                     using (var command = new NpgsqlCommand(sql, con))
                     {
-                        command.Parameters.Add(new NpgsqlParameter("name", NpgsqlDbType.Uuid));
+                        command.Parameters.Add(new NpgsqlParameter("name", NpgsqlDbType.Text));
                         command.Parameters[0].Value = name;
                         using (NpgsqlDataReader rs = command.ExecuteReader())
                         {

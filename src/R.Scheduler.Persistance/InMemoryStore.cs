@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Runtime.Caching;
 using Quartz;
 using R.Scheduler.Interfaces;
@@ -184,6 +185,27 @@ namespace R.Scheduler.Persistance
             }
 
             return retval;
+        }
+
+        /// <summary>
+        /// Delete Calendar id mapping
+        /// </summary>
+        /// <param name="name"></param>
+        public void RemoveCalendarIdMap(string name)
+        {
+            const string cacheKey = "RSCHED_CALENDAR_ID_KEY_MAP";
+
+            if (Cache.Contains(cacheKey))
+            {
+                var cacheValue = (IDictionary<string, Guid>)Cache.Get(cacheKey);
+
+                string keyToRemove = (from mapItem in cacheValue where mapItem.Key == name select mapItem.Key).FirstOrDefault();
+
+                if (!string.IsNullOrEmpty(keyToRemove))
+                {
+                    cacheValue.Remove(keyToRemove);
+                }
+            }
         }
 
         /// <summary>

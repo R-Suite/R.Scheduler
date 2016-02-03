@@ -22,6 +22,7 @@ namespace R.Scheduler.Interfaces
         void RemoveTriggerKeyIdMap(string triggerName, string triggerGroup);
         Guid UpsertCalendarIdMap(string name);
         string GetCalendarName(Guid id);
+        void RemoveCalendarIdMap(string name);
         Guid GetCalendarId(string name);
     }
 }

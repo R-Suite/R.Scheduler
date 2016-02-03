@@ -477,7 +477,12 @@ namespace R.Scheduler.Core
         {
             var name = _persistanceStore.GetCalendarName(id);
 
-            return _scheduler.DeleteCalendar(name);
+            bool retval = _scheduler.DeleteCalendar(name);
+
+            // remove job key id map entry
+            _persistanceStore.RemoveCalendarIdMap(name);
+
+            return retval;
         }
 
         /// <summary>

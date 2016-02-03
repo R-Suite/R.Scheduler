@@ -755,6 +755,35 @@ namespace R.Scheduler.Persistance
             return guid;
         }
 
+        /// <summary>
+        /// Delete Calendar id mapping
+        /// </summary>
+        /// <param name="name"></param>
+        public void RemoveCalendarIdMap(string name)
+        {
+            const string sql = @"DELETE FROM rsched_calendar_id_name_map WHERE calendar_name = :name";
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            {
+                con.Open();
+
+                try
+                {
+                    using (var command = new NpgsqlCommand(sql, con))
+                    {
+                        command.Parameters.Add(new NpgsqlParameter("name", NpgsqlDbType.Varchar));
+                        command.Parameters[0].Value = name;
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error deleting Id-CalendarName Map. {0}", ex.Message);
+                }
+            }
+        }
+
         private IEnumerable<AuditLog> GetAuditLogs(string sql)
         {
             IList<AuditLog> retval = new List<AuditLog>();

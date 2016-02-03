@@ -675,6 +675,34 @@ namespace R.Scheduler.Persistance
         }
 
         /// <summary>
+        /// Delete Calendar id mapping
+        /// </summary>
+        /// <param name="name"></param>
+        public void RemoveCalendarIdMap(string name)
+        {
+            const string sql = @"DELETE FROM [RSCHED_CALENDAR_ID_NAME_MAP] WHERE [CALENDAR_NAME] = @name";
+
+            using (var con = new SqlConnection(_connectionString))
+            {
+                con.Open();
+
+                try
+                {
+                    using (var command = new SqlCommand(sql, con))
+                    {
+                        command.Parameters.AddWithValue("@name", name);
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error deleting Id-CalendarName Map. {0}", ex.Message);
+                }
+            }
+        }
+
+        /// <summary>
         /// Get calendar id mapped to specified name
         /// </summary>
         /// <param name="name"></param>

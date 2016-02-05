@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Web.Http;
 using Common.Logging;
 using Quartz;
+using Quartz.Collection;
 using R.Scheduler.Contracts.Calendars.Holiday.Model;
 using R.Scheduler.Contracts.Model;
 using R.Scheduler.Interfaces;
@@ -96,19 +97,19 @@ namespace R.Scheduler.Controllers
         /// Update HolidayCalendar with exclusion date
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="date"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
         [AcceptVerbs("POST")]
         [Route("api/holidayCalendars/{id}")]
-        public QueryResponse PostExclusionDate(Guid id, [FromBody]DateTime date)
+        public QueryResponse PostExclusionDate(Guid id, [FromBody]AddExclusionDatesRequest model)
         {
-            Logger.DebugFormat("Entered HolidayCalendarsController.PostExclusionDate(). Calendar id = {0}, ExclusionDate = {1}", id, date);
+            Logger.DebugFormat("Entered HolidayCalendarsController.PostExclusionDate(). Calendar id = {0}, ExclusionDate = {1}", id, model);
 
             var response = new QueryResponse {Valid = true, Id = id};
 
             try
             {
-                _schedulerCore.AddHolidayCalendarExclusionDates(id, new List<DateTime> { date });
+                _schedulerCore.AddHolidayCalendarExclusionDates(id, model.ExclusionDates);
             }
             catch (Exception ex)
             {
@@ -118,6 +119,75 @@ namespace R.Scheduler.Controllers
                     new Error
                     {
                         Code = "ErrorAddingExclusionDates",
+                        Type = "Server",
+                        Message = string.Format("Error: {0}", ex.Message)
+                    }
+                };
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Delete exclusion date from specified HolidayCalendar
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [AcceptVerbs("DELETE")]
+        [Route("api/holidayCalendars/{id}/exclusionDate")]
+        public QueryResponse RemoveExclusionDate(Guid id, [FromBody]RemoveExclusionDatesRequest model)
+        {
+            Logger.DebugFormat("Entered HolidayCalendarsController.RemoveExclusionDate(). Calendar id = {0}, ExclusionDate = {1}", id, model);
+
+            var response = new QueryResponse { Valid = true, Id = id, Errors = new List<Error>() };
+
+            // Get saved calendar
+            Quartz.Impl.Calendar.HolidayCalendar calendar;
+            try
+            {
+                string calendarName;
+                calendar = (Quartz.Impl.Calendar.HolidayCalendar)_schedulerCore.GetCalendar(id, out calendarName);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(string.Format("Error getting HolidayCalendar: {0}", ex.Message), ex);
+
+                response.Valid = false;
+                response.Errors.Add(new Error
+                {
+                    Code = "ErrorGettingCalendar",
+                    Type = "Server",
+                    Message = string.Format("Error: {0}", ex.Message)
+                });
+
+                return response;
+            }
+
+            // Remove specified exclusion dates
+            var newExclusionDates = new List<DateTime>();
+
+            foreach (var excludedDate in calendar.ExcludedDates)
+            {
+                if (!model.ExclusionDates.Contains(excludedDate))
+                {
+                    newExclusionDates.Add(excludedDate);
+                }
+            }
+
+            // Amend calendar
+            try
+            {
+                _schedulerCore.AmendHolidayCalendar(id, calendar.Description, newExclusionDates);
+            }
+            catch (Exception ex)
+            {
+                response.Valid = false;
+                response.Errors = new List<Error>
+                {
+                    new Error
+                    {
+                        Code = "ErrorAmendingHolidayCalendar",
                         Type = "Server",
                         Message = string.Format("Error: {0}", ex.Message)
                     }
@@ -147,7 +217,7 @@ namespace R.Scheduler.Controllers
             }
             catch (Exception ex)
             {
-                Logger.Debug(string.Format("Error getting JobDetail: {0}", ex.Message));
+                Logger.Error(string.Format("Error getting HolidayCalendar: {0}", ex.Message), ex);
                 return null;
             }
 

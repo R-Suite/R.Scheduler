@@ -447,7 +447,8 @@ namespace R.Scheduler.Core
         }
 
         /// <summary>
-        /// Amends existing <see cref="HolidayCalendar"/>
+        /// Amends existing <see cref="HolidayCalendar"/>.
+        /// New datesExcluded set replaces the current set.
         /// </summary>
         /// <param name="id"></param>
         /// <param name="description"></param>
@@ -457,6 +458,12 @@ namespace R.Scheduler.Core
             var name = _persistanceStore.GetCalendarName(id);
 
             var holidays = (HolidayCalendar)_scheduler.GetCalendar(name);
+
+            // Remove currently excluded dates
+            foreach (var excludedDate in holidays.ExcludedDates)
+            {
+                holidays.RemoveExcludedDate(excludedDate);
+            }
 
             if (null != datesExcluded && datesExcluded.Count > 0)
             {

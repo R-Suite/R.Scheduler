@@ -41,7 +41,9 @@
   <ItemGroup>
     <Compile Include="Calendars\BaseCalendar.cs" />
     <Compile Include="Calendars\Cron\Model\CronCalendar.cs" />
+    <Compile Include="Calendars\Holiday\Model\AddExclusionDatesRequest.cs" />
     <Compile Include="Calendars\Holiday\Model\HolidayCalendar.cs" />
+    <Compile Include="Calendars\Holiday\Model\RemoveExclusionDatesRequest.cs" />
     <Compile Include="JobTypes\AssemblyPlugin\BaseJobPlugin.cs" />
     <Compile Include="JobTypes\AssemblyPlugin\Model\PluginJob.cs" />
     <Compile Include="JobTypes\AssemblyPlugin\IJobPlugin.cs" />

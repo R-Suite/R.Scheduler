@@ -458,6 +458,7 @@ namespace R.Scheduler.Core
             var name = _persistanceStore.GetCalendarName(id);
 
             var holidays = (HolidayCalendar)_scheduler.GetCalendar(name);
+            holidays.Description = description;
 
             // Remove currently excluded dates
             foreach (var excludedDate in holidays.ExcludedDates)

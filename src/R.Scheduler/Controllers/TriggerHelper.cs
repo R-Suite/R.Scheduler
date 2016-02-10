@@ -16,6 +16,7 @@ namespace R.Scheduler.Controllers
                 ITrigger quartzTrigger = trigger.Key;
                 var triggerType = "InstructionNotSet";
                 var misfireInstruction = string.Empty;
+                var additionalDetails = string.Empty;
                 if (quartzTrigger is ICronTrigger)
                 {
                     triggerType = "Cron";
@@ -34,6 +35,7 @@ namespace R.Scheduler.Controllers
                             misfireInstruction = "IgnoreMisfirePolicy";
                             break;
                     }
+                    additionalDetails = string.Format("Cron Expression: {0}", ((ICronTrigger)quartzTrigger).CronExpressionString);
                 }
                 if (quartzTrigger is ISimpleTrigger)
                 {
@@ -62,6 +64,7 @@ namespace R.Scheduler.Controllers
                             misfireInstruction = "IgnoreMisfirePolicy";
                             break;
                     }
+                    additionalDetails = string.Format("Repeat Interval: {0}. Repeat Count: {1}", ((ISimpleTrigger)quartzTrigger).RepeatInterval, ((ISimpleTrigger)quartzTrigger).RepeatCount);
                 }
                 var nextFireTimeUtc = quartzTrigger.GetNextFireTimeUtc();
                 var previousFireTimeUtc = quartzTrigger.GetPreviousFireTimeUtc();
@@ -86,7 +89,8 @@ namespace R.Scheduler.Controllers
                         ? quartzTrigger.FinalFireTimeUtc.Value.UtcDateTime
                         : (DateTime?)null,
                     Type = triggerType,
-                    MisfireInstruction = misfireInstruction
+                    MisfireInstruction = misfireInstruction,
+                    AdditionalDetails = additionalDetails
                 });
             }
             return triggerDetails;

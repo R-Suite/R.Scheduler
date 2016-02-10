@@ -18,5 +18,6 @@ namespace R.Scheduler.Contracts.Model
         public DateTime? PreviousFireTimeUtc { get; set; }
         public DateTime? EndTimeUtc { get; set; }
         public DateTime? FinalFireTimeUtc { get; set; }
+        public string AdditionalDetails { get; set; }
     }
 }

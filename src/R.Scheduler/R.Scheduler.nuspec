@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>R.Scheduler</id>
-    <version>1.0.1-pre</version>
+    <version>1.0.2-pre</version>
     <title>R.Scheduler</title>
     <authors>Jakub Pachansky</authors>
     <owners>Jakub Pachansky,Tim Watson</owners>

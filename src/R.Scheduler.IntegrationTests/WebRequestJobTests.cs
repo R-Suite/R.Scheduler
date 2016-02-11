@@ -1,8 +1,10 @@
-﻿using System.Web.Http;
+﻿using System;
+using System.Web.Http;
 using Microsoft.Owin.Hosting;
 using Moq;
 using Quartz;
 using Quartz.Impl;
+using Quartz.Impl.Calendar;
 using Xunit;
 
 namespace R.Scheduler.IntegrationTests

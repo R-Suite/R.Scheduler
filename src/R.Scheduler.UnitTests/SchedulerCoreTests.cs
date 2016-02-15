@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Moq;
 using Quartz;
 using Quartz.Impl;
+using Quartz.Impl.Calendar;
 using Quartz.Job;
 using R.Scheduler.Contracts.Model;
 using R.Scheduler.Core;
@@ -165,6 +166,80 @@ namespace R.Scheduler.UnitTests
             // Assert
             _mockScheduler.Verify(x => x.ScheduleJob(
                 It.Is<ICronTrigger>(t => (Equals(t.TimeZone, TimeZoneInfo.Local)))), Times.Once);
+        }
+
+        [Fact]
+        public void ShouldRegisterHolidayCalendarWithScheduler()
+        {
+            // Arrange
+            Guid calId = Guid.NewGuid();
+            const string calName = "TestHolCal";
+            var exclusionDate = new DateTime(2016, 01, 01);
+            _mockPersistanceStore.Setup(m => m.UpsertCalendarIdMap(calName)).Returns(calId);
+
+            _mockScheduler.Setup(x => x.AddCalendar(calName, It.Is<HolidayCalendar>(c => c.ExcludedDates.Contains(exclusionDate)), true, true));
+            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object, _mockPersistanceStore.Object);
+
+            // Act 
+            var result = schedulerCore.AddHolidayCalendar(calName, "test cal", new List<DateTime> { exclusionDate });
+
+            // Assert
+            Assert.Equal(calId, result);
+            _mockScheduler.VerifyAll();
+        }
+
+        [Fact]
+        public void ShouldAmendRegisteredHolidayCalendarWithAddtionalExclusionDate()
+        {
+            // Arrange
+            Guid calId = Guid.NewGuid();
+            const string calName = "TestHolCal";
+            var exclusionDate1 = new DateTime(2016, 01, 01);
+            var exclusionDate2 = new DateTime(2016, 01, 02);
+            _mockPersistanceStore.Setup(m => m.GetCalendarName(calId)).Returns(calName);
+
+            var registeredCalendar = new HolidayCalendar();
+            registeredCalendar.AddExcludedDate(exclusionDate1);
+            _mockScheduler.Setup(i => i.GetCalendar(calName)).Returns(registeredCalendar);
+
+            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object, _mockPersistanceStore.Object);
+
+            // Act 
+            schedulerCore.AmendHolidayCalendar(calId, "test cal", new List<DateTime> { exclusionDate1, exclusionDate2 });
+
+            // Assert
+            _mockScheduler.Verify(
+                x => x.AddCalendar(calName,
+                    It.Is<HolidayCalendar>(
+                        c => c.ExcludedDates.Contains(exclusionDate1) && c.ExcludedDates.Contains(exclusionDate2) &&
+                             c.ExcludedDates.Count == 2), true, true), Times.Once);
+        }
+
+        [Fact]
+        public void ShouldAddExclusionDatesToExistingHolidayCalendar()
+        {
+            // Arrange
+            Guid calId = Guid.NewGuid();
+            const string calName = "TestHolCal";
+            var exclusionDate1 = new DateTime(2016, 01, 01);
+            var exclusionDate2 = new DateTime(2016, 01, 02);
+            _mockPersistanceStore.Setup(m => m.GetCalendarName(calId)).Returns(calName);
+
+            var registeredCalendar = new HolidayCalendar();
+            registeredCalendar.AddExcludedDate(exclusionDate1);
+            _mockScheduler.Setup(i => i.GetCalendar(calName)).Returns(registeredCalendar);
+
+            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object, _mockPersistanceStore.Object);
+
+            // Act 
+            schedulerCore.AddHolidayCalendarExclusionDates(calId, new List<DateTime> { exclusionDate1, exclusionDate2 });
+
+            // Assert
+            _mockScheduler.Verify(
+                x => x.AddCalendar(calName,
+                    It.Is<HolidayCalendar>(
+                        c => c.ExcludedDates.Contains(exclusionDate1) && c.ExcludedDates.Contains(exclusionDate2) &&
+                             c.ExcludedDates.Count == 2), true, true), Times.Once);
         }
     }
 }

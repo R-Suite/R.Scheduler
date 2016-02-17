@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Web.Http;
 using AutoMapper;
@@ -107,6 +108,21 @@ namespace R.Scheduler.Controllers
             }
 
             return erroredFireInstances;
+        }
+
+        /// <summary>
+        /// Get executed jobs
+        /// </summary>
+        /// <returns></returns>
+        [AcceptVerbs("GET")]
+        [Route("api/upcomingJobs")]
+        public IList<FireInstance> GetUpcomingJobs(int count)
+        {
+            Logger.Debug("Entered AnalyticsController.GetUpcomingJobs().");
+
+            var upcomingJobs = _analytics.GetUpcomingJobs(count).ToList();
+
+            return upcomingJobs;
         }
     }
 }

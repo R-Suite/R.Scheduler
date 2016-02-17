@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Quartz;
+using Quartz.Impl.Matchers;
+using Quartz.Spi;
+using R.Scheduler.Contracts.Model;
 using R.Scheduler.Interfaces;
 
 namespace R.Scheduler.Core
@@ -73,6 +77,46 @@ namespace R.Scheduler.Core
         public IEnumerable<AuditLog> GetExecutedJobs(int count)
         {
             return _persistanceStore.GetExecutedJobs(count);
+        }
+
+        /// <summary>
+        /// Get a specified number of upcoming jobs
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public IEnumerable<FireInstance> GetUpcomingJobs(int count)
+        {
+            var sortedFireTimes = new SortedList<DateTimeOffset, ITrigger>();
+
+            var allTriggerKeys = _scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.AnyGroup());
+            foreach (var triggerKey in allTriggerKeys)
+            {
+                ITrigger trigger = _scheduler.GetTrigger(triggerKey);
+
+                ICalendar cal = null;
+                if (!string.IsNullOrEmpty(trigger.CalendarName))
+                {
+                    cal = _scheduler.GetCalendar(trigger.CalendarName);
+                }
+                var fireTimes = TriggerUtils.ComputeFireTimes(trigger as IOperableTrigger, cal, count);
+
+                foreach (var dateTimeOffset in fireTimes)
+                {
+                    sortedFireTimes.Add(dateTimeOffset, trigger);
+                }
+            }
+
+            IList<FireInstance> retval = sortedFireTimes.Select(i => new FireInstance
+            {
+                FireTimeUtc = i.Key,
+                JobName = i.Value.JobKey.Name,
+                JobGroup = i.Value.JobKey.Group,
+                TriggerName = i.Value.Key.Name,
+                TriggerGroup = i.Value.Key.Group,
+                JobId = _persistanceStore.GetJobId(i.Value.JobKey)
+            }).Take(count).ToList();
+
+            return retval;
         }
     }
 }

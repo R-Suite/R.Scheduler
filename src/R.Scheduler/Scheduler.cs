@@ -111,6 +111,7 @@ namespace R.Scheduler
             if (null != _instance)
             {
                 _instance.Shutdown();
+                _instance = null;
             }
         }
 

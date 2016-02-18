@@ -107,6 +107,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnalyticsTests.cs" />
     <Compile Include="AssemblyPluginJobTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SchedulerCoreTests.cs" />

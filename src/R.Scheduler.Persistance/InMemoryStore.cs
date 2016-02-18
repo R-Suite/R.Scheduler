@@ -34,16 +34,6 @@ namespace R.Scheduler.Persistance
             Cache.Set(log.TimeStamp.ToString(CultureInfo.InvariantCulture), log, _policy);
         }
 
-        public int GetJobDetailsCount()
-        {
-            throw new NotImplementedException();
-        }
-
-        public int GetTriggerCount()
-        {
-            throw new NotImplementedException();
-        }
-
         public IEnumerable<TriggerKey> GetFiredTriggers()
         {
             throw new NotImplementedException();
@@ -130,9 +120,31 @@ namespace R.Scheduler.Persistance
             return retval;
         }
 
+        /// <summary>
+        /// Get job id mapped to specified JobKey
+        /// </summary>
+        /// <param name="jobKey"></param>
+        /// <returns></returns>
         public Guid GetJobId(JobKey jobKey)
         {
-            throw new NotImplementedException();
+            Guid retval = Guid.Empty;
+            const string cacheKey = "RSCHED_JOB_ID_KEY_MAP";
+
+            if (Cache.Contains(cacheKey))
+            {
+                var cacheValue = (IDictionary<string, Guid>)Cache.Get(cacheKey);
+
+                foreach (var mapItem in cacheValue)
+                {
+                    if (mapItem.Key == jobKey.Name + "|" + jobKey.Group)
+                    {
+                        retval = mapItem.Value;
+                        break;
+                    }
+                }
+            }
+
+            return retval;
         }
 
         public TriggerKey GetTriggerKey(Guid id)
@@ -145,9 +157,43 @@ namespace R.Scheduler.Persistance
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Insert TriggerKey and return new id.
+        /// Return existing id if trigger key already exists. 
+        /// </summary>
+        /// <param name="triggerName"></param>
+        /// <param name="triggerGroup"></param>
+        /// <returns></returns>
         public Guid UpsertTriggerKeyIdMap(string triggerName, string triggerGroup)
         {
-            throw new NotImplementedException();
+            Guid retval = Guid.NewGuid();
+
+            const string cacheKey = "RSCHED_TRIGGER_ID_KEY_MAP";
+            string triggerKey = triggerName + "|" + triggerGroup;
+
+            lock (SyncRoot)
+            {
+                IDictionary<string, Guid> cacheValue;
+                if (Cache.Contains(cacheKey))
+                {
+                    cacheValue = (IDictionary<string, Guid>)Cache.Get(cacheKey);
+                    if (cacheValue.ContainsKey(triggerKey))
+                    {
+                        retval = cacheValue[triggerKey];
+                    }
+                    else
+                    {
+                        cacheValue.Add(triggerKey, retval);
+                    }
+                }
+                else
+                {
+                    cacheValue = new Dictionary<string, Guid> { { triggerKey, retval } };
+                    Cache.Add(cacheKey, cacheValue, ObjectCache.InfiniteAbsoluteExpiration);
+                }
+            }
+
+            return retval;
         }
 
         public void RemoveTriggerKeyIdMap(string triggerName, string triggerGroup)

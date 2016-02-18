@@ -99,62 +99,6 @@ namespace R.Scheduler.Persistance
         }
 
         /// <summary>
-        /// Get number of jobs setup in the scheduler
-        /// </summary>
-        /// <returns></returns>
-        public int GetJobDetailsCount()
-        {
-            int retval = 0;
-            const string sql = @"SELECT count(*) FROM [QRTZ_JOB_DETAILS];";
-
-            using (var con = new SqlConnection(_connectionString))
-            {
-                try
-                {
-                    con.Open();
-                    using (var command = new SqlCommand(sql, con))
-                    {
-                        retval = (int) command.ExecuteScalar();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.ErrorFormat("Error getting job details count. {0}", ex.Message);
-                }
-            }
-
-            return retval;
-        }
-
-        /// <summary>
-        /// Get number of triggers setup in the scheduler
-        /// </summary>
-        /// <returns></returns>
-        public int GetTriggerCount()
-        {
-            int retval = 0;
-            const string sql = @"SELECT count(*) FROM [QRTZ_TRIGGERS];";
-
-            using (var con = new SqlConnection(_connectionString))
-            {
-                try
-                {
-                    con.Open();
-                    using (var command = new SqlCommand(sql, con))
-                    {
-                        retval = (int)command.ExecuteScalar();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.ErrorFormat("Error getting triggers count. {0}", ex.Message);
-                }
-            }
-
-            return retval;
-        }
-
-        /// <summary>
         /// Get currently executing triggers
         /// </summary>
         /// <returns></returns>

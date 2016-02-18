@@ -29,7 +29,7 @@ namespace R.Scheduler.Core
         /// <returns></returns>
         public int GetJobCount()
         {
-            return _persistanceStore.GetJobDetailsCount();
+            return _scheduler.GetJobKeys(GroupMatcher<JobKey>.AnyGroup()).Count;
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace R.Scheduler.Core
         /// <returns></returns>
         public int GetTriggerCount()
         {
-            return _persistanceStore.GetTriggerCount();
+            return _scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.AnyGroup()).Count;
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace R.Scheduler.Core
         /// <returns></returns>
         public IEnumerable<FireInstance> GetUpcomingJobs(int count)
         {
-            var sortedFireTimes = new SortedList<DateTimeOffset, ITrigger>();
+            IList<FireInstance> temp = new List<FireInstance>();
 
             var allTriggerKeys = _scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.AnyGroup());
             foreach (var triggerKey in allTriggerKeys)
@@ -102,19 +102,19 @@ namespace R.Scheduler.Core
 
                 foreach (var dateTimeOffset in fireTimes)
                 {
-                    sortedFireTimes.Add(dateTimeOffset, trigger);
+                    temp.Add(new FireInstance
+                    {
+                        FireTimeUtc = dateTimeOffset,
+                        JobName = trigger.JobKey.Name,
+                        JobGroup = trigger.JobKey.Group,
+                        TriggerName = trigger.Key.Name,
+                        TriggerGroup = trigger.Key.Group,
+                        JobId = _persistanceStore.GetJobId(trigger.JobKey)
+                    });
                 }
             }
 
-            IList<FireInstance> retval = sortedFireTimes.Select(i => new FireInstance
-            {
-                FireTimeUtc = i.Key,
-                JobName = i.Value.JobKey.Name,
-                JobGroup = i.Value.JobKey.Group,
-                TriggerName = i.Value.Key.Name,
-                TriggerGroup = i.Value.Key.Group,
-                JobId = _persistanceStore.GetJobId(i.Value.JobKey)
-            }).Take(count).ToList();
+            IList<FireInstance> retval = temp.OrderBy(i => i.FireTimeUtc).Take(count).ToList();
 
             return retval;
         }

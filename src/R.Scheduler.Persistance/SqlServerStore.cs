@@ -99,41 +99,6 @@ namespace R.Scheduler.Persistance
         }
 
         /// <summary>
-        /// Get currently executing triggers
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<TriggerKey> GetFiredTriggers()
-        {
-            IList<TriggerKey> keys = new List<TriggerKey>();
-
-            const string sql = @"SELECT [TRIGGER_NAME], [TRIGGER_GROUP] FROM [QRTZ_FIRED_TRIGGERS]";
-
-            using (var con = new SqlConnection(_connectionString))
-            {
-                try
-                {
-                    con.Open();
-                    using (var command = new SqlCommand(sql, con))
-                    {
-                        using (SqlDataReader rs = command.ExecuteReader())
-                        {
-                            if (rs.Read())
-                            {
-                                keys.Add(new TriggerKey(rs.GetString(0), rs.GetString(1)));
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.ErrorFormat("Error getting fired triggers. {0}", ex.Message);
-                }
-            }
-
-            return keys;
-        }
-
-        /// <summary>
         /// Get <see cref="count"/> of most recently failed jobs
         /// </summary>
         /// <param name="count"></param>

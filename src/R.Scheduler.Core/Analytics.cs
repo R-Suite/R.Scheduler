@@ -42,18 +42,26 @@ namespace R.Scheduler.Core
         }
 
         /// <summary>
-        /// Get currently executing triggers mapped to trigger ids
+        /// Get fire instances of currently executing jobs.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<KeyValuePair<ITrigger, Guid>> GetFiredTriggers()
+        public IEnumerable<FireInstance> GetExecutingJobs()
         {
-            IDictionary<ITrigger, Guid> retval = new Dictionary<ITrigger, Guid>();
-            IEnumerable<TriggerKey> firedTriggers = _persistanceStore.GetFiredTriggers();
+            IList<FireInstance> retval = new List<FireInstance>();
 
-            foreach (var firedTrigger in firedTriggers)
+            var executingJobs = _scheduler.GetCurrentlyExecutingJobs();
+
+            foreach (var executingJob in executingJobs)
             {
-                var triggerId = _persistanceStore.GetTriggerId(firedTrigger);
-                retval.Add(_scheduler.GetTrigger(firedTrigger), triggerId);
+                retval.Add(new FireInstance
+                {
+                    FireTimeUtc = executingJob.Trigger.GetPreviousFireTimeUtc(),
+                    JobName = executingJob.JobDetail.Key.Name,
+                    JobGroup = executingJob.JobDetail.Key.Group,
+                    TriggerName = executingJob.Trigger.Key.Name,
+                    TriggerGroup = executingJob.Trigger.Key.Group,
+                    JobId = _persistanceStore.GetJobId(executingJob.JobDetail.Key)
+                });
             }
 
             return retval;

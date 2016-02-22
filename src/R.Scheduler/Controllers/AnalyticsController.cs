@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Web.Http;
 using AutoMapper;
 using Common.Logging;
-using Quartz;
 using R.Scheduler.Contracts.Model;
 using R.Scheduler.Interfaces;
 using StructureMap;
@@ -54,14 +52,12 @@ namespace R.Scheduler.Controllers
         /// </summary>
         /// <returns></returns>
         [AcceptVerbs("GET")]
-        [Route("api/firedTriggers")]
-        public IList<TriggerDetails> GetFiredTriggers()
+        [Route("api/executingJobs")]
+        public IList<FireInstance> GetExecutingJobs()
         {
-            Logger.Info("Entered AnalyticsController.GetFiredTriggers().");
+            Logger.Info("Entered AnalyticsController.GetExecutingJobs().");
 
-            IEnumerable<KeyValuePair<ITrigger, Guid>> quartzFiredTriggers = _analytics.GetFiredTriggers();
-
-            return TriggerHelper.GetTriggerDetails(quartzFiredTriggers);
+            return _analytics.GetExecutingJobs().ToList();
         }
 
         /// <summary>

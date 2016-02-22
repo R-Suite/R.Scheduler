@@ -34,11 +34,6 @@ namespace R.Scheduler.Persistance
             Cache.Set(log.TimeStamp.ToString(CultureInfo.InvariantCulture), log, _policy);
         }
 
-        public IEnumerable<TriggerKey> GetFiredTriggers()
-        {
-            throw new NotImplementedException();
-        }
-
         public IEnumerable<AuditLog> GetErroredJobs(int count)
         {
             throw new NotImplementedException();

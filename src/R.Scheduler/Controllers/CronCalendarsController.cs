@@ -89,5 +89,38 @@ namespace R.Scheduler.Controllers
 
             return response;
         }
+
+        /// <summary>
+        /// Get <see cref="CronCalendar"/>
+        /// </summary>
+        /// <returns></returns>
+        [AcceptVerbs("GET")]
+        [Route("api/cronCalendars/{id}")]
+        public CronCalendar Get(Guid id)
+        {
+            Logger.Debug("Entered CronCalendarsController.Get().");
+
+            Quartz.Impl.Calendar.CronCalendar calendar;
+
+            string calendarName;
+
+            try
+            {
+                calendar = (Quartz.Impl.Calendar.CronCalendar)_schedulerCore.GetCalendar(id, out calendarName);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(string.Format("Error getting HolidayCalendar: {0}", ex.Message), ex);
+                return null;
+            }
+
+            return new CronCalendar
+            {
+                Id = id,
+                Name = calendarName,
+                CronExpression = calendar.CronExpression.ToString(),
+                Description = calendar.Description
+            };
+        }
     }
 }

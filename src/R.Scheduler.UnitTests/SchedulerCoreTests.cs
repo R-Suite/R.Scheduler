@@ -241,5 +241,44 @@ namespace R.Scheduler.UnitTests
                         c => c.ExcludedDates.Contains(exclusionDate1) && c.ExcludedDates.Contains(exclusionDate2) &&
                              c.ExcludedDates.Count == 2), true, true), Times.Once);
         }
+
+        [Fact]
+        public void ShouldRegisterCronCalendarWithScheduler()
+        {
+            // Arrange
+            Guid calId = Guid.NewGuid();
+            const string calName = "TestCronCal";
+            const string cronString = "0 0 12 1/1 * ? *";
+            _mockPersistanceStore.Setup(m => m.UpsertCalendarIdMap(calName)).Returns(calId);
+
+            _mockScheduler.Setup(x => x.AddCalendar(calName, It.Is<CronCalendar>(c => c.CronExpression.ToString() == cronString), true, true));
+            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object, _mockPersistanceStore.Object);
+
+            // Act 
+            var result = schedulerCore.AddCronCalendar(calName, "test cal", cronString);
+
+            // Assert
+            Assert.Equal(calId, result);
+            _mockScheduler.VerifyAll();
+        }
+
+        [Fact]
+        public void ShouldAmendExistingrCronCalendar()
+        {
+            // Arrange
+            Guid calId = Guid.NewGuid();
+            const string calName = "TestCronCal";
+            const string cronString = "0 0 12 1/1 * ? *";
+            _mockPersistanceStore.Setup(m => m.GetCalendarName(calId)).Returns(calName);
+
+            _mockScheduler.Setup(x => x.AddCalendar(calName, It.Is<CronCalendar>(c => c.CronExpression.ToString() == cronString), true, true));
+            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object, _mockPersistanceStore.Object);
+
+            // Act 
+            schedulerCore.AmendCronCalendar(calId, "test cal", cronString);
+
+            // Assert
+            _mockScheduler.VerifyAll();
+        }
     }
 }

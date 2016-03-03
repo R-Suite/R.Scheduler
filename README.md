@@ -4,7 +4,7 @@ R.Scheduler is API driven. Actions can be performed using a simple RESTful API u
 
 ## Project Maturity
 
-R.Scheduler is used in a production environment with a couple of thousands of jobs running daily. It is relatively matured but hasn’t been officially released. It may not yet be suitable for the most demanding and conservative projects.
+R.Scheduler is used in a production environment with a couple of thousands of jobs running daily. It is relatively matured but may not yet be suitable for the most demanding and conservative projects.
 
 Public (Web) API is relatively stable but minor changes are likely in future versions.
 
@@ -147,6 +147,7 @@ DELETE /api/jobs/207379FE-9F7F-483C-8D26-A5369F073369
   - Cron Trigger
 - Calendars:
   - Holiday Calendar
+  - Cron Calendar
 - Misfire Instructions
 - DataStore:
   - SqlServer

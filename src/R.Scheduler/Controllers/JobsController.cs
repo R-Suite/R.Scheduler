@@ -81,7 +81,7 @@ namespace R.Scheduler.Controllers
         {
             Logger.DebugFormat("Entered JobsController.Execute(). id = {0}", id);
 
-            var response = new QueryResponse { Valid = true };
+            var response = new QueryResponse { Valid = true, Id = id };
 
             try
             {

@@ -46,7 +46,6 @@ namespace R.Scheduler.Ftp
         /// <param name="serverPort">not in use</param>
         /// <param name="userName"></param>
         /// <param name="password"></param>
-        /// <param name="remoteDirectoryPath"></param>
         public void Connect(string host, int serverPort, string userName, string password = null)
         {
             _requestUri = host;

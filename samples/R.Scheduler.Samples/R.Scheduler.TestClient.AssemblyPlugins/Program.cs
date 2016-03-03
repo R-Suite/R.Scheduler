@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using Newtonsoft.Json;
 using R.Scheduler.Contracts.JobTypes.AssemblyPlugin.Model;
 using R.Scheduler.Contracts.Model;
 
@@ -11,6 +12,7 @@ namespace R.Scheduler.TestClient.AssemblyPlugins
     {
         private static readonly string PluginAssemblyPath = Path.Combine(Environment.CurrentDirectory, "MyPlugin.dll");
         private const string Url = @"http://localhost:5000/";
+        private static Guid _jobId;
 
         static void Main(string[] args)
         {
@@ -61,11 +63,14 @@ namespace R.Scheduler.TestClient.AssemblyPlugins
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
                 var response = client.PostAsJsonAsync("api/plugins/", job).Result;
-                string result = response.Content.ReadAsStringAsync().Result;
+                string resultStr = response.Content.ReadAsStringAsync().Result;
+
+                dynamic result = JsonConvert.DeserializeObject<dynamic>(resultStr);
 
                 if (result != null)
                 {
-                    Console.WriteLine(result);
+                    Console.WriteLine(resultStr);
+                    _jobId = new Guid(result.id.ToString());
                 }
             }
         }
@@ -81,7 +86,7 @@ namespace R.Scheduler.TestClient.AssemblyPlugins
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                var response = client.PostAsync("api/jobs/execution?jobName=MyAssemblyPluginJob&jobGroup=MyJobGroup", null).Result;
+                var response = client.PostAsync("api/jobs/" + _jobId, null).Result;
                 string result = response.Content.ReadAsStringAsync().Result;
 
                 if (result != null)
@@ -96,7 +101,7 @@ namespace R.Scheduler.TestClient.AssemblyPlugins
         /// </summary>
         private static void SchedulePluginWithSimpleTrigger()
         {
-            var trigger = new SimpleTrigger()
+            var trigger = new SimpleTrigger
             {
                 Name = "MyPluginTestTrigger",
                 Group = "DEFAULT",

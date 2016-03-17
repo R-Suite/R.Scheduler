@@ -208,6 +208,15 @@ namespace R.Scheduler.Core
 
             IJobDetail jobDetail = _scheduler.GetJobDetail(jobKey);
 
+            var jobDataMap = new JobDataMap();
+            if (myTrigger.JobDataMap != null && myTrigger.JobDataMap.Count > 0)
+            {
+                foreach (var jobData in myTrigger.JobDataMap)
+                {
+                    jobDataMap.Add(jobData.Key, jobData.Value);
+                }
+            }
+
             var cronTrigger = myTrigger as CronTrigger;
             if (cronTrigger != null)
             {
@@ -230,6 +239,7 @@ namespace R.Scheduler.Core
                 var trigger = (ICronTrigger)TriggerBuilder.Create()
                     .WithIdentity(myTrigger.Name, myTrigger.Group)
                     .ForJob(jobDetail)
+                    .UsingJobData(jobDataMap)
                     .ModifiedByCalendar(!string.IsNullOrEmpty(cronTrigger.CalendarName) ? cronTrigger.CalendarName : null)
                     .WithCronSchedule(cronTrigger.CronExpression, misFireAction)
                     .StartAt(startAt)
@@ -283,6 +293,7 @@ namespace R.Scheduler.Core
                 var trigger = (ISimpleTrigger)TriggerBuilder.Create()
                     .WithIdentity(myTrigger.Name, myTrigger.Group)
                     .ForJob(jobDetail)
+                    .UsingJobData(jobDataMap)
                     .ModifiedByCalendar(!string.IsNullOrEmpty(simpleTrigger.CalendarName) ? simpleTrigger.CalendarName : null)
                     .StartAt(startAt)
                     .WithSimpleSchedule(misFireAction)

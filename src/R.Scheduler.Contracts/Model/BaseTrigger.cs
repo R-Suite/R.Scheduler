@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace R.Scheduler.Contracts.Model
 {
@@ -12,5 +13,10 @@ namespace R.Scheduler.Contracts.Model
         public string CalendarName { get; set; }
 
         public DateTime StartDateTime { get; set; }
+
+        /// <summary>
+        /// If provided, the JobDataMap will be available when your job executes, or in trigger listeners
+        /// </summary>
+        public Dictionary<string, object> JobDataMap { get; set; }
     }
 }

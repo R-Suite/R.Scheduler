@@ -135,6 +135,10 @@
       <Project>{99edf966-9370-4fa2-8ce7-6089f88e83cc}</Project>
       <Name>R.Scheduler.Sql</Name>
     </ProjectReference>
+    <ProjectReference Include="..\R.Scheduler.TestListenersImp\R.Scheduler.TestListenersImp.csproj">
+      <Project>{00fafe80-af56-4277-9177-bd9dd3eb7ba5}</Project>
+      <Name>R.Scheduler.TestListenersImp</Name>
+    </ProjectReference>
     <ProjectReference Include="..\R.Scheduler.WebRequest\R.Scheduler.WebRequest.csproj">
       <Project>{f6b44c96-f2d3-4086-ae9c-507f528559be}</Project>
       <Name>R.Scheduler.WebRequest</Name>

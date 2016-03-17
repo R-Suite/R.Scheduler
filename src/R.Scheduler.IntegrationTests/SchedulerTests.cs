@@ -1,4 +1,5 @@
-﻿using R.Scheduler.Interfaces;
+﻿using System.Collections.Generic;
+using R.Scheduler.Interfaces;
 using Xunit;
 
 namespace R.Scheduler.IntegrationTests
@@ -56,6 +57,28 @@ namespace R.Scheduler.IntegrationTests
             Assert.Equal("TestInstanceId", Scheduler.Configuration.InstanceId);
             Assert.Equal("true", Scheduler.Configuration.UseProperties);
             Assert.Equal("http://test:123/", Scheduler.Configuration.WebApiBaseAddress);
+        }
+
+        [Fact]
+        public void TestSchedulerInitializesWithCustomListeners()
+        {
+            // Arrange
+            Scheduler.Shutdown();
+
+            // Act
+            Scheduler.Initialize((config =>
+            {
+                config.EnableWebApiSelfHost = false;
+                config.EnableAuditHistory = false;
+                config.CustomTriggerListenerAssemblyNames = new List<string> { "R.Scheduler.TestListenersImp.dll" };
+                config.CustomJobListenerAssemblyNames = new List<string> { "R.Scheduler.TestListenersImp.dll" };
+                config.CustomSchedulerListenerAssemblyNames = new List<string> { "R.Scheduler.TestListenersImp.dll" };
+            }));
+
+            // Assert
+            Assert.NotNull(Scheduler.Instance().ListenerManager.GetTriggerListener("MyTestTriggerListener"));
+            Assert.NotNull(Scheduler.Instance().ListenerManager.GetJobListener("MyTestJobListener"));
+            Assert.Equal(1, Scheduler.Instance().ListenerManager.GetSchedulerListeners().Count);
         }
     }
 }

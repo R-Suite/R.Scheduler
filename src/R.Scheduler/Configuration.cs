@@ -1,4 +1,7 @@
-﻿using R.Scheduler.Interfaces;
+﻿using System.Collections.Generic;
+using Quartz;
+using R.Scheduler.Ftp;
+using R.Scheduler.Interfaces;
 using IConfiguration = R.Scheduler.Interfaces.IConfiguration;
 
 namespace R.Scheduler
@@ -21,10 +24,15 @@ namespace R.Scheduler
         }
 
         public PersistanceStoreType PersistanceStoreType { get; set; }
+
         public string ConnectionString { get; set; }
+
         public string TablePrefix { get; set; }
+
         public string InstanceName { get; set; }
+
         public string InstanceId { get; set; }
+
         public bool AutoStart { get; set; }
 
         /// <summary>
@@ -35,9 +43,29 @@ namespace R.Scheduler
         public string UseProperties { get; set; }
 
         public bool EnableWebApiSelfHost { get; set; }
+
         public string WebApiBaseAddress { get; set; }
 
         public bool EnableAuditHistory { get; set; }
+
+        /// <summary>
+        /// Assembly name that contains custom implementation of <see cref="IFtpLibrary"/>
+        /// </summary>
         public string CustomFtpLibraryAssemblyName { get; set; }
+
+        /// <summary>
+        /// Assembly name that contains custom implementation of <see cref="ITriggerListener"/>
+        /// </summary>
+        public IList<string> CustomTriggerListenerAssemblyNames { get; set; }
+
+        /// <summary>
+        /// Assembly name that contains custom implementation of <see cref="ISchedulerListener"/>
+        /// </summary>
+        public IList<string> CustomSchedulerListenerAssemblyNames { get; set; }
+
+        /// <summary>
+        /// Assembly name that contains custom implementation of <see cref="IJobListener"/>
+        /// </summary>
+        public IList<string> CustomJobListenerAssemblyNames { get; set; }
     }
 }

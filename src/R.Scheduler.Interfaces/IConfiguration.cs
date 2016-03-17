@@ -1,4 +1,7 @@
-﻿namespace R.Scheduler.Interfaces
+﻿using System.Collections.Generic;
+using Quartz;
+
+namespace R.Scheduler.Interfaces
 {
     public interface IConfiguration
     {
@@ -22,5 +25,17 @@
         bool EnableAuditHistory { get; set; }
 
         string CustomFtpLibraryAssemblyName { get; set; }
+
+        IList<string> CustomTriggerListenerAssemblyNames { get; set; }
+
+        /// <summary>
+        /// Assembly name that contains custom implementation of <see cref="ISchedulerListener"/>
+        /// </summary>
+        IList<string> CustomSchedulerListenerAssemblyNames { get; set; }
+
+        /// <summary>
+        /// Assembly name that contains custom implementation of <see cref="IJobListener"/>
+        /// </summary>
+        IList<string> CustomJobListenerAssemblyNames { get; set; }
     }
 }

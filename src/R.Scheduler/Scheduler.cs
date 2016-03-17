@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.Linq;
+using System.Reflection;
+using Common.Logging;
 using Microsoft.Owin.Hosting;
 using Quartz;
 using Quartz.Impl;
@@ -13,6 +16,7 @@ namespace R.Scheduler
 {
     public sealed class Scheduler
     {
+        private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private static IScheduler _instance;
         private static readonly object SyncRoot = new Object();
 
@@ -92,6 +96,11 @@ namespace R.Scheduler
                             _instance.ListenerManager.AddTriggerListener(new AuditTriggerListener(), GroupMatcher<TriggerKey>.AnyGroup());
                         }
 
+                        // Custom listeners
+                        AddCustomTriggerListeners();
+                        AddCustomJobListeners();
+                        AddCustomSchedulerListeners();
+
                         if (Configuration.EnableWebApiSelfHost)
                         {
                             IDisposable webApiHost = WebApp.Start<Startup>(url: Configuration.WebApiBaseAddress);
@@ -153,6 +162,109 @@ namespace R.Scheduler
             }
 
             return properties;
+        }
+        
+        private static void AddCustomTriggerListeners()
+        {
+            if (Configuration.CustomTriggerListenerAssemblyNames != null)
+            {
+                foreach (var listenerAssemblyName in Configuration.CustomTriggerListenerAssemblyNames)
+                {
+                    try
+                    {
+                        var asm = GetAssembly(listenerAssemblyName);
+                        Type listenerType = asm != null
+                            ? asm.GetTypes().FirstOrDefault(i => IsListener(i, typeof (ITriggerListener)))
+                            : null;
+
+                        if (listenerType != null)
+                        {
+                            var listener = (ITriggerListener) Activator.CreateInstance(listenerType);
+                            _instance.ListenerManager.AddTriggerListener(listener);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(string.Format("Error adding TriggerListener from {0}", listenerAssemblyName), ex);
+                    }
+                }
+            }
+        }
+
+        private static void AddCustomJobListeners()
+        {
+            if (Configuration.CustomJobListenerAssemblyNames != null)
+            {
+                foreach (var listenerAssemblyName in Configuration.CustomJobListenerAssemblyNames)
+                {
+                    try
+                    {
+                        var asm = GetAssembly(listenerAssemblyName);
+                        Type listenerType = asm != null
+                            ? asm.GetTypes().FirstOrDefault(i => IsListener(i, typeof(IJobListener)))
+                            : null;
+
+                        if (listenerType != null)
+                        {
+                            var listener = (IJobListener)Activator.CreateInstance(listenerType);
+                            _instance.ListenerManager.AddJobListener(listener);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(string.Format("Error adding JobListener from {0}", listenerAssemblyName), ex);
+                    }
+                }
+            }
+        }
+
+        private static void AddCustomSchedulerListeners()
+        {
+            if (Configuration.CustomSchedulerListenerAssemblyNames != null)
+            {
+                foreach (var listenerAssemblyName in Configuration.CustomSchedulerListenerAssemblyNames)
+                {
+                    try
+                    {
+                        var asm = GetAssembly(listenerAssemblyName);
+                        Type listenerType = asm != null
+                            ? asm.GetTypes().FirstOrDefault(i => IsListener(i, typeof(ISchedulerListener)))
+                            : null;
+
+                        if (listenerType != null)
+                        {
+                            var listener = (ISchedulerListener)Activator.CreateInstance(listenerType);
+                            _instance.ListenerManager.AddSchedulerListener(listener);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(string.Format("Error adding SchedulerListener from {0}", listenerAssemblyName), ex);
+                    }
+                }
+            }
+        }
+
+        private static Assembly GetAssembly(string assemblyName)
+        {
+            if (!assemblyName.ToLower().EndsWith(".dll"))
+            {
+                assemblyName += ".dll";
+            }
+
+            Assembly asm = Assembly.LoadFrom(assemblyName);
+
+            return asm;
+        }
+
+        private static bool IsListener(Type t, Type listenerType)
+        {
+            if (t == null)
+                return false;
+            var isListener = t.GetInterface(listenerType.FullName) != null;
+            if (!isListener)
+                isListener = IsListener(t.BaseType, listenerType);
+            return isListener;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using R.Scheduler.Interfaces;
+﻿using System.Collections.Generic;
+using R.Scheduler.Interfaces;
 
 namespace R.Scheduler.TestHost
 {
@@ -19,6 +20,7 @@ namespace R.Scheduler.TestHost
                 config.PersistanceStoreType = PersistanceStoreType.Postgre;
                 config.ConnectionString = "User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=Scheduler;";
                 //config.CustomFtpLibraryAssemblyName = "R.Scheduler.FakeFtpLib";
+                config.CustomTriggerListenerAssemblyNames = new List<string>{ "R.Scheduler.TestListenersImp" };
             });
         }
     }

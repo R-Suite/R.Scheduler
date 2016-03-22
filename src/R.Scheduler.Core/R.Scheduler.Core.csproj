@@ -74,6 +74,7 @@
     <Compile Include="AuditJobListener.cs" />
     <Compile Include="AuditTriggerListener.cs" />
     <Compile Include="BaseJobsImpController.cs" />
+    <Compile Include="CronExpressionEx.cs" />
     <Compile Include="PersistanceStoreInterceptor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SchedulerCore.cs" />

@@ -50,10 +50,11 @@ namespace R.Scheduler.Persistance
         /// </summary>
         /// <param name="jobName"></param>
         /// <param name="jobGroup"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        public Guid UpsertJobKeyIdMap(string jobName, string jobGroup)
+        public Guid UpsertJobKeyIdMap(string jobName, string jobGroup, Guid? jobId = null)
         {
-            Guid retval = Guid.NewGuid();
+            Guid retval = jobId == null ? Guid.NewGuid() : jobId.Value;
 
             const string cacheKey = "RSCHED_JOB_ID_KEY_MAP";
             string jobKey = jobName + "|" + jobGroup;

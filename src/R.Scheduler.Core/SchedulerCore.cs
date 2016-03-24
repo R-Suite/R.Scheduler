@@ -115,7 +115,8 @@ namespace R.Scheduler.Core
         /// <param name="jobType"></param>
         /// <param name="dataMap"><see cref="jobType"/> specific parameters</param>
         /// <param name="description"></param>
-        public Guid CreateJob(string jobName, string jobGroup, Type jobType, Dictionary<string, object> dataMap, string description)
+        /// <param name="jobId"></param>
+        public Guid CreateJob(string jobName, string jobGroup, Type jobType, Dictionary<string, object> dataMap, string description, Guid? jobId = null)
         {
             // Use DefaultGroup if jobGroup is null or empty
             jobGroup = (!string.IsNullOrEmpty(jobGroup)) ? jobGroup : JobKey.DefaultGroup;
@@ -133,7 +134,7 @@ namespace R.Scheduler.Core
             Guid id;
             using (var tran = new TransactionScope())
             {
-                id = _persistanceStore.UpsertJobKeyIdMap(jobName, jobGroup);
+                id = _persistanceStore.UpsertJobKeyIdMap(jobName, jobGroup, jobId);
                 _scheduler.AddJob(jobDetail, true);
                 tran.Complete();
             }

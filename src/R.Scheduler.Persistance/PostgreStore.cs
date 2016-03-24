@@ -161,8 +161,9 @@ namespace R.Scheduler.Persistance
         /// </summary>
         /// <param name="jobName"></param>
         /// <param name="jobGroup"></param>
+        /// <param name="jobId"></param>
         /// <returns></returns>
-        public Guid UpsertJobKeyIdMap(string jobName, string jobGroup)
+        public Guid UpsertJobKeyIdMap(string jobName, string jobGroup, Guid? jobId = null)
         {
             var retval = Guid.Empty;
 
@@ -194,7 +195,8 @@ namespace R.Scheduler.Persistance
                     // TriggerKey does not exist
                     if (retval == Guid.Empty)
                     {
-                        retval = Guid.NewGuid();
+                        retval = jobId == null ? Guid.NewGuid() : jobId.Value;
+
                         const string sqlInsert = @"INSERT INTO rsched_job_id_key_map(id
                                                                ,job_name
                                                                ,job_group) 

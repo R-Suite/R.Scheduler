@@ -110,7 +110,7 @@
     <Compile Include="Controllers\AnalyticsController.cs" />
     <Compile Include="Controllers\CalendarsController.cs" />
     <Compile Include="Controllers\CronCalendarsController.cs" />
-    <Compile Include="Controllers\CronExpressionController.cs" />
+    <Compile Include="Controllers\CronExpressionsController.cs" />
     <Compile Include="Controllers\DirectoryScanJobsController.cs" />
     <Compile Include="Controllers\HolidayCalendarsController.cs" />
     <Compile Include="Controllers\JobsController.cs" />

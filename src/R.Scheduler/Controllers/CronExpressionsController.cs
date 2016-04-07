@@ -7,7 +7,7 @@ using R.Scheduler.Core;
 
 namespace R.Scheduler.Controllers
 {
-    public class CronExpressionController : ApiController
+    public class CronExpressionsController : ApiController
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -18,7 +18,7 @@ namespace R.Scheduler.Controllers
         /// <returns></returns>
         [AcceptVerbs("GET")]
         [Route("api/cronExpressions/fireTimesAfter")]
-        public List<DateTime> GetFutureDateTimes(string cronExpression, string dateTimeAfter = null, int count = 100)
+        public List<DateTime> GetFutureDateTimes(string cronExpression, string dateTimeAfter = null, int count = 100, string calendarName = null)
         {
             Logger.Debug("Entered CronExpressionController.GetFutureDateTimes()");
 
@@ -31,7 +31,7 @@ namespace R.Scheduler.Controllers
 
             var cronExpressionEx = new CronExpressionEx(cronExpression);
 
-            return cronExpressionEx.GetFutureFireDateTimesUtcAfter(dta, count);
+            return cronExpressionEx.GetFutureFireDateTimesUtcAfter(dta, count, calendarName);
         }
 
         /// <summary>

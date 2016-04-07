@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace R.Scheduler.Contracts.Model
 {
@@ -19,5 +20,6 @@ namespace R.Scheduler.Contracts.Model
         public DateTime? EndTimeUtc { get; set; }
         public DateTime? FinalFireTimeUtc { get; set; }
         public string AdditionalDetails { get; set; }
+        public Dictionary<string, object> JobDataMap { get; set; }
     }
 }

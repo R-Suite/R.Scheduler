@@ -18,7 +18,7 @@ namespace R.Scheduler.TestHost
             {
                 config.EnableWebApiSelfHost = true;
                 config.PersistanceStoreType = PersistanceStoreType.Postgre;
-                config.ConnectionString = "User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=Scheduler;";
+                config.ConnectionString = "User ID=postgres;Password=xxx;Host=localhost;Port=5432;Database=Scheduler;";
                 //config.CustomFtpLibraryAssemblyName = "R.Scheduler.FakeFtpLib";
                 config.CustomTriggerListenerAssemblyNames = new List<string>{ "R.Scheduler.TestListenersImp" };
             });

@@ -68,6 +68,16 @@ namespace R.Scheduler.Controllers
                 }
                 var nextFireTimeUtc = quartzTrigger.GetNextFireTimeUtc();
                 var previousFireTimeUtc = quartzTrigger.GetPreviousFireTimeUtc();
+
+                var jobDataMap = new Dictionary<string, object>();
+                if (null != quartzTrigger.JobDataMap)
+                {
+                    foreach (var jobData in quartzTrigger.JobDataMap)
+                    {
+                        jobDataMap.Add(jobData.Key, jobData.Value);
+                    }
+                }
+
                 triggerDetails.Add(new TriggerDetails
                 {
                     Id = trigger.Value,
@@ -81,16 +91,17 @@ namespace R.Scheduler.Controllers
                     EndTimeUtc =
                         (quartzTrigger.EndTimeUtc.HasValue)
                             ? quartzTrigger.EndTimeUtc.Value.UtcDateTime
-                            : (DateTime?)null,
-                    NextFireTimeUtc = (nextFireTimeUtc.HasValue) ? nextFireTimeUtc.Value.UtcDateTime : (DateTime?)null,
+                            : (DateTime?) null,
+                    NextFireTimeUtc = (nextFireTimeUtc.HasValue) ? nextFireTimeUtc.Value.UtcDateTime : (DateTime?) null,
                     PreviousFireTimeUtc =
-                        (previousFireTimeUtc.HasValue) ? previousFireTimeUtc.Value.UtcDateTime : (DateTime?)null,
+                        (previousFireTimeUtc.HasValue) ? previousFireTimeUtc.Value.UtcDateTime : (DateTime?) null,
                     FinalFireTimeUtc = (quartzTrigger.FinalFireTimeUtc.HasValue)
                         ? quartzTrigger.FinalFireTimeUtc.Value.UtcDateTime
-                        : (DateTime?)null,
+                        : (DateTime?) null,
                     Type = triggerType,
                     MisfireInstruction = misfireInstruction,
-                    AdditionalDetails = additionalDetails
+                    AdditionalDetails = additionalDetails,
+                    JobDataMap = (jobDataMap.Count > 0) ? jobDataMap : null
                 });
             }
             return triggerDetails;

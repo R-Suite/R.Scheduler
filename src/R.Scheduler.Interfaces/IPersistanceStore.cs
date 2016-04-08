@@ -9,7 +9,7 @@ namespace R.Scheduler.Interfaces
         void InsertAuditLog(AuditLog log);
         IEnumerable<AuditLog> GetErroredJobs(int count);
         IEnumerable<AuditLog> GetExecutedJobs(int count);
-        Guid UpsertJobKeyIdMap(string jobName, string jobGroup);
+        Guid UpsertJobKeyIdMap(string jobName, string jobGroup, Guid? jobId = null);
         void RemoveJobKeyIdMap(string jobName, string jobGroup);
         JobKey GetJobKey(Guid id);
         Guid GetJobId(JobKey jobKey);

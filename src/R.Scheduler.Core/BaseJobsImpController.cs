@@ -26,7 +26,7 @@ namespace R.Scheduler.Core
 
             try
             {
-                var id = _schedulerCore.CreateJob(model.JobName, model.JobGroup, jobType, dataMap, description);
+                var id = _schedulerCore.CreateJob(model.JobName, model.JobGroup, jobType, dataMap, description, model.Id == Guid.Empty ? (Guid?)null : model.Id);
                 response.Id = id;
             }
             catch (Exception ex)

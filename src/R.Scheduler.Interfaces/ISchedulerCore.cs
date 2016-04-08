@@ -16,7 +16,7 @@ namespace R.Scheduler.Interfaces
 
         void ExecuteJob(Guid jobId);
 
-        Guid CreateJob(string jobName, string groupName, Type jobType, Dictionary<string, object> dataMap, string description);
+        Guid CreateJob(string jobName, string groupName, Type jobType, Dictionary<string, object> dataMap, string description, Guid? jobId = null);
 
         void RemoveJobTriggers(Guid jobId);
 

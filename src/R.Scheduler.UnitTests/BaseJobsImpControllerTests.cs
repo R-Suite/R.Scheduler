@@ -35,7 +35,7 @@ namespace R.Scheduler.UnitTests
         {
             // Arrange
             var controller = new TestController();
-            _mockSchedulerCore.Setup(i => i.CreateJob(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Type>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<string>())).Throws(new Exception());
+            _mockSchedulerCore.Setup(i => i.CreateJob(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Type>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<string>(), null)).Throws(new Exception());
 
             // Act 
             var result = controller.CreateJob(null, null, null);

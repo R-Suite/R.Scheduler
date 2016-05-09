@@ -73,8 +73,8 @@ namespace R.Scheduler.Sql
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error("Error executing non-query.", ex);
-                    throw new JobExecutionException("Error in SqlJob: " + ex.Message, ex, false);
+                    Logger.Error("Error in SqlJob: ", ex);
+                    throw new JobExecutionException(ex.Message, ex, false);
                 }
             }
         }
@@ -96,7 +96,8 @@ namespace R.Scheduler.Sql
             string value = data.GetString(propertyName);
             if (string.IsNullOrEmpty(value))
             {
-                throw new ArgumentException(propertyName + " not specified.");
+                Logger.ErrorFormat("Error in SqlJob: {0} not specified.", propertyName);
+                throw new JobExecutionException(string.Format("{0} not specified.", propertyName));
             }
             return value;
         }

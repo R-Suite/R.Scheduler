@@ -33,7 +33,7 @@ namespace R.Scheduler.WebRequest
         /// </summary>
         public WebRequestJob()
         {
-            Logger.Info("Entering WebRequestJob.ctor().");
+            Logger.Debug("Entering WebRequestJob.ctor().");
         }
 
         public void Execute(IJobExecutionContext context)
@@ -120,7 +120,7 @@ namespace R.Scheduler.WebRequest
             }
             catch (WebException ex)
             {
-                Logger.Error("WebRequestJob: WebException occured", ex);
+                Logger.Error("Error in WebRequestJob:", ex);
                 context.Result = ex.Message;
 
                 if (ex.Response != null)
@@ -133,17 +133,17 @@ namespace R.Scheduler.WebRequest
                             using (var reader = new StreamReader(stream))
                             {
                                 string error = reader.ReadToEnd();
-                                Logger.ErrorFormat("WebRequestJob: {0}", error);
+                                Logger.ErrorFormat("Error in WebRequestJob: {0}", error);
                             }
                         }
                     }
                 }
-                throw new JobExecutionException("Error in WebRequestJob: " + ex.Message, ex, false);
+                throw new JobExecutionException(ex.Message, ex, false);
             }
             catch (Exception ex)
             {
-                Logger.Error("WebRequestJob: Exception occured", ex);
-                throw new JobExecutionException("Error in WebRequestJob: " + ex.Message, ex, false);
+                Logger.Error("Error in WebRequestJob:", ex);
+                throw new JobExecutionException(ex.Message, ex, false);
             }
         }
 
@@ -164,7 +164,8 @@ namespace R.Scheduler.WebRequest
             string value = data.GetString(propertyName);
             if (string.IsNullOrEmpty(value))
             {
-                throw new ArgumentException(propertyName + " not specified.");
+                Logger.ErrorFormat("Error in WebRequestJob: {0} not specified.", propertyName);
+                throw new JobExecutionException(string.Format("{0} not specified.", propertyName));
             }
             return value;
         }

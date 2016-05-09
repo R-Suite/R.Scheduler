@@ -52,7 +52,7 @@ namespace R.Scheduler.IntegrationTests
             _mockJobExecutionContext.SetupGet(p => p.JobDetail).Returns(jobDetail);
 
             // Act / Assert
-            Assert.Throws<FileNotFoundException>(() => pluginRunner.Execute(_mockJobExecutionContext.Object));
+            Assert.Throws<JobExecutionException>(() => pluginRunner.Execute(_mockJobExecutionContext.Object));
         }
 
         [Fact]
@@ -67,7 +67,7 @@ namespace R.Scheduler.IntegrationTests
             _mockJobExecutionContext.SetupGet(p => p.JobDetail).Returns(jobDetail);
 
             // Act / Assert
-            Assert.Throws<FileNotFoundException>(()=>pluginRunner.Execute(_mockJobExecutionContext.Object));
+            Assert.Throws<JobExecutionException>(() => pluginRunner.Execute(_mockJobExecutionContext.Object));
         }
 
         [Fact]

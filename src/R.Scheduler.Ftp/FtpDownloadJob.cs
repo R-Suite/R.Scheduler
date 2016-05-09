@@ -43,7 +43,7 @@ namespace R.Scheduler.Ftp
         /// </summary>
         public FtpDownloadJob()
         {
-            Logger.Info("Entering FtpDownloadJob.ctor().");
+            Logger.Debug("Entering FtpDownloadJob.ctor().");
         }
 
         public void Execute(IJobExecutionContext context)
@@ -67,14 +67,24 @@ namespace R.Scheduler.Ftp
             TimeSpan cutOffTimeSpan;
             if (!TimeSpan.TryParse(cutOff, out cutOffTimeSpan))
             {
-                throw new ArgumentException(string.Format("Invalid cutOffTimeSpan format [{0}] specified.", cutOff));
+                var err = string.Format("Invalid cutOffTimeSpan format [{0}] specified.", cutOff);
+                Logger.ErrorFormat("Error in FtpDownloadJob: {0}", err);
+                throw new JobExecutionException(err);
             }
 
             // Get files
-            using (var ftpLibrary = ObjectFactory.GetInstance<IFtpLibrary>())
+            try
             {
-                ftpLibrary.Connect(ftpHost, port, userName, password);
-                ftpLibrary.GetFiles(remoteDirectoryPath, localDirectoryPath, fileExtensions, cutOffTimeSpan);
+                using (var ftpLibrary = ObjectFactory.GetInstance<IFtpLibrary>())
+                {
+                    ftpLibrary.Connect(ftpHost, port, userName, password);
+                    ftpLibrary.GetFiles(remoteDirectoryPath, localDirectoryPath, fileExtensions, cutOffTimeSpan);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Error in FtpDownloadJob.", ex);
+                throw new JobExecutionException(ex.Message, ex, false);
             }
         }
 
@@ -95,7 +105,8 @@ namespace R.Scheduler.Ftp
             string value = data.GetString(propertyName);
             if (string.IsNullOrEmpty(value))
             {
-                throw new ArgumentException(propertyName + " not specified.");
+                Logger.ErrorFormat("Error in FtpDownloadJob: {0} not specified.", propertyName);
+                throw new JobExecutionException(string.Format("{0} not specified.", propertyName));
             }
             return value;
         }

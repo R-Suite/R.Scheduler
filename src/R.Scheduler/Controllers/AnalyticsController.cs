@@ -55,7 +55,7 @@ namespace R.Scheduler.Controllers
         [Route("api/executingJobs")]
         public IList<FireInstance> GetExecutingJobs()
         {
-            Logger.Info("Entered AnalyticsController.GetExecutingJobs().");
+            Logger.Debug("Entered AnalyticsController.GetExecutingJobs().");
 
             return _analytics.GetExecutingJobs().ToList();
         }

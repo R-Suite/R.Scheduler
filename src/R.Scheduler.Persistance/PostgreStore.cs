@@ -15,6 +15,7 @@ namespace R.Scheduler.Persistance
     public class PostgreStore : IPersistanceStore
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog AuditLogLogger = LogManager.GetLogger("AuditLog");
         private readonly string _connectionString;
 
         public PostgreStore(string connectionString)
@@ -110,7 +111,7 @@ namespace R.Scheduler.Persistance
                 }
                 catch (Exception ex)
                 {
-                    Logger.ErrorFormat("Error persisting AuditLog. {0}", ex.Message);
+                    AuditLogLogger.Error("Error persisting AuditLog.", ex);
                 }
             }
         }
@@ -223,7 +224,7 @@ namespace R.Scheduler.Persistance
                 catch (Exception ex)
                 {
                     trans.Rollback();
-                    Logger.ErrorFormat("Error persisting Id-JobKey Map. {0}", ex.Message);
+                    Logger.Error("Error persisting Id-JobKey Map.", ex);
                     throw;
                 }
             }
@@ -258,7 +259,7 @@ namespace R.Scheduler.Persistance
                 }
                 catch (Exception ex)
                 {
-                    Logger.ErrorFormat("Error persisting Id-JobKey Map. {0}", ex.Message);
+                    Logger.Error("Error persisting Id-JobKey Map.", ex);
                 }
             }
         }
@@ -295,7 +296,7 @@ namespace R.Scheduler.Persistance
                 }
                 catch (Exception ex)
                 {
-                    Logger.ErrorFormat("Error getting JobKeys. {0}", ex.Message);
+                    Logger.Error("Error getting JobKeys.", ex);
                 }
             }
 
@@ -335,7 +336,7 @@ namespace R.Scheduler.Persistance
                 }
                 catch (Exception ex)
                 {
-                    Logger.ErrorFormat("Error getting Job Id. {0}", ex.Message);
+                    Logger.Error("Error getting Job Id.", ex);
                 }
             }
 
@@ -374,7 +375,7 @@ namespace R.Scheduler.Persistance
                 }
                 catch (Exception ex)
                 {
-                    Logger.ErrorFormat("Error getting TriggerKeys. {0}", ex.Message);
+                    Logger.Error("Error getting TriggerKeys.", ex);
                 }
             }
 
@@ -414,7 +415,7 @@ namespace R.Scheduler.Persistance
                 }
                 catch (Exception ex)
                 {
-                    Logger.ErrorFormat("Error getting Trigger Id. {0}", ex.Message);
+                    Logger.Error("Error getting Trigger Id.", ex);
                 }
             }
 
@@ -487,7 +488,7 @@ namespace R.Scheduler.Persistance
                 catch (Exception ex)
                 {
                     trans.Rollback();
-                    Logger.ErrorFormat("Error persisting Id-TriggerKey Map. {0}", ex.Message);
+                    Logger.Error("Error persisting Id-TriggerKey Map.", ex);
                     throw;
                 }
             }
@@ -522,7 +523,7 @@ namespace R.Scheduler.Persistance
                 }
                 catch (Exception ex)
                 {
-                    Logger.ErrorFormat("Error persisting Id-TriggerKey Map. {0}", ex.Message);
+                    Logger.Error("Error persisting Id-TriggerKey Map.", ex);
                 }
             }
         }
@@ -582,7 +583,7 @@ namespace R.Scheduler.Persistance
                 catch (Exception ex)
                 {
                     trans.Rollback();
-                    Logger.ErrorFormat("Error persisting Id-CalendarName Map. {0}", ex.Message);
+                    Logger.Error("Error persisting Id-CalendarName Map.", ex);
                     throw;
                 }
             }
@@ -621,7 +622,7 @@ namespace R.Scheduler.Persistance
                 }
                 catch (Exception ex)
                 {
-                    Logger.ErrorFormat("Error getting calendar name. {0}", ex.Message);
+                    Logger.Error("Error getting calendar name.", ex);
                 }
             }
 
@@ -659,7 +660,7 @@ namespace R.Scheduler.Persistance
                 }
                 catch (Exception ex)
                 {
-                    Logger.ErrorFormat("Error getting calendar id. {0}", ex.Message);
+                    Logger.Error("Error getting calendar id.", ex);
                 }
             }
 
@@ -690,7 +691,7 @@ namespace R.Scheduler.Persistance
                 }
                 catch (Exception ex)
                 {
-                    Logger.ErrorFormat("Error deleting Id-CalendarName Map. {0}", ex.Message);
+                    Logger.Error("Error deleting Id-CalendarName Map.", ex);
                 }
             }
         }
@@ -741,7 +742,7 @@ namespace R.Scheduler.Persistance
                 }
                 catch (Exception ex)
                 {
-                    Logger.ErrorFormat("Error getting AuditLogs. {0}", ex.Message);
+                    AuditLogLogger.Error("Error getting AuditLogs.", ex);
                 }
             }
             return retval;

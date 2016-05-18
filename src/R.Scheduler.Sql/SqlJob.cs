@@ -9,6 +9,7 @@ namespace R.Scheduler.Sql
     public class SqlJob : IJob
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private string _jobName;
 
         /// <summary> Db Connection string REQUIRED.</summary>
         public const string ConnectionString = "connectionString";
@@ -34,6 +35,7 @@ namespace R.Scheduler.Sql
         public void Execute(IJobExecutionContext context)
         {
             JobDataMap data = context.MergedJobDataMap;
+            _jobName = context.JobDetail.Key.Name;
 
             string providerAssemblyName = GetRequiredParameter(data, PoviderAssemblyName);
             string connectionClass = GetRequiredParameter(data, ConnectionClass);
@@ -73,7 +75,7 @@ namespace R.Scheduler.Sql
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error("Error in SqlJob: ", ex);
+                    Logger.Error(string.Format("Error in SqlJob ({0}): ", _jobName), ex);
                     throw new JobExecutionException(ex.Message, ex, false);
                 }
             }

@@ -5,11 +5,13 @@ using System.Web.Http;
 using Common.Logging;
 using R.Scheduler.Contracts.Calendars.Cron.Model;
 using R.Scheduler.Contracts.Model;
+using R.Scheduler.Core;
 using R.Scheduler.Interfaces;
 using StructureMap;
 
 namespace R.Scheduler.Controllers
 {
+    [SchedulerAuthorize(AppSettingRoles = "Roles", AppSettingUsers = "Users")]
     public class CronCalendarsController : ApiController
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -27,6 +29,7 @@ namespace R.Scheduler.Controllers
         /// <returns></returns>
         [AcceptVerbs("POST")]
         [Route("api/cronCalendars")]
+        [SchedulerAuthorize(AppSettingRoles = "Create.Roles", AppSettingUsers = "Create.Users")]
         public QueryResponse Post([FromBody]CronCalendar model)
         {
             Logger.DebugFormat("Entered CronCalendarsController.Post(). Calendar Name = {0}", model.Name);
@@ -63,6 +66,7 @@ namespace R.Scheduler.Controllers
         /// <returns></returns>
         [AcceptVerbs("PUT")]
         [Route("api/cronCalendars/{id}")]
+        [SchedulerAuthorize(AppSettingRoles = "Update.Roles", AppSettingUsers = "Update.Users")]
         public QueryResponse Put(Guid id, [FromBody]CronCalendar model)
         {
             Logger.DebugFormat("Entered CronCalendarsController.Put(). Calendar id = {0}", id);
@@ -96,6 +100,7 @@ namespace R.Scheduler.Controllers
         /// <returns></returns>
         [AcceptVerbs("GET")]
         [Route("api/cronCalendars/{id}")]
+        [SchedulerAuthorize(AppSettingRoles = "Read.Roles", AppSettingUsers = "Read.Users")]
         public CronCalendar Get(Guid id)
         {
             Logger.Debug("Entered CronCalendarsController.Get().");

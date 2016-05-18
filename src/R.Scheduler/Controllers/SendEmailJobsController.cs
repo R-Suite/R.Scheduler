@@ -17,6 +17,7 @@ namespace R.Scheduler.Controllers
     /// <summary>
     /// Controller for a Quartz.net built-in job which sends an e-mail with the configured content to the configured
     /// </summary>
+    [SchedulerAuthorize(AppSettingRoles = "Roles", AppSettingUsers = "Users")]
     public class SendEmailJobsController : BaseJobsImpController
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -33,6 +34,7 @@ namespace R.Scheduler.Controllers
         /// <returns></returns>
         [AcceptVerbs("GET")]
         [Route("api/emails")]
+        [SchedulerAuthorize(AppSettingRoles = "Read.Roles", AppSettingUsers = "Read.Users")]
         public IEnumerable<EmailJob> Get()
         {
             Logger.Debug("Entered SendEmailJobsController.Get().");
@@ -77,6 +79,7 @@ namespace R.Scheduler.Controllers
         /// <returns></returns>
         [AcceptVerbs("GET")]
         [Route("api/emails/{id}")]
+        [SchedulerAuthorize(AppSettingRoles = "Read.Roles", AppSettingUsers = "Read.Users")]
         public EmailJob Get(Guid id)
         {
             Logger.Debug("Entered SendEmailJobsController.Get().");
@@ -121,6 +124,7 @@ namespace R.Scheduler.Controllers
         /// <returns></returns>
         [AcceptVerbs("POST")]
         [Route("api/emails")]
+        [SchedulerAuthorize(AppSettingRoles = "Create.Roles", AppSettingUsers = "Create.Users")]
         public QueryResponse Post([FromBody]EmailJob model)
         {
             Logger.DebugFormat("Entered EmailsController.Post(). Job Name = {0}", model.JobName);
@@ -135,6 +139,7 @@ namespace R.Scheduler.Controllers
         /// <returns></returns>
         [AcceptVerbs("PUT")]
         [Route("api/emails/{id}")]
+        [SchedulerAuthorize(AppSettingRoles = "Update.Roles", AppSettingUsers = "Update.Users")]
         public QueryResponse Put([FromBody]EmailJob model)
         {
             Logger.DebugFormat("Entered EmailsController.Put(). Job Name = {0}", model.JobName);

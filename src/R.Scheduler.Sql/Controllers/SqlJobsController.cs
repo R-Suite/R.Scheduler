@@ -12,6 +12,7 @@ using StructureMap;
 
 namespace R.Scheduler.Sql.Controllers
 {
+    [SchedulerAuthorize(AppSettingRoles = "Roles", AppSettingUsers = "Users")]
     public class SqlJobsController : BaseJobsImpController
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -28,6 +29,7 @@ namespace R.Scheduler.Sql.Controllers
         /// <returns></returns>
         [AcceptVerbs("GET")]
         [Route("api/sqlJobs")]
+        [SchedulerAuthorize(AppSettingRoles = "Read.Roles", AppSettingUsers = "Read.Users")]
         public IEnumerable<Contracts.JobTypes.Sql.Model.SqlJob> Get()
         {
             Logger.Debug("Entered SqlJobsController.Get().");
@@ -58,6 +60,7 @@ namespace R.Scheduler.Sql.Controllers
         /// <returns></returns>
         [AcceptVerbs("GET")]
         [Route("api/sqlJobs/{id}")]
+        [SchedulerAuthorize(AppSettingRoles = "Read.Roles", AppSettingUsers = "Read.Users")]
         public Contracts.JobTypes.Sql.Model.SqlJob Get(Guid id)
         {
             Logger.Debug("Entered SqlJobsController.Get().");
@@ -98,6 +101,7 @@ namespace R.Scheduler.Sql.Controllers
         /// <returns></returns>
         [AcceptVerbs("POST")]
         [Route("api/sqlJobs")]
+        [SchedulerAuthorize(AppSettingRoles = "Create.Roles", AppSettingUsers = "Create.Users")]
         public QueryResponse Post([FromBody]Contracts.JobTypes.Sql.Model.SqlJob model)
         {
             Logger.DebugFormat("Entered SqlJobsController.Post(). Job Name = {0}", model.JobName);
@@ -112,6 +116,7 @@ namespace R.Scheduler.Sql.Controllers
         /// <returns></returns>
         [AcceptVerbs("PUT")]
         [Route("api/sqlJobs/{id}")]
+        [SchedulerAuthorize(AppSettingRoles = "Update.Roles", AppSettingUsers = "Update.Users")]
         public QueryResponse Put([FromBody]Contracts.JobTypes.Sql.Model.SqlJob model)
         {
             Logger.DebugFormat("Entered SqlJobsController.Put(). Job Name = {0}", model.JobName);

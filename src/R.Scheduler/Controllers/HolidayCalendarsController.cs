@@ -4,15 +4,15 @@ using System.Linq;
 using System.Reflection;
 using System.Web.Http;
 using Common.Logging;
-using Quartz;
-using Quartz.Collection;
 using R.Scheduler.Contracts.Calendars.Holiday.Model;
 using R.Scheduler.Contracts.Model;
+using R.Scheduler.Core;
 using R.Scheduler.Interfaces;
 using StructureMap;
 
 namespace R.Scheduler.Controllers
 {
+    [SchedulerAuthorize(AppSettingRoles = "Roles", AppSettingUsers = "Users")]
     public class HolidayCalendarsController : ApiController
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -30,6 +30,7 @@ namespace R.Scheduler.Controllers
         /// <returns></returns>
         [AcceptVerbs("POST")]
         [Route("api/holidayCalendars")]
+        [SchedulerAuthorize(AppSettingRoles = "Create.Roles", AppSettingUsers = "Create.Users")]
         public QueryResponse Post([FromBody]HolidayCalendar model)
         {
             Logger.DebugFormat("Entered HolidayCalendarsController.Post(). Calendar Name = {0}", model.Name);
@@ -66,6 +67,7 @@ namespace R.Scheduler.Controllers
         /// <returns></returns>
         [AcceptVerbs("PUT")]
         [Route("api/holidayCalendars/{id}")]
+        [SchedulerAuthorize(AppSettingRoles = "Update.Roles", AppSettingUsers = "Update.Users")]
         public QueryResponse Put(Guid id, [FromBody]HolidayCalendar model)
         {
             Logger.DebugFormat("Entered HolidayCalendarsController.Put(). Calendar id = {0}", id);
@@ -101,6 +103,7 @@ namespace R.Scheduler.Controllers
         /// <returns></returns>
         [AcceptVerbs("POST")]
         [Route("api/holidayCalendars/{id}")]
+        [SchedulerAuthorize(AppSettingRoles = "Update.Roles", AppSettingUsers = "Update.Users")]
         public QueryResponse PostExclusionDate(Guid id, [FromBody]AddExclusionDatesRequest model)
         {
             Logger.DebugFormat("Entered HolidayCalendarsController.PostExclusionDate(). Calendar id = {0}, ExclusionDate = {1}", id, model);
@@ -136,6 +139,7 @@ namespace R.Scheduler.Controllers
         /// <returns></returns>
         [AcceptVerbs("DELETE")]
         [Route("api/holidayCalendars/{id}/exclusionDate")]
+        [SchedulerAuthorize(AppSettingRoles = "Delete.Roles", AppSettingUsers = "Delete.Users")]
         public QueryResponse RemoveExclusionDate(Guid id, [FromBody]RemoveExclusionDatesRequest model)
         {
             Logger.DebugFormat("Entered HolidayCalendarsController.RemoveExclusionDate(). Calendar id = {0}, ExclusionDate = {1}", id, model);
@@ -203,6 +207,7 @@ namespace R.Scheduler.Controllers
         /// <returns></returns>
         [AcceptVerbs("GET")]
         [Route("api/holidayCalendars/{id}")]
+        [SchedulerAuthorize(AppSettingRoles = "Read.Roles", AppSettingUsers = "Read.Users")]
         public HolidayCalendar Get(Guid id)
         {
             Logger.Debug("Entered HolidayCalendarsController.Get().");

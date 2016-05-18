@@ -135,6 +135,10 @@
       <Project>{99edf966-9370-4fa2-8ce7-6089f88e83cc}</Project>
       <Name>R.Scheduler.Sql</Name>
     </ProjectReference>
+    <ProjectReference Include="..\R.Scheduler.TestCustomAuthorizationImp\R.Scheduler.TestCustomAuthorizationImp.csproj">
+      <Project>{64467844-10c7-4b12-ad87-d6f38de05d9b}</Project>
+      <Name>R.Scheduler.TestCustomAuthorizationImp</Name>
+    </ProjectReference>
     <ProjectReference Include="..\R.Scheduler.TestListenersImp\R.Scheduler.TestListenersImp.csproj">
       <Project>{00fafe80-af56-4277-9177-bd9dd3eb7ba5}</Project>
       <Name>R.Scheduler.TestListenersImp</Name>

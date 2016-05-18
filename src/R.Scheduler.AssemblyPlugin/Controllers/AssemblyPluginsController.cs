@@ -13,6 +13,7 @@ using StructureMap;
 
 namespace R.Scheduler.AssemblyPlugin.Controllers
 {
+    [SchedulerAuthorize(AppSettingRoles = "Roles", AppSettingUsers = "Users")]
     public class AssemblyPluginsController : BaseJobsImpController
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -29,6 +30,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         /// <returns></returns>
         [AcceptVerbs("GET")]
         [Route("api/plugins")]
+        [SchedulerAuthorize(AppSettingRoles = "Read.Roles", AppSettingUsers = "Read.Users")]
         public IEnumerable<PluginJob> Get()
         {
             Logger.Debug("Entered AssemblyPluginsController.Get().");
@@ -53,6 +55,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         /// <returns></returns>
         [AcceptVerbs("GET")]
         [Route("api/plugins/{id}")]
+        [SchedulerAuthorize(AppSettingRoles = "Read.Roles", AppSettingUsers = "Read.Users")]
         public PluginJob Get(Guid id)
         {
             Logger.Debug("Entered AssemblyPluginsController.Get().");
@@ -87,6 +90,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         /// <returns></returns>
         [AcceptVerbs("POST")]
         [Route("api/plugins")]
+        [SchedulerAuthorize(AppSettingRoles = "Create.Roles", AppSettingUsers = "Create.Users")]
         public QueryResponse Post([FromBody]PluginJob model)
         {
             Logger.DebugFormat("Entered AssemblyPluginsController.Post(). Job Name = {0}", model.JobName);
@@ -101,6 +105,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         /// <returns></returns>
         [AcceptVerbs("PUT")]
         [Route("api/plugins/{id}")]
+        [SchedulerAuthorize(AppSettingRoles = "Update.Roles", AppSettingUsers = "Update.Users")]
         public QueryResponse Put([FromBody]PluginJob model)
         {
             Logger.DebugFormat("Entered AssemblyPluginsController.Put(). Job Name = {0}", model.JobName);

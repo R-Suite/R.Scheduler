@@ -12,6 +12,7 @@ using StructureMap;
 
 namespace R.Scheduler.WebRequest.Controllers
 {
+    [SchedulerAuthorize(AppSettingRoles = "Roles", AppSettingUsers = "Users")]
     public class WebRequestJobController : BaseJobsImpController
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -28,6 +29,7 @@ namespace R.Scheduler.WebRequest.Controllers
         /// <returns></returns>
         [AcceptVerbs("GET")]
         [Route("api/webRequests")]
+        [SchedulerAuthorize(AppSettingRoles = "Read.Roles", AppSettingUsers = "Read.Users")]
         public IEnumerable<Contracts.JobTypes.WebRequest.Model.WebRequestJob> Get()
         {
             Logger.Debug("Entered WebRequestJobController.Get().");
@@ -53,6 +55,7 @@ namespace R.Scheduler.WebRequest.Controllers
         /// <returns></returns>
         [AcceptVerbs("GET")]
         [Route("api/webRequests/{id}")]
+        [SchedulerAuthorize(AppSettingRoles = "Read.Roles", AppSettingUsers = "Read.Users")]
         public Contracts.JobTypes.WebRequest.Model.WebRequestJob Get(Guid id)
         {
             Logger.Info("Entered WebRequestJobController.Get().");
@@ -91,6 +94,7 @@ namespace R.Scheduler.WebRequest.Controllers
         /// <returns></returns>
         [AcceptVerbs("POST")]
         [Route("api/webRequests")]
+        [SchedulerAuthorize(AppSettingRoles = "Create.Roles", AppSettingUsers = "Create.Users")]
         public QueryResponse Post([FromBody]Contracts.JobTypes.WebRequest.Model.WebRequestJob model)
         {
             Logger.InfoFormat("Entered WebRequestJobController.Post(). Job Name = {0}", model.JobName);
@@ -105,6 +109,7 @@ namespace R.Scheduler.WebRequest.Controllers
         /// <returns></returns>
         [AcceptVerbs("PUT")]
         [Route("api/webRequests/{id}")]
+        [SchedulerAuthorize(AppSettingRoles = "Update.Roles", AppSettingUsers = "Update.Users")]
         public QueryResponse Put([FromBody]Contracts.JobTypes.WebRequest.Model.WebRequestJob model)
         {
             Logger.InfoFormat("Entered WebRequestJobController.Put(). Job Name = {0}", model.JobName);

@@ -67,5 +67,15 @@ namespace R.Scheduler
         /// Assembly name that contains custom implementation of <see cref="IJobListener"/>
         /// </summary>
         public IList<string> CustomJobListenerAssemblyNames { get; set; }
+
+        /// <summary>
+        /// Assembly name that contains custom implementation of <see cref="IAuthorize"/>
+        /// </summary>
+        public string CustomAuthorizationAssemblyName { get; set; }
+
+        /// <summary>
+        /// Assembly name that contains custom WebApp settings
+        /// </summary>
+        public string CustomWebAppSettingsAssemblyName { get; set; }
     }
 }

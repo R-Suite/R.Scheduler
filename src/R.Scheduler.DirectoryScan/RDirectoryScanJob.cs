@@ -83,8 +83,9 @@ namespace R.Scheduler.DirectoryScan
         public new void Execute(IJobExecutionContext context)
         {
             JobDataMap data = context.MergedJobDataMap;
+            var jobName = context.JobDetail.Key.Name;
 
-            string callbackUrl = GetRequiredParameter(data, CallbackUrl);
+            string callbackUrl = GetRequiredParameter(data, CallbackUrl, jobName);
 
             string listenerName = Guid.NewGuid().ToString();
             var listener = new RDirectoryScanListener(callbackUrl);
@@ -94,17 +95,18 @@ namespace R.Scheduler.DirectoryScan
             data.Put("DIRECTORY_SCAN_LISTENER_NAME", listenerName);
             context.Scheduler.Context.Add(listenerName, listener);
 
+            Logger.InfoFormat("Executing ({0})", jobName);
             base.Execute(context);
 
             context.Scheduler.Context.Remove(listenerName);
         }
 
-        protected virtual string GetRequiredParameter(JobDataMap data, string propertyName)
+        protected virtual string GetRequiredParameter(JobDataMap data, string propertyName, string jobName)
         {
             string value = data.GetString(propertyName);
             if (string.IsNullOrEmpty(value))
             {
-                Logger.ErrorFormat("Error in RDirectoryScanJob: {0} not specified.", propertyName);
+                Logger.ErrorFormat("Error in RDirectoryScanJob ({0}): {1} not specified.", jobName, propertyName);
                 throw new JobExecutionException(string.Format("{0} not specified.", propertyName));
             }
             return value;

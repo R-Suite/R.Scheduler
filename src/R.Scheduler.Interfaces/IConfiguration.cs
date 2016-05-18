@@ -37,5 +37,15 @@ namespace R.Scheduler.Interfaces
         /// Assembly name that contains custom implementation of <see cref="IJobListener"/>
         /// </summary>
         IList<string> CustomJobListenerAssemblyNames { get; set; }
+
+        /// <summary>
+        /// Assmbly that contains custom authorization logic
+        /// </summary>
+        string CustomAuthorizationAssemblyName { get; set; }
+
+        /// <summary>
+        /// Assembly that contains custom WebApp settings class
+        /// </summary>
+        string CustomWebAppSettingsAssemblyName { get; set; }
     }
 }

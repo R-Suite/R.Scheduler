@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using Common.Logging;
 using Microsoft.Owin.Hosting;
+using Owin;
 using Quartz;
 using Quartz.Impl;
 using Quartz.Impl.Matchers;
@@ -101,15 +104,60 @@ namespace R.Scheduler
                         AddCustomJobListeners();
                         AddCustomSchedulerListeners();
 
+                        // Custom Authorization
+                        AddCustomAuthorization();
+
                         if (Configuration.EnableWebApiSelfHost)
                         {
-                            IDisposable webApiHost = WebApp.Start<Startup>(url: Configuration.WebApiBaseAddress);
+                            // If custom WebApp Settings is defined in a custom assembly - load the assembly, get the relevant type and method,
+                            // make  generic method and invoke it.
+                            if (!string.IsNullOrEmpty(Configuration.CustomWebAppSettingsAssemblyName))
+                            {
+                                var asm = GetAssembly(Configuration.CustomWebAppSettingsAssemblyName);
+
+                                Type startupType = null;
+                                var allTypes = asm.GetTypes();
+                                foreach (var type in allTypes)
+                                {
+                                    var allMethods = type.GetMethods();
+
+                                    foreach (MethodInfo methodInfo in allMethods)
+                                    {
+                                        ParameterInfo pi = methodInfo.GetParameters().FirstOrDefault(q => q.ParameterType == typeof(IAppBuilder));
+
+                                        if (null != pi)
+                                        {
+                                            startupType = type;
+                                            break;
+                                        }
+                                    }
+
+                                    if (startupType != null)
+                                    {
+                                        break;
+                                    }
+                                }
+
+                                MethodInfo miWebAppStart = typeof (Scheduler).GetMethod("WebAppStart", BindingFlags.NonPublic | BindingFlags.Static);
+                                MethodInfo genericMiWebAppStart = miWebAppStart.MakeGenericMethod(startupType);
+                                genericMiWebAppStart.Invoke(null, new object[] {Configuration.WebApiBaseAddress});
+                            }
+                            else
+                            {
+                                // No custom WebApp Settings defined, use the built-in default.
+                                WebAppStart<Startup>(Configuration.WebApiBaseAddress);
+                            }
                         }
                     }
                 }
             }
 
             return _instance;
+        }
+
+        private static void WebAppStart<T>(string webApiBaseAddress)
+        {
+            IDisposable webApiHost = WebApp.Start<T>(url: webApiBaseAddress);
         }
 
         /// <summary>
@@ -174,7 +222,7 @@ namespace R.Scheduler
                     {
                         var asm = GetAssembly(listenerAssemblyName);
                         Type listenerType = asm != null
-                            ? asm.GetTypes().FirstOrDefault(i => IsListener(i, typeof (ITriggerListener)))
+                            ? asm.GetTypes().FirstOrDefault(i => IsOfType(i, typeof (ITriggerListener)))
                             : null;
 
                         if (listenerType != null)
@@ -201,7 +249,7 @@ namespace R.Scheduler
                     {
                         var asm = GetAssembly(listenerAssemblyName);
                         Type listenerType = asm != null
-                            ? asm.GetTypes().FirstOrDefault(i => IsListener(i, typeof(IJobListener)))
+                            ? asm.GetTypes().FirstOrDefault(i => IsOfType(i, typeof(IJobListener)))
                             : null;
 
                         if (listenerType != null)
@@ -228,7 +276,7 @@ namespace R.Scheduler
                     {
                         var asm = GetAssembly(listenerAssemblyName);
                         Type listenerType = asm != null
-                            ? asm.GetTypes().FirstOrDefault(i => IsListener(i, typeof(ISchedulerListener)))
+                            ? asm.GetTypes().FirstOrDefault(i => IsOfType(i, typeof(ISchedulerListener)))
                             : null;
 
                         if (listenerType != null)
@@ -245,6 +293,32 @@ namespace R.Scheduler
             }
         }
 
+        private static void AddCustomAuthorization()
+        {
+            if (!string.IsNullOrEmpty(Configuration.CustomAuthorizationAssemblyName))
+            {
+                var authorizerAssemblyName = Configuration.CustomAuthorizationAssemblyName;
+
+                try
+                {
+                    var asm = GetAssembly(authorizerAssemblyName);
+                    Type authorizerType = asm != null
+                        ? asm.GetTypes().FirstOrDefault(i => IsOfType(i, typeof(IAuthorize)))
+                        : null;
+
+                    if (authorizerType != null)
+                    {
+                        var authorizer = (IAuthorize) Activator.CreateInstance(authorizerType);
+                        _instance.Context.Add("CustomAuthorizer", authorizer);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(string.Format("Error adding authorizer from {0}", authorizerAssemblyName), ex);
+                }
+            }
+        }
+
         private static Assembly GetAssembly(string assemblyName)
         {
             if (!assemblyName.ToLower().EndsWith(".dll"))
@@ -257,13 +331,13 @@ namespace R.Scheduler
             return asm;
         }
 
-        private static bool IsListener(Type t, Type listenerType)
+        private static bool IsOfType(Type t, Type listenerType)
         {
             if (t == null)
                 return false;
             var isListener = t.GetInterface(listenerType.FullName) != null;
             if (!isListener)
-                isListener = IsListener(t.BaseType, listenerType);
+                isListener = IsOfType(t.BaseType, listenerType);
             return isListener;
         }
     }

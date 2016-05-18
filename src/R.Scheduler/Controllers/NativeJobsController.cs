@@ -17,6 +17,7 @@ namespace R.Scheduler.Controllers
     /// <summary>
     /// Controller for Quartz.net built-in job for executing native executables in a separate process.
     /// </summary>
+    [SchedulerAuthorize(AppSettingRoles = "Roles", AppSettingUsers = "Users")]
     public class NativeJobsController : BaseJobsImpController
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -33,6 +34,7 @@ namespace R.Scheduler.Controllers
         /// <returns></returns>
         [AcceptVerbs("GET")]
         [Route("api/nativeJobs")]
+        [SchedulerAuthorize(AppSettingRoles = "Read.Roles", AppSettingUsers = "Read.Users")]
         public IEnumerable<NativeExecJob> Get()
         {
             Logger.Debug("Entered NativeJobsController.Get().");
@@ -71,6 +73,7 @@ namespace R.Scheduler.Controllers
         /// <returns></returns>
         [AcceptVerbs("GET")]
         [Route("api/nativeJobs/{id}")]
+        [SchedulerAuthorize(AppSettingRoles = "Read.Roles", AppSettingUsers = "Read.Users")]
         public NativeExecJob Get(Guid id)
         {
             Logger.Debug("Entered NativeJobsController.Get().");
@@ -109,6 +112,7 @@ namespace R.Scheduler.Controllers
         /// <returns></returns>
         [AcceptVerbs("POST")]
         [Route("api/nativeJobs")]
+        [SchedulerAuthorize(AppSettingRoles = "Create.Roles", AppSettingUsers = "Create.Users")]
         public QueryResponse Post([FromBody]NativeExecJob model)
         {
             Logger.DebugFormat("Entered NativeJobsController.Post(). Job Name = {0}", model.JobName);
@@ -123,6 +127,7 @@ namespace R.Scheduler.Controllers
         /// <returns></returns>
         [AcceptVerbs("PUT")]
         [Route("api/nativeJobs/{id}")]
+        [SchedulerAuthorize(AppSettingRoles = "Update.Roles", AppSettingUsers = "Update.Users")]
         public QueryResponse Put([FromBody]NativeExecJob model)
         {
             Logger.DebugFormat("Entered NativeJobsController.Put(). Job Name = {0}", model.JobName);

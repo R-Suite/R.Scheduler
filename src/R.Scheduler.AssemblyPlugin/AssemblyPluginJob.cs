@@ -29,6 +29,7 @@ namespace R.Scheduler.AssemblyPlugin
         public void Execute(IJobExecutionContext context)
         {
             JobDataMap dataMap = context.JobDetail.JobDataMap;
+            var jobName = context.JobDetail.Key.Name;
 
             string pluginPath = dataMap.GetString("pluginPath");
 
@@ -36,14 +37,14 @@ namespace R.Scheduler.AssemblyPlugin
 
             if (string.IsNullOrEmpty(pluginPath) || !File.Exists(pluginPath))
             {
-                Logger.ErrorFormat("Error in AssemblyPluginJob: plugin file '{0}' does not exist.", pluginPath);
+                Logger.ErrorFormat("Error in AssemblyPluginJob ({0}): plugin file '{1}' does not exist.", jobName, pluginPath);
                 throw new JobExecutionException(string.Format("Assembly file {0} does not exist", pluginPath));
             }
 
             var pluginAssemblyName = Path.GetFileNameWithoutExtension(pluginPath);
 
             var appDomain = GetAppDomain(pluginPath, pluginAssemblyName);
-            var pluginTypeName = GetPluginTypeName(appDomain, pluginPath);
+            var pluginTypeName = GetPluginTypeName(appDomain, pluginPath, jobName);
             Exception executionException = null;
 
             IJobPlugin jobPlugin;
@@ -79,7 +80,7 @@ namespace R.Scheduler.AssemblyPlugin
 
             if (null != executionException)
             {
-                Logger.Error("Error in AssemblyPluginJob: ", executionException);
+                Logger.Error(string.Format("Error in AssemblyPluginJob ({0}):", jobName), executionException);
                 throw new JobExecutionException(executionException.Message, executionException, false);
             }
         }
@@ -116,7 +117,7 @@ namespace R.Scheduler.AssemblyPlugin
             return appDomain;
         }
 
-        private static string GetPluginTypeName(AppDomain domain, string pluginPath)
+        private static string GetPluginTypeName(AppDomain domain, string pluginPath, string jobName)
         {
             PluginAppDomainHelper helper = null;
             var pluginFinderType = typeof (PluginAppDomainHelper);
@@ -129,7 +130,7 @@ namespace R.Scheduler.AssemblyPlugin
 
             if (helper == null)
             {
-                Logger.Error("Error in AssemblyPluginJob: Could not create plugin domain helper.");
+                Logger.ErrorFormat("Error in AssemblyPluginJob ({0}): Could not create plugin domain helper.", jobName);
                 throw new JobExecutionException("Could not create plugin domain helper");
             }
 

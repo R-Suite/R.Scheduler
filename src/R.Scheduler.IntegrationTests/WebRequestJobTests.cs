@@ -44,6 +44,7 @@ namespace R.Scheduler.IntegrationTests
                 jobDetail.JobDataMap.Add("contentType", "text/plain");
                 jobDetail.JobDataMap.Add("uri", BaseHostingAddress + "/testapi/test?JobName=TestJob&FireInstanceId={$FireInstanceId}");
                 _mockJobExecutionContext.SetupGet(p => p.MergedJobDataMap).Returns(jobDetail.JobDataMap);
+                _mockJobExecutionContext.SetupGet(p => p.JobDetail).Returns(jobDetail);
 
                 // Act
                 pluginRunner.Execute(_mockJobExecutionContext.Object);

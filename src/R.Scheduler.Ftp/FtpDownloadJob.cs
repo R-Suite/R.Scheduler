@@ -49,15 +49,16 @@ namespace R.Scheduler.Ftp
         public void Execute(IJobExecutionContext context)
         {
             JobDataMap data = context.MergedJobDataMap;
+            var jobName = context.JobDetail.Key.Name;
 
-            string ftpHost = GetRequiredParameter(data, FtpHost);
+            string ftpHost = GetRequiredParameter(data, FtpHost, jobName);
             string serverPort = GetOptionalParameter(data, ServerPort);
             string userName = GetOptionalParameter(data, UserName);
             string password = GetOptionalParameter(data, Password);
-            string localDirectoryPath = GetRequiredParameter(data, LocalDirectoryPath);
+            string localDirectoryPath = GetRequiredParameter(data, LocalDirectoryPath, jobName);
             string remoteDirectoryPath = GetOptionalParameter(data, RemoteDirectoryPath);
             string cutOff = GetOptionalParameter(data, CutOff);
-            string fileExtensions = GetRequiredParameter(data, FileExtensions);
+            string fileExtensions = GetRequiredParameter(data, FileExtensions, jobName);
 
             // Set defaults
             int port = (!string.IsNullOrEmpty(serverPort) ? Int32.Parse(serverPort) : 21);
@@ -68,7 +69,7 @@ namespace R.Scheduler.Ftp
             if (!TimeSpan.TryParse(cutOff, out cutOffTimeSpan))
             {
                 var err = string.Format("Invalid cutOffTimeSpan format [{0}] specified.", cutOff);
-                Logger.ErrorFormat("Error in FtpDownloadJob: {0}", err);
+                Logger.ErrorFormat("Error in FtpDownloadJob ({0}): {1}", jobName, err);
                 throw new JobExecutionException(err);
             }
 
@@ -83,7 +84,7 @@ namespace R.Scheduler.Ftp
             }
             catch (Exception ex)
             {
-                Logger.Error("Error in FtpDownloadJob.", ex);
+                Logger.Error(string.Format("Error in FtpDownloadJob ({0}):", jobName), ex);
                 throw new JobExecutionException(ex.Message, ex, false);
             }
         }
@@ -100,12 +101,12 @@ namespace R.Scheduler.Ftp
             return value;
         }
 
-        protected virtual string GetRequiredParameter(JobDataMap data, string propertyName)
+        protected virtual string GetRequiredParameter(JobDataMap data, string propertyName, string jobName)
         {
             string value = data.GetString(propertyName);
             if (string.IsNullOrEmpty(value))
             {
-                Logger.ErrorFormat("Error in FtpDownloadJob: {0} not specified.", propertyName);
+                Logger.ErrorFormat("Error in FtpDownloadJob ({0}): {1} not specified.", jobName, propertyName);
                 throw new JobExecutionException(string.Format("{0} not specified.", propertyName));
             }
             return value;

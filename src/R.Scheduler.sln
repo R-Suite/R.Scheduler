@@ -50,6 +50,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.FakeJobPluginWi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.TestListenersImp", "R.Scheduler.TestListenersImp\R.Scheduler.TestListenersImp.csproj", "{00FAFE80-AF56-4277-9177-BD9DD3EB7BA5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.TestCustomAuthorizationImp", "R.Scheduler.TestCustomAuthorizationImp\R.Scheduler.TestCustomAuthorizationImp.csproj", "{64467844-10C7-4B12-AD87-D6F38DE05D9B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -124,6 +126,10 @@ Global
 		{00FAFE80-AF56-4277-9177-BD9DD3EB7BA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00FAFE80-AF56-4277-9177-BD9DD3EB7BA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00FAFE80-AF56-4277-9177-BD9DD3EB7BA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64467844-10C7-4B12-AD87-D6F38DE05D9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64467844-10C7-4B12-AD87-D6F38DE05D9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64467844-10C7-4B12-AD87-D6F38DE05D9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64467844-10C7-4B12-AD87-D6F38DE05D9B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -142,5 +148,6 @@ Global
 		{99EDF966-9370-4FA2-8CE7-6089F88E83CC} = {6C0687DC-4023-4803-8690-197C9274A5C0}
 		{9AB8E06A-1951-4C47-A438-AD3BA5E65A3F} = {ACF74C8F-7012-44A7-A924-4F87D805F93F}
 		{00FAFE80-AF56-4277-9177-BD9DD3EB7BA5} = {6E854787-A37D-422A-A0F3-C8707723EB4C}
+		{64467844-10C7-4B12-AD87-D6F38DE05D9B} = {6E854787-A37D-422A-A0F3-C8707723EB4C}
 	EndGlobalSection
 EndGlobal

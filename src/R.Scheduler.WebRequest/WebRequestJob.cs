@@ -39,10 +39,11 @@ namespace R.Scheduler.WebRequest
         public void Execute(IJobExecutionContext context)
         {
             JobDataMap data = context.MergedJobDataMap;
+            var jobName = context.JobDetail.Key.Name;
 
-            string actionType = GetRequiredParameter(data, ActionType);
-            string method = GetRequiredParameter(data, Method);
-            string uri = GetRequiredParameter(data, Uri);
+            string actionType = GetRequiredParameter(data, ActionType, jobName);
+            string method = GetRequiredParameter(data, Method, jobName);
+            string uri = GetRequiredParameter(data, Uri, jobName);
             string body = GetOptionalParameter(data, Body) ?? string.Empty;
             string contentType = GetOptionalParameter(data, ContentType) ?? "text/plain";
 
@@ -120,7 +121,7 @@ namespace R.Scheduler.WebRequest
             }
             catch (WebException ex)
             {
-                Logger.Error("Error in WebRequestJob:", ex);
+                Logger.Error(string.Format("Error in WebRequestJob ({0}):", jobName), ex);
                 context.Result = ex.Message;
 
                 if (ex.Response != null)
@@ -133,7 +134,7 @@ namespace R.Scheduler.WebRequest
                             using (var reader = new StreamReader(stream))
                             {
                                 string error = reader.ReadToEnd();
-                                Logger.ErrorFormat("Error in WebRequestJob: {0}", error);
+                                Logger.ErrorFormat("Error in WebRequestJob ({0}): {1}", jobName, error);
                             }
                         }
                     }
@@ -142,7 +143,7 @@ namespace R.Scheduler.WebRequest
             }
             catch (Exception ex)
             {
-                Logger.Error("Error in WebRequestJob:", ex);
+                Logger.Error(string.Format("Error in WebRequestJob ({0}):", jobName), ex);
                 throw new JobExecutionException(ex.Message, ex, false);
             }
         }
@@ -159,12 +160,12 @@ namespace R.Scheduler.WebRequest
             return value;
         }
 
-        protected virtual string GetRequiredParameter(JobDataMap data, string propertyName)
+        protected virtual string GetRequiredParameter(JobDataMap data, string propertyName, string jobName)
         {
             string value = data.GetString(propertyName);
             if (string.IsNullOrEmpty(value))
             {
-                Logger.ErrorFormat("Error in WebRequestJob: {0} not specified.", propertyName);
+                Logger.ErrorFormat("Error in WebRequestJob ({0}): {1} not specified.", jobName, propertyName);
                 throw new JobExecutionException(string.Format("{0} not specified.", propertyName));
             }
             return value;

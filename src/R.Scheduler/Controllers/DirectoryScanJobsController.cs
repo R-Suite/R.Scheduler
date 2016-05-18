@@ -16,6 +16,7 @@ using DirectoryScanJob = R.Scheduler.Contracts.JobTypes.DirectoryScan.Model.Dire
 
 namespace R.Scheduler.Controllers
 {
+    [SchedulerAuthorize(AppSettingRoles = "Roles", AppSettingUsers = "Users")]
     public class DirectoryScanJobsController : BaseJobsImpController
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -32,6 +33,7 @@ namespace R.Scheduler.Controllers
         /// <returns></returns>
         [AcceptVerbs("GET")]
         [Route("api/dirScanJobs")]
+        [SchedulerAuthorize(AppSettingRoles = "Read.Roles", AppSettingUsers = "Read.Users")]
         public IEnumerable<Contracts.JobTypes.DirectoryScan.Model.DirectoryScanJob> Get()
         {
             Logger.Info("Entered DirectoryScanJobsController.Get().");
@@ -69,6 +71,7 @@ namespace R.Scheduler.Controllers
         /// <returns></returns>
         [AcceptVerbs("GET")]
         [Route("api/dirScanJobs/{id}")]
+        [SchedulerAuthorize(AppSettingRoles = "Read.Roles", AppSettingUsers = "Read.Users")]
         public Contracts.JobTypes.DirectoryScan.Model.DirectoryScanJob Get(Guid id)
         {
             Logger.Info("Entered DirectoryScanJobsController.Get().");
@@ -105,6 +108,7 @@ namespace R.Scheduler.Controllers
         /// <returns></returns>
         [AcceptVerbs("POST")]
         [Route("api/dirScanJobs")]
+        [SchedulerAuthorize(AppSettingRoles = "Create.Roles", AppSettingUsers = "Create.Users")]
         public QueryResponse Post([FromBody]Contracts.JobTypes.DirectoryScan.Model.DirectoryScanJob model)
         {
             Logger.InfoFormat("Entered DirectoryScanJobsController.Post(). Job Name = {0}", model.JobName);
@@ -119,6 +123,7 @@ namespace R.Scheduler.Controllers
         /// <returns></returns>
         [AcceptVerbs("PUT")]
         [Route("api/dirScanJobs/{id}")]
+        [SchedulerAuthorize(AppSettingRoles = "Update.Roles", AppSettingUsers = "Update.Users")]
         public QueryResponse Put([FromBody]Contracts.JobTypes.DirectoryScan.Model.DirectoryScanJob model)
         {
             Logger.InfoFormat("Entered DirectoryScanJobsController.Put(). Job Name = {0}", model.JobName);

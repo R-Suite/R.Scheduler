@@ -12,6 +12,7 @@ using StructureMap;
 
 namespace R.Scheduler.Ftp.Controllers
 {
+    [SchedulerAuthorize(AppSettingRoles = "Roles", AppSettingUsers = "Users")]
     public class FtpJobsController : BaseJobsImpController
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -28,6 +29,7 @@ namespace R.Scheduler.Ftp.Controllers
         /// <returns></returns>
         [AcceptVerbs("GET")]
         [Route("api/ftpDownloads")]
+        [SchedulerAuthorize(AppSettingRoles = "Read.Roles", AppSettingUsers = "Read.Users")]
         public IEnumerable<Contracts.JobTypes.Ftp.Model.FtpDownloadJob> Get()
         {
             Logger.Debug("Entered FtpJobsController.Get().");
@@ -52,6 +54,7 @@ namespace R.Scheduler.Ftp.Controllers
         /// <returns></returns>
         [AcceptVerbs("GET")]
         [Route("api/ftpDownloads/{id}")]
+        [SchedulerAuthorize(AppSettingRoles = "Read.Roles", AppSettingUsers = "Read.Users")]
         public Contracts.JobTypes.Ftp.Model.FtpDownloadJob Get(Guid id)
         {
             Logger.Debug("Entered FtpJobsController.Get().");
@@ -93,6 +96,7 @@ namespace R.Scheduler.Ftp.Controllers
         /// <returns></returns>
         [AcceptVerbs("POST")]
         [Route("api/ftpDownloads")]
+        [SchedulerAuthorize(AppSettingRoles = "Create.Roles", AppSettingUsers = "Create.Users")]
         public QueryResponse Post([FromBody]Contracts.JobTypes.Ftp.Model.FtpDownloadJob model)
         {
             Logger.DebugFormat("Entered FtpJobsController.Post(). Job Name = {0}", model.JobName);
@@ -107,6 +111,7 @@ namespace R.Scheduler.Ftp.Controllers
         /// <returns></returns>
         [AcceptVerbs("PUT")]
         [Route("api/ftpDownloads/{id}")]
+        [SchedulerAuthorize(AppSettingRoles = "Update.Roles", AppSettingUsers = "Update.Users")]
         public QueryResponse Put([FromBody]Contracts.JobTypes.Ftp.Model.FtpDownloadJob model)
         {
             Logger.DebugFormat("Entered FtpJobsController.Put(). Job Name = {0}", model.JobName);

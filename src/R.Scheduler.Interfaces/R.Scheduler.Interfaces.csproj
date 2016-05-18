@@ -71,6 +71,7 @@
   <ItemGroup>
     <Compile Include="AuditLog.cs" />
     <Compile Include="IAnalytics.cs" />
+    <Compile Include="IAuthorize.cs" />
     <Compile Include="IConfiguration.cs" />
     <Compile Include="IPersistanceStore.cs" />
     <Compile Include="IJobTypeManager.cs" />

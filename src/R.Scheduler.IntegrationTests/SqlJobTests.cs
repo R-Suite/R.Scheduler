@@ -30,7 +30,7 @@ namespace R.Scheduler.IntegrationTests
                 var command = new SQLiteCommand(sql, dbConnection);
                 command.ExecuteNonQuery();
 
-                IJobDetail jobDetail = new JobDetailImpl("jobsettings", typeof(IJob));
+                IJobDetail jobDetail = new JobDetailImpl("TestJob1", typeof(IJob));
                 jobDetail.JobDataMap.Add("connectionString", ConnectionString);
                 jobDetail.JobDataMap.Add("providerAssemblyName", @"System.Data.SQLite");
                 jobDetail.JobDataMap.Add("connectionClass", @"System.Data.SQLite.SQLiteConnection");
@@ -38,6 +38,7 @@ namespace R.Scheduler.IntegrationTests
                 jobDetail.JobDataMap.Add("dataAdapterClass", @"System.Data.SQLite.SQLiteDataAdapter");
                 jobDetail.JobDataMap.Add("nonQueryCommand", @"insert into names (name) values ('Me')");
                 _mockJobExecutionContext.SetupGet(p => p.MergedJobDataMap).Returns(jobDetail.JobDataMap);
+                _mockJobExecutionContext.SetupGet(p => p.JobDetail).Returns(jobDetail);
 
                 // Act
                 pluginRunner.Execute(_mockJobExecutionContext.Object);

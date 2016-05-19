@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Net.Http;
 using System.Reflection;
 using Common.Logging;
 using Microsoft.Owin.Hosting;
@@ -145,7 +143,7 @@ namespace R.Scheduler
                             else
                             {
                                 // No custom WebApp Settings defined, use the built-in default.
-                                WebAppStart<Startup>(Configuration.WebApiBaseAddress);
+                                IDisposable webApiHost = WebApp.Start<Startup>(url: Configuration.WebApiBaseAddress);
                             }
                         }
                     }

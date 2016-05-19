@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Web.Http;
 using System.Web.Http.Controllers;
@@ -59,6 +61,16 @@ namespace R.Scheduler.Core
 
             // Authorized by default
             return true;
+        }
+
+        protected override void HandleUnauthorizedRequest(HttpActionContext actionContext)
+        {
+            var msg = new HttpResponseMessage(HttpStatusCode.Forbidden)
+            {
+                ReasonPhrase = "Unauthorized"
+            };
+
+            throw new HttpResponseException(msg);
         }
     }
 }

@@ -40,7 +40,7 @@ namespace R.Scheduler.Core
 
             foreach (string group in jobGroups)
             {
-                var groupMatcher = GroupMatcher<JobKey>.GroupContains(group);
+                var groupMatcher = GroupMatcher<JobKey>.GroupEquals(group);
                 var jobKeys = _scheduler.GetJobKeys(groupMatcher);
                 foreach (var jobKey in jobKeys)
                 {

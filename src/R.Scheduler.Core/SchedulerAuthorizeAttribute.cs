@@ -22,6 +22,8 @@ namespace R.Scheduler.Core
 
         protected override bool IsAuthorized(HttpActionContext actionContext)
         {
+            Logger.DebugFormat("Entered SchedulerAuthorizeAttribute.IsAuthorized");
+
             var scheduler = ObjectFactory.GetInstance<IScheduler>();
 
             if (scheduler.Context.ContainsKey("CustomAuthorizer"))
@@ -50,6 +52,7 @@ namespace R.Scheduler.Core
                 var authorize = (IAuthorize)scheduler.Context["CustomAuthorizer"];
                 authorize.Roles = roles;
                 authorize.Users = users;
+
                 var isAuthorized =  authorize.IsAuthorized(actionContext);
 
                 Logger.DebugFormat("Custom authorization enabled. isAuthorized = {0}", isAuthorized);
@@ -65,7 +68,7 @@ namespace R.Scheduler.Core
 
         protected override void HandleUnauthorizedRequest(HttpActionContext actionContext)
         {
-            var msg = new HttpResponseMessage(HttpStatusCode.Forbidden)
+            var msg = new HttpResponseMessage(HttpStatusCode.Unauthorized)
             {
                 ReasonPhrase = "Unauthorized"
             };

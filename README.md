@@ -1,3 +1,7 @@
+**Version 1.2.0-pre adds support for:**
+- Token-based authentication (No default implementation provided, you must implement ```R.Scheduler.Interfaces.IAuthorize``` in your custom assembly and register the assembly with the Scheduler at start-up. _See R.Scheduler.TestHost.Program.cs_)
+- ConnectionString encryption for SsqlJob and username/password encryption for FtpDownloadJob. (Add ```<add key="FeatureToggle.EncryptionFeatureToggle" value="true" />``` and ```<add key="SchedulerEncryptionKey" value="{Convert.ToBase64String(R.Scheduler.Core.AESGCM.NewKey())}" />``` to your app settings.
+
 # R.Scheduler
 An experimental, easy to use job execution engine built on top of Quartz Enterprise Scheduler .NET. 
 R.Scheduler is API driven. Actions can be performed using a simple RESTful API using JSON over HTTP.

@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Reflection;
 using System.Web.Http;
 using Common.Logging;
+using FeatureToggle.Core;
 using Quartz;
 using R.Scheduler.Contracts.Model;
 using R.Scheduler.Core;
+using R.Scheduler.Core.FeatureToggles;
 using R.Scheduler.Interfaces;
 using StructureMap;
 
@@ -67,8 +70,24 @@ namespace R.Scheduler.Ftp.Controllers
             }
             catch (Exception ex)
             {
-                Logger.Info(string.Format("Error getting JobDetail: {0}", ex.Message));
+                Logger.WarnFormat("Error getting JobDetail: {0}", ex.Message);
                 return null;
+            }
+
+            string username = jobDetail.JobDataMap.GetString("userName");
+            string password = jobDetail.JobDataMap.GetString("password");
+
+            try
+            {
+                if (new EncryptionFeatureToggle().FeatureEnabled)
+                {
+                    username = AESGCM.SimpleDecrypt(username, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
+                    password = AESGCM.SimpleDecrypt(password, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("ConfigurationError getting FtpDownload job.", ex);
             }
 
             return new Contracts.JobTypes.Ftp.Model.FtpDownloadJob
@@ -79,8 +98,8 @@ namespace R.Scheduler.Ftp.Controllers
                 SchedulerName = _schedulerCore.SchedulerName,
                 FtpHost = jobDetail.JobDataMap.GetString("ftpHost"),
                 ServerPort = jobDetail.JobDataMap.GetString("serverPort"),
-                Username = jobDetail.JobDataMap.GetString("userName"),
-                Password = jobDetail.JobDataMap.GetString("password"),
+                Username = username,
+                Password = password,
                 LocalDirectoryPath = jobDetail.JobDataMap.GetString("localDirectoryPath"),
                 RemoteDirectoryPath = jobDetail.JobDataMap.GetString("remoteDirectoryPath"),
                 FileExtensions = jobDetail.JobDataMap.GetString("fileExtensions"),
@@ -121,12 +140,28 @@ namespace R.Scheduler.Ftp.Controllers
 
         private QueryResponse CreateJob(Contracts.JobTypes.Ftp.Model.FtpDownloadJob model)
         {
+            string username = model.Username;
+            string password = model.Password;
+
+            try
+            {
+                if (new EncryptionFeatureToggle().FeatureEnabled)
+                {
+                    username = AESGCM.SimpleEncrypt(username, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
+                    password = AESGCM.SimpleEncrypt(password, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("ConfigurationError creating FtpDownload job.", ex);
+            }
+
             var dataMap = new Dictionary<string, object>
             {
                 {"ftpHost", model.FtpHost},
                 {"serverPort", model.ServerPort},
-                {"userName", model.Username},
-                {"password", model.Password},
+                {"userName", username},
+                {"password", password},
                 {"localDirectoryPath", model.LocalDirectoryPath},
                 {"remoteDirectoryPath", model.RemoteDirectoryPath},
                 {"fileExtensions", model.FileExtensions},

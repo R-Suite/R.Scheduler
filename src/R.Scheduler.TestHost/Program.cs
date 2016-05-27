@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using R.Scheduler.Interfaces;
+﻿using R.Scheduler.Interfaces;
 
 namespace R.Scheduler.TestHost
 {
@@ -16,14 +15,6 @@ namespace R.Scheduler.TestHost
                 config.CustomAuthorizationAssemblyName = "R.Scheduler.TestCustomAuthorizationImp";
                 config.CustomWebAppSettingsAssemblyName = "R.Scheduler.TestCustomAuthorizationImp";
             });
-            //R.Scheduler.Scheduler.Initialize(config =>
-            //{
-            //    config.EnableWebApiSelfHost = true;
-            //    config.PersistanceStoreType = PersistanceStoreType.Postgre;
-            //    config.ConnectionString = "User ID=postgres;Password=xxx;Host=localhost;Port=5432;Database=Scheduler;";
-            //    //config.CustomFtpLibraryAssemblyName = "R.Scheduler.FakeFtpLib";
-            //    config.CustomTriggerListenerAssemblyNames = new List<string>{ "R.Scheduler.TestListenersImp" };
-            //});
         }
     }
 }

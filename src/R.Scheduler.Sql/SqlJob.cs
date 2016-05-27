@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Configuration;
 using System.Data.Common;
 using System.Reflection;
 using Common.Logging;
+using FeatureToggle.Core;
 using Quartz;
+using R.Scheduler.Core;
+using R.Scheduler.Core.FeatureToggles;
 
 namespace R.Scheduler.Sql
 {
@@ -63,6 +67,18 @@ namespace R.Scheduler.Sql
             where COMMAND_TYPE : DbCommand 
             where ADAPTER_TYPE : DbDataAdapter, new()
         {
+            try
+            {
+                if (new EncryptionFeatureToggle().FeatureEnabled)
+                {
+                    connectionString = AESGCM.SimpleDecrypt(connectionString, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("ConfigurationError executing SqlJob job.", ex);
+            }
+
             using (var dbControl = new DbControl<CONNECTION_TYPE, COMMAND_TYPE, ADAPTER_TYPE>(connectionString))
             {
                 DbCommand command = (null != commandStyle && commandStyle.ToLower() == "storedprocedure")

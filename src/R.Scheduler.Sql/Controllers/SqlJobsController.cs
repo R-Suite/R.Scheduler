@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Configuration;
 using System.Reflection;
 using System.Web.Http;
 using Common.Logging;
+using FeatureToggle.Core;
 using Quartz;
 using R.Scheduler.Contracts.Model;
 using R.Scheduler.Core;
+using R.Scheduler.Core.FeatureToggles;
 using R.Scheduler.Interfaces;
 using StructureMap;
 
@@ -36,22 +38,41 @@ namespace R.Scheduler.Sql.Controllers
 
             var jobDetailsMap = _schedulerCore.GetJobDetails(typeof(SqlJob));
 
-            return jobDetailsMap.Select(mapItem =>
-                                                    new Contracts.JobTypes.Sql.Model.SqlJob
-                                                    {
-                                                        Id = mapItem.Value,
-                                                        JobName = mapItem.Key.Key.Name,
-                                                        JobGroup = mapItem.Key.Key.Group,
-                                                        SchedulerName = _schedulerCore.SchedulerName,
-                                                        ConnectionString = mapItem.Key.JobDataMap.GetString("connectionString"),
-                                                        CommandClass = mapItem.Key.JobDataMap.GetString("commandClass"),
-                                                        ConnectionClass = mapItem.Key.JobDataMap.GetString("connectionClass"),
-                                                        CommandStyle = mapItem.Key.JobDataMap.GetString("commandStyle"),
-                                                        ProviderAssemblyName = mapItem.Key.JobDataMap.GetString("providerAssemblyName"),
-                                                        NonQueryCommand = mapItem.Key.JobDataMap.GetString("nonQueryCommand"),
-                                                        DataAdapterClass = mapItem.Key.JobDataMap.GetString("dataAdapterClass")
-                                                    }).ToList();
+            var retval = new List<Contracts.JobTypes.Sql.Model.SqlJob>();
 
+            foreach (var mapItem in jobDetailsMap)
+            {
+                string connectionString = mapItem.Key.JobDataMap.GetString("connectionString");
+
+                try
+                {
+                    if (new EncryptionFeatureToggle().FeatureEnabled)
+                    {
+                        connectionString = AESGCM.SimpleDecrypt(connectionString, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error("ConfigurationError getting SqlJob jobs.", ex);
+                }
+
+                retval.Add(new Contracts.JobTypes.Sql.Model.SqlJob
+                {
+                    Id = mapItem.Value,
+                    JobName = mapItem.Key.Key.Name,
+                    JobGroup = mapItem.Key.Key.Group,
+                    SchedulerName = _schedulerCore.SchedulerName,
+                    ConnectionString = connectionString,
+                    CommandClass = mapItem.Key.JobDataMap.GetString("commandClass"),
+                    ConnectionClass = mapItem.Key.JobDataMap.GetString("connectionClass"),
+                    CommandStyle = mapItem.Key.JobDataMap.GetString("commandStyle"),
+                    ProviderAssemblyName = mapItem.Key.JobDataMap.GetString("providerAssemblyName"),
+                    NonQueryCommand = mapItem.Key.JobDataMap.GetString("nonQueryCommand"),
+                    DataAdapterClass = mapItem.Key.JobDataMap.GetString("dataAdapterClass")
+                });
+            }
+
+            return retval;
         }
 
         /// <summary>
@@ -77,13 +98,27 @@ namespace R.Scheduler.Sql.Controllers
                 return null;
             }
 
-            return new Contracts.JobTypes.Sql.Model.SqlJob()
+            string connectionString = jobDetail.JobDataMap.GetString("connectionString");
+
+            try
+            {
+                if (new EncryptionFeatureToggle().FeatureEnabled)
+                {
+                    connectionString = AESGCM.SimpleDecrypt(connectionString, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("ConfigurationError getting SqlJob job.", ex);
+            }
+
+            return new Contracts.JobTypes.Sql.Model.SqlJob
             {
                 Id = id,
                 JobName = jobDetail.Key.Name,
                 JobGroup = jobDetail.Key.Group,
                 SchedulerName = _schedulerCore.SchedulerName,
-                ConnectionString = jobDetail.JobDataMap.GetString("connectionString"),
+                ConnectionString = connectionString,
                 CommandClass = jobDetail.JobDataMap.GetString("commandClass"),
                 ConnectionClass = jobDetail.JobDataMap.GetString("connectionClass"),
                 CommandStyle = jobDetail.JobDataMap.GetString("commandStyle"),
@@ -126,9 +161,23 @@ namespace R.Scheduler.Sql.Controllers
 
         private QueryResponse CreateJob(Contracts.JobTypes.Sql.Model.SqlJob model)
         {
+            string connectionString = model.ConnectionString;
+
+            try
+            {
+                if (new EncryptionFeatureToggle().FeatureEnabled)
+                {
+                    connectionString = AESGCM.SimpleEncrypt(connectionString, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("ConfigurationError creating SqlJob job.", ex);
+            }
+
             var dataMap = new Dictionary<string, object>
             {
-                {"connectionString", model.ConnectionString},
+                {"connectionString", connectionString},
                 {"commandClass", model.CommandClass},
                 {"connectionClass", model.ConnectionClass},
                 {"commandStyle", model.CommandStyle},

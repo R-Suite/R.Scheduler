@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Configuration;
 using System.Reflection;
 using Common.Logging;
 using Quartz;
+using R.Scheduler.Core;
+using R.Scheduler.Core.FeatureToggles;
 using StructureMap;
 
 namespace R.Scheduler.Ftp
@@ -71,6 +74,19 @@ namespace R.Scheduler.Ftp
                 var err = string.Format("Invalid cutOffTimeSpan format [{0}] specified.", cutOff);
                 Logger.ErrorFormat("Error in FtpDownloadJob ({0}): {1}", jobName, err);
                 throw new JobExecutionException(err);
+            }
+
+            try
+            {
+                if (new EncryptionFeatureToggle().FeatureEnabled)
+                {
+                    userName = AESGCM.SimpleDecrypt(userName, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
+                    password = AESGCM.SimpleDecrypt(password, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("ConfigurationError executing SecureWebRequestJob job.", ex);
             }
 
             // Get files

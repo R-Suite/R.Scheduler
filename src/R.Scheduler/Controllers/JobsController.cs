@@ -33,9 +33,19 @@ namespace R.Scheduler.Controllers
         [SchedulerAuthorize(AppSettingRoles = "Read.Roles", AppSettingUsers = "Read.Users")]
         public IEnumerable<BaseJob> Get()
         {
-            Logger.Info("Entered JobsController.Get().");
+            Logger.Debug("Entered JobsController.Get().");
 
-            IDictionary<IJobDetail, Guid> jobDetailsMap = _schedulerCore.GetJobDetails();
+            IDictionary<IJobDetail, Guid> jobDetailsMap;
+
+            try
+            {
+                jobDetailsMap = _schedulerCore.GetJobDetails();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                throw;
+            }
 
             return jobDetailsMap.Select(mapItem =>
                                                     new BaseJob

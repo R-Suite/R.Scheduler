@@ -82,6 +82,7 @@ namespace R.Scheduler.WebRequest
 
             // Execute WebRequest
             System.Net.WebRequest request = System.Net.WebRequest.Create(actionType + uri);
+            request.Credentials = CredentialCache.DefaultNetworkCredentials;
             request.Method = method;
 
             Stream dataStream;

@@ -161,7 +161,7 @@ namespace R.Scheduler.Controllers
                 {"LAST_MODIFIED_TIME", model.LastModifiedTime.ToString("o")}
             };
 
-            return base.CreateJob(model, typeof (RDirectoryScanJob), dataMap);
+            return base.CreateJob(model, typeof (RDirectoryScanJob), dataMap, model.Description);
         }
     }
 }

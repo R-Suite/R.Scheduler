@@ -86,7 +86,7 @@ namespace R.Scheduler.Ftp
             }
             catch (Exception ex)
             {
-                Logger.Error("ConfigurationError executing SecureWebRequestJob job.", ex);
+                Logger.Error("ConfigurationError executing FtpDownloadJob job.", ex);
             }
 
             // Get files

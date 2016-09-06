@@ -53,7 +53,7 @@ namespace R.Scheduler.Sql.Controllers
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error("ConfigurationError getting SqlJob jobs.", ex);
+                    Logger.Warn("ConfigurationError getting SqlJob jobs.", ex);
                 }
 
                 retval.Add(new Contracts.JobTypes.Sql.Model.SqlJob
@@ -109,7 +109,7 @@ namespace R.Scheduler.Sql.Controllers
             }
             catch (Exception ex)
             {
-                Logger.Error("ConfigurationError getting SqlJob job.", ex);
+                Logger.Warn("ConfigurationError getting SqlJob job.", ex);
             }
 
             return new Contracts.JobTypes.Sql.Model.SqlJob

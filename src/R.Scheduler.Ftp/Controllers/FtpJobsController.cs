@@ -87,7 +87,7 @@ namespace R.Scheduler.Ftp.Controllers
             }
             catch (Exception ex)
             {
-                Logger.Error("ConfigurationError getting FtpDownload job.", ex);
+                Logger.Warn("ConfigurationError getting FtpDownload job.", ex);
             }
 
             return new Contracts.JobTypes.Ftp.Model.FtpDownloadJob

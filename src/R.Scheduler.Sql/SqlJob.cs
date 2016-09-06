@@ -76,7 +76,7 @@ namespace R.Scheduler.Sql
             }
             catch (Exception ex)
             {
-                Logger.Error("ConfigurationError executing SqlJob job.", ex);
+                Logger.Warn("ConfigurationError executing SqlJob job.", ex);
             }
 
             using (var dbControl = new DbControl<CONNECTION_TYPE, COMMAND_TYPE, ADAPTER_TYPE>(connectionString))

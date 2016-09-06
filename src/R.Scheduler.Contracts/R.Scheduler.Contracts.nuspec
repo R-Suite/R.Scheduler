@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>R.Scheduler.Contracts</id>
-    <version>1.2.0-pre</version>
+    <version>1.2.1</version>
     <title>R.Scheduler.Contracts</title>
     <authors>Jakub Pachansky</authors>
     <owners>Jakub Pachansky</owners>

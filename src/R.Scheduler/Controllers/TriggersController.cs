@@ -210,5 +210,57 @@ namespace R.Scheduler.Controllers
 
             return response;
         }
+
+        /// <summary>
+        /// Pause or resume specified trigger
+        /// </summary>
+        /// <param name="id">trigger id</param>
+        /// <param name="state">[on, off]</param>
+        /// <returns></returns>
+        [AcceptVerbs("PUT")]
+        [Route("api/triggers/{id}/state")]
+        [SchedulerAuthorize(AppSettingRoles = "Update.Roles", AppSettingUsers = "Update.Users")]
+        public QueryResponse ToggleTriggerState(Guid id, [FromBody] string state)
+        {
+            Logger.DebugFormat("Entered TriggersController.ToggleTrigger(). id = {0}, state = {1}", id, state);
+
+            var response = new QueryResponse { Valid = true, Id = id};
+
+            try
+            {
+                if (null == state || (state.ToLower() != "on" && state.ToLower() != "off"))
+                {
+                    throw new Exception("Invalid state. Provide state value 'ON' or 'OFF'");
+                }
+
+                if (state.ToLower() == "off")
+                    _schedulerCore.PauseTrigger(id);
+                else
+                    _schedulerCore.ResumeTrigger(id);
+            }
+            catch (Exception ex)
+            {
+                Logger.ErrorFormat("Error toggling trigger {0}. {1}", id, ex.Message);
+
+                string type = "Server";
+                if (ex is ArgumentException)
+                {
+                    type = "Sender";
+                }
+
+                response.Valid = false;
+                response.Errors = new List<Error>
+                {
+                    new Error
+                    {
+                        Code = "ErrorTogglingTrigger",
+                        Type = type,
+                        Message = string.Format("Error toggling trigger state. ({0})", ex.Message)
+                    }
+                };
+            }
+
+            return response;
+        }
     }
 }

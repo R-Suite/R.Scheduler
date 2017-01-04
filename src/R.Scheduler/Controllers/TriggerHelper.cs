@@ -14,6 +14,9 @@ namespace R.Scheduler.Controllers
             foreach (KeyValuePair<ITrigger, Guid> trigger in quartzTriggers)
             {
                 ITrigger quartzTrigger = trigger.Key;
+
+                TriggerState triggerState = Scheduler.Instance().GetTriggerState(quartzTrigger.Key);
+
                 var triggerType = "InstructionNotSet";
                 var misfireInstruction = string.Empty;
                 var additionalDetails = string.Empty;
@@ -101,7 +104,8 @@ namespace R.Scheduler.Controllers
                     Type = triggerType,
                     MisfireInstruction = misfireInstruction,
                     AdditionalDetails = additionalDetails,
-                    JobDataMap = (jobDataMap.Count > 0) ? jobDataMap : null
+                    JobDataMap = (jobDataMap.Count > 0) ? jobDataMap : null,
+                    State = triggerState.ToString()
                 });
             }
             return triggerDetails;

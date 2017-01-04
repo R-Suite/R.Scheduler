@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>R.Scheduler</id>
-    <version>1.2.4</version>
+    <version>1.2.5</version>
     <title>R.Scheduler</title>
     <authors>Jakub Pachansky</authors>
     <owners>Jakub Pachansky</owners>
@@ -10,16 +10,15 @@
     <description>A simple, easy to use job execution engine built on top of Quartz Enterprise Scheduler .NET</description>
     <language>en-GB</language>
     <projectUrl>https://github.com/R-Suite/R.Scheduler</projectUrl>
-    <copyright>Copyright 2016 R.Scheduler. All rights reserved</copyright>
+    <copyright>Copyright 2017 R.Scheduler. All rights reserved</copyright>
     <tags>Scheduler,R Scheduler,Quartz, Quartz net,R.Scheduler,Quartz Scheduler,RScheduler,Scheduling</tags>
     <dependencies>
-      <dependency id="R.Scheduler.Contracts" version="1.2.1" />
-      <dependency id="Quartz" version="2.3.3" />
+      <dependency id="R.Scheduler.Contracts" version="1.2.2" />
+      <dependency id="Quartz" version="2.4.1" />
       <dependency id="Microsoft.AspNet.WebApi.OwinSelfHost" version="5.2.3" />
       <dependency id="Microsoft.AspNet.WebApi.Cors" version="5.2.3" />
       <dependency id="Microsoft.Owin.Hosting" version="3.0.1" />
       <dependency id="structuremap" version="2.6.4.1" />
-      <dependency id="Common.Logging" version="3.3.0" />
       <dependency id="AutoMapper" version="4.1.1" />
       <dependency id="Newtonsoft.Json" version="8.0.3" />
   </dependencies>

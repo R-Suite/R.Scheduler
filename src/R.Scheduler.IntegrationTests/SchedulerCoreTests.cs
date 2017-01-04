@@ -106,5 +106,44 @@ namespace R.Scheduler.IntegrationTests
             Assert.Equal(triggerName, Scheduler.Instance().GetTrigger(new TriggerKey(triggerName)).Key.Name);
             Assert.Equal(0, Scheduler.Instance().GetTrigger(new TriggerKey(triggerName)).JobDataMap.Count);
         }
+
+        [Fact]
+        public void TestPauseTriggerSetsTriggerIntoPausedStateAndResumeTriggersSetsTriggerBackToNormalState()
+        {
+            // Arrange
+            Scheduler.Shutdown();
+            Scheduler.Initialize((config =>
+            {
+                config.EnableWebApiSelfHost = false;
+                config.EnableAuditHistory = false;
+            }));
+            IPersistanceStore persistanceStore = new InMemoryStore();
+            _schedulerCore = new SchedulerCore(Scheduler.Instance(), persistanceStore);
+
+            const string jobName = "Job1";
+            const string jobGroup = "Group1";
+            const string triggerName = "Trigger1";
+
+            _schedulerCore.CreateJob(jobName, jobGroup, typeof(NoOpJob), new Dictionary<string, object>(), string.Empty);
+
+            var simpleTrigger = new SimpleTrigger
+            {
+                RepeatCount = 1,
+                RepeatInterval = new TimeSpan(0, 1, 0, 0),
+                JobName = jobName,
+                JobGroup = jobGroup,
+                Name = triggerName
+            };
+
+            var triggerId = _schedulerCore.ScheduleTrigger(simpleTrigger);
+
+
+            // Act / Assert
+            _schedulerCore.PauseTrigger(triggerId);
+            Assert.Equal(TriggerState.Paused, Scheduler.Instance().GetTriggerState(new TriggerKey(triggerName)));
+
+            _schedulerCore.ResumeTrigger(triggerId);
+            Assert.Equal(TriggerState.Normal, Scheduler.Instance().GetTriggerState(new TriggerKey(triggerName)));
+        }
     }
 }

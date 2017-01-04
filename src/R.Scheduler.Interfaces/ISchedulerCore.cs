@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Quartz;
-using Quartz.Impl.Calendar;
 using R.Scheduler.Contracts.Model;
 
 namespace R.Scheduler.Interfaces
@@ -23,6 +22,10 @@ namespace R.Scheduler.Interfaces
         void RemoveJob(Guid jobId);
 
         void RemoveTrigger(Guid triggerId);
+
+        void PauseTrigger(Guid triggerId);
+
+        void ResumeTrigger(Guid triggerId);
 
         Guid ScheduleTrigger(BaseTrigger myTrigger);
 

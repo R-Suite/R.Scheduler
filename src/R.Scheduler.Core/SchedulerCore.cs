@@ -185,6 +185,42 @@ namespace R.Scheduler.Core
         }
 
         /// <summary>
+        /// Pause trigger from firing.
+        /// </summary>
+        /// <param name="triggerId"></param>
+        public void PauseTrigger(Guid triggerId)
+        {
+            var triggerKey = _persistanceStore.GetTriggerKey(triggerId);
+
+            if (_scheduler.CheckExists(triggerKey))
+            {
+                _scheduler.PauseTrigger(triggerKey);
+            }
+            else
+            {
+                throw new KeyNotFoundException(string.Format("TriggerKey not found for {0}", triggerId));
+            }
+        }
+
+        /// <summary>
+        /// Resume trigger from firing.
+        /// </summary>
+        /// <param name="triggerId"></param>
+        public void ResumeTrigger(Guid triggerId)
+        {
+            var triggerKey = _persistanceStore.GetTriggerKey(triggerId);
+
+            if (_scheduler.CheckExists(triggerKey))
+            {
+                _scheduler.ResumeTrigger(triggerKey);
+            }
+            else
+            {
+                throw new KeyNotFoundException(string.Format("TriggerKey not found for {0}", triggerId));
+            }
+        }
+
+        /// <summary>
         /// Schedule specified trigger
         /// </summary>
         /// <param name="myTrigger"></param>

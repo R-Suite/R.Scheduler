@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>R.Scheduler.Contracts</id>
-    <version>1.2.1</version>
+    <version>1.2.2</version>
     <title>R.Scheduler.Contracts</title>
     <authors>Jakub Pachansky</authors>
     <owners>Jakub Pachansky</owners>
@@ -10,7 +10,7 @@
     <description>R Scheduler Contracts</description>
     <language>en-GB</language>
     <projectUrl>https://github.com/R-Suite/R.Scheduler</projectUrl>
-    <copyright>Copyright 2016 R.Scheduler. All rights reserved</copyright>
+    <copyright>Copyright 2017 R.Scheduler. All rights reserved</copyright>
     <tags>Scheduler Contracts,Scheduler.Contracts,Quartz, Quartz net,Scheduler.Interfaces,R.Scheduler,R Scheduler,Scheduler</tags>
   </metadata>
   <files>

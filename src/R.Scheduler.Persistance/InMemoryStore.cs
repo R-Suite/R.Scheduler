@@ -145,7 +145,24 @@ namespace R.Scheduler.Persistance
 
         public TriggerKey GetTriggerKey(Guid id)
         {
-            throw new NotImplementedException();
+            TriggerKey retval = null;
+            const string cacheKey = "RSCHED_TRIGGER_ID_KEY_MAP";
+
+            if (Cache.Contains(cacheKey))
+            {
+                var cacheValue = (IDictionary<string, Guid>)Cache.Get(cacheKey);
+
+                foreach (var mapItem in cacheValue)
+                {
+                    if (mapItem.Value == id)
+                    {
+                        retval = new TriggerKey(mapItem.Key.Split('|')[0], mapItem.Key.Split('|')[1]);
+                        break;
+                    }
+                }
+            }
+
+            return retval;
         }
 
         public Guid GetTriggerId(TriggerKey triggerKey)

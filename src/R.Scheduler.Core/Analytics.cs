@@ -110,15 +110,18 @@ namespace R.Scheduler.Core
 
                 foreach (var dateTimeOffset in fireTimes)
                 {
-                    temp.Add(new FireInstance
+                    if (dateTimeOffset > DateTime.UtcNow) // Paused triggers might have the next firetime in the past.
                     {
-                        FireTimeUtc = dateTimeOffset,
-                        JobName = trigger.JobKey.Name,
-                        JobGroup = trigger.JobKey.Group,
-                        TriggerName = trigger.Key.Name,
-                        TriggerGroup = trigger.Key.Group,
-                        JobId = _persistanceStore.GetJobId(trigger.JobKey)
-                    });
+                        temp.Add(new FireInstance
+                        {
+                            FireTimeUtc = dateTimeOffset,
+                            JobName = trigger.JobKey.Name,
+                            JobGroup = trigger.JobKey.Group,
+                            TriggerName = trigger.Key.Name,
+                            TriggerGroup = trigger.Key.Group,
+                            JobId = _persistanceStore.GetJobId(trigger.JobKey)
+                        });
+                    }
                 }
             }
 

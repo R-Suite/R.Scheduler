@@ -13,6 +13,7 @@ using StructureMap;
 
 namespace R.Scheduler.Core
 {
+    [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
     public class SchedulerAuthorizeAttribute : AuthorizeAttribute
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -26,7 +27,7 @@ namespace R.Scheduler.Core
 
             var scheduler = ObjectFactory.GetInstance<IScheduler>();
 
-            if (scheduler.Context.ContainsKey("CustomAuthorizer"))
+            if (scheduler.Context.ContainsKey("CustomAuthorizerType"))
             {
                 var users = new List<string>();
                 var roles = new List<string>();
@@ -49,7 +50,7 @@ namespace R.Scheduler.Core
                     users.AddRange(ConfigurationManager.AppSettings[AppSettingUsers].Split(sep, StringSplitOptions.RemoveEmptyEntries));
                 }
 
-                var authorize = (IAuthorize)scheduler.Context["CustomAuthorizer"];
+                var authorize = (IAuthorize)Activator.CreateInstance((Type)scheduler.Context["CustomAuthorizerType"]);
                 authorize.Roles = roles;
                 authorize.Users = users;
 

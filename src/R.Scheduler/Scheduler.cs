@@ -306,8 +306,7 @@ namespace R.Scheduler
 
                     if (authorizerType != null)
                     {
-                        var authorizer = (IAuthorize) Activator.CreateInstance(authorizerType);
-                        _instance.Context.Add("CustomAuthorizer", authorizer);
+                        _instance.Context.Add("CustomAuthorizerType", authorizerType);
                     }
                 }
                 catch (Exception ex)

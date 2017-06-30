@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>R.Scheduler</id>
-    <version>1.2.8</version>
+    <version>1.2.9</version>
     <title>R.Scheduler</title>
     <authors>Jakub Pachansky</authors>
     <owners>Jakub Pachansky</owners>
@@ -21,6 +21,7 @@
       <dependency id="structuremap" version="2.6.4.1" />
       <dependency id="AutoMapper" version="4.1.1" />
       <dependency id="Newtonsoft.Json" version="8.0.3" />
+      <dependency id="FeatureToggle" version="3.4.0" />
   </dependencies>
   </metadata>
   <files>

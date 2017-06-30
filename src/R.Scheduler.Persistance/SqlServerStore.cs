@@ -90,6 +90,7 @@ namespace R.Scheduler.Persistance
                         command.Parameters.AddWithValue("@result", log.Result ?? string.Empty);
                         command.Parameters.AddWithValue("@executionException", log.ExecutionException ?? string.Empty);
 
+                        command.CommandTimeout = 60;
                         command.ExecuteScalar();
                     }
                 }

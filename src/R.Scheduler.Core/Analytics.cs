@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using Common.Logging;
 using Quartz;
 using Quartz.Impl.Matchers;
 using Quartz.Spi;
@@ -14,6 +16,7 @@ namespace R.Scheduler.Core
     /// </summary>
     public class Analytics : IAnalytics
     {
+        private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly IScheduler _scheduler;
         private readonly IPersistanceStore _persistanceStore;
 
@@ -97,32 +100,41 @@ namespace R.Scheduler.Core
             IList<FireInstance> temp = new List<FireInstance>();
 
             var allTriggerKeys = _scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.AnyGroup());
-            foreach (var triggerKey in allTriggerKeys)
+
+            try
             {
-                ITrigger trigger = _scheduler.GetTrigger(triggerKey);
-
-                ICalendar cal = null;
-                if (!string.IsNullOrEmpty(trigger.CalendarName))
+                foreach (var triggerKey in allTriggerKeys)
                 {
-                    cal = _scheduler.GetCalendar(trigger.CalendarName);
-                }
-                var fireTimes = TriggerUtils.ComputeFireTimes(trigger as IOperableTrigger, cal, count);
+                    ITrigger trigger = _scheduler.GetTrigger(triggerKey);
 
-                foreach (var dateTimeOffset in fireTimes)
-                {
-                    if (dateTimeOffset > DateTime.UtcNow) // Paused triggers might have the next firetime in the past.
+                    ICalendar cal = null;
+                    if (!string.IsNullOrEmpty(trigger.CalendarName))
                     {
-                        temp.Add(new FireInstance
+                        cal = _scheduler.GetCalendar(trigger.CalendarName);
+                    }
+                    var fireTimes = TriggerUtils.ComputeFireTimes(trigger as IOperableTrigger, cal, count);
+
+                    foreach (var dateTimeOffset in fireTimes)
+                    {
+                        if (dateTimeOffset > DateTime.UtcNow) // Paused triggers might have the next firetime in the past.
                         {
-                            FireTimeUtc = dateTimeOffset,
-                            JobName = trigger.JobKey.Name,
-                            JobGroup = trigger.JobKey.Group,
-                            TriggerName = trigger.Key.Name,
-                            TriggerGroup = trigger.Key.Group,
-                            JobId = _persistanceStore.GetJobId(trigger.JobKey)
-                        });
+                            temp.Add(new FireInstance
+                            {
+                                FireTimeUtc = dateTimeOffset,
+                                JobName = trigger.JobKey.Name,
+                                JobGroup = trigger.JobKey.Group,
+                                TriggerName = trigger.Key.Name,
+                                TriggerGroup = trigger.Key.Group,
+                                JobId = _persistanceStore.GetJobId(trigger.JobKey)
+                            });
+                        }
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Error getting upcoming job", e);
+                throw;
             }
 
             IList<FireInstance> retval = temp.OrderBy(i => i.FireTimeUtc).Take(count).ToList();

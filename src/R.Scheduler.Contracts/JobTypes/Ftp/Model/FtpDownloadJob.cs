@@ -10,5 +10,7 @@
         public string RemoteDirectoryPath { get; set; }
         public string FileExtensions { get; set; }
         public string CutOffTimeSpan { get; set; }
+        public string SshPrivateKeyPath { get; set; }
+        public string SshPrivateKeyPassword { get; set; }
     }
 }

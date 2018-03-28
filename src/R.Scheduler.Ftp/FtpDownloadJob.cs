@@ -41,6 +41,12 @@ namespace R.Scheduler.Ftp
         /// <summary> Single or comma-separated list of file extensions. REQUIRED.</summary>
         public const string FileExtensions = "fileExtensions";
 
+        /// <summary> Ssh private key path. Optional.</summary>
+        public const string SshPrivateKeyPath = "sshPrivateKeyPath";
+
+        /// <summary> SSH private key password. Optional.</summary>
+        public const string SshPrivateKeyPassword = "sshPrivateKeyPassword";
+
         /// <summary>
         /// Ctor used by Scheduler engine
         /// </summary>
@@ -62,6 +68,8 @@ namespace R.Scheduler.Ftp
             string remoteDirectoryPath = GetOptionalParameter(data, RemoteDirectoryPath);
             string cutOff = GetOptionalParameter(data, CutOff);
             string fileExtensions = GetRequiredParameter(data, FileExtensions, jobName);
+            string sshPrivateKeyPath = GetOptionalParameter(data, SshPrivateKeyPath);
+            string sshPrivateKeyPassword = GetOptionalParameter(data, SshPrivateKeyPassword);
 
             // Set defaults
             int port = (!string.IsNullOrEmpty(serverPort) ? Int32.Parse(serverPort) : 21);
@@ -82,6 +90,11 @@ namespace R.Scheduler.Ftp
                 {
                     userName = AESGCM.SimpleDecrypt(userName, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
                     password = AESGCM.SimpleDecrypt(password, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
+
+                    if (!string.IsNullOrEmpty(sshPrivateKeyPassword))
+                    {
+                        sshPrivateKeyPassword = AESGCM.SimpleDecrypt(sshPrivateKeyPassword, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
+                    }
                 }
             }
             catch (Exception ex)
@@ -94,7 +107,7 @@ namespace R.Scheduler.Ftp
             {
                 using (var ftpLibrary = ObjectFactory.GetInstance<IFtpLibrary>())
                 {
-                    ftpLibrary.Connect(ftpHost, port, userName, password);
+                    ftpLibrary.Connect(ftpHost, port, userName, password, sshPrivateKeyPath, sshPrivateKeyPassword);
                     ftpLibrary.GetFiles(remoteDirectoryPath, localDirectoryPath, fileExtensions, cutOffTimeSpan);
                 }
             }

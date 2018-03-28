@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Web.Http;
@@ -114,7 +115,7 @@ namespace R.Scheduler.Controllers
         }
 
         /// <summary>
-        /// Get executed jobs
+        /// Get upcoming jobs
         /// </summary>
         /// <returns></returns>
         [AcceptVerbs("GET")]
@@ -125,6 +126,22 @@ namespace R.Scheduler.Controllers
             Logger.Debug("Entered AnalyticsController.GetUpcomingJobs().");
 
             var upcomingJobs = _analytics.GetUpcomingJobs(count).ToList();
+
+            return upcomingJobs;
+        }
+
+        /// <summary>
+        /// Get upcoming jobs between dates
+        /// </summary>
+        /// <returns></returns>
+        [AcceptVerbs("GET")]
+        [Route("api/upcomingJobsBetween")]
+        [SchedulerAuthorize(AppSettingRoles = "Read.Roles", AppSettingUsers = "Read.Users")]
+        public IList<FireInstance> GetUpcomingJobsBetween(DateTime from, DateTime to)
+        {
+            Logger.Debug("Entered AnalyticsController.GetUpcomingJobsBetween().");
+
+            var upcomingJobs = _analytics.GetUpcomingJobsBetween(from, to).ToList();
 
             return upcomingJobs;
         }

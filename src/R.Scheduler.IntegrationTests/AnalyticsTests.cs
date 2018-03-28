@@ -65,6 +65,35 @@ namespace R.Scheduler.IntegrationTests
         }
 
         [Fact]
+        public void TestGetUpcomingBetweenJobsReturnsCorrectResults()
+        {
+            // Arrange
+            _schedulerCore.CreateJob("TestJob1", string.Empty, typeof(NoOpJob), new Dictionary<string, object>(), string.Empty);
+            _schedulerCore.ScheduleTrigger(new SimpleTrigger
+            {
+                JobName = "TestJob1",
+                Name = "TestTrigger1",
+                RepeatCount = 10,
+                RepeatInterval = new TimeSpan(0, 10, 0),
+                StartDateTime = DateTime.Now.AddMinutes(2)
+            });
+            _schedulerCore.ScheduleTrigger(new SimpleTrigger
+            {
+                JobName = "TestJob1",
+                Name = "TestTrigger2",
+                RepeatCount = 10,
+                RepeatInterval = new TimeSpan(0, 20, 0),
+                StartDateTime = DateTime.Now.AddMinutes(1)
+            });
+
+            // Act
+            var result = _analytics.GetUpcomingJobsBetween(DateTime.UtcNow, DateTime.UtcNow.AddHours(1)).ToList();
+
+            // Assert
+            Assert.Equal(9, result.Count);
+        }
+
+        [Fact]
         public void TestGetJobCountReturnCorrectResult()
         {
             // Arrange

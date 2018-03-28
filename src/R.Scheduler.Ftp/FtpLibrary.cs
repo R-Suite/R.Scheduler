@@ -43,10 +43,12 @@ namespace R.Scheduler.Ftp
         /// Only builds Request Uri but does not create physical connection to ftp server.
         /// </summary>
         /// <param name="host"></param>
-        /// <param name="serverPort">not in use</param>
+        /// <param name="serverPort">serverPort not used in this implementation</param>
         /// <param name="userName"></param>
         /// <param name="password"></param>
-        public void Connect(string host, int serverPort, string userName, string password = null)
+        /// <param name="sshPrivateKeyPath">sshPrivateKeyPath not used in this implementation</param>
+        /// <param name="sshPrivateKeyPassword">sshPrivateKeyPath not used in this implementation</param>
+        public void Connect(string host, int serverPort, string userName, string password, string sshPrivateKeyPath, string sshPrivateKeyPassword)
         {
             _requestUri = host;
             _userName = userName;

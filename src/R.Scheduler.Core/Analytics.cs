@@ -113,6 +113,7 @@ namespace R.Scheduler.Core
                         cal = _scheduler.GetCalendar(trigger.CalendarName);
                     }
                     var fireTimes = TriggerUtils.ComputeFireTimes(trigger as IOperableTrigger, cal, count);
+                    //TriggerUtils.ComputeFireTimesBetween(trigger as IOperableTrigger, cal,)
 
                     foreach (var dateTimeOffset in fireTimes)
                     {
@@ -138,6 +139,60 @@ namespace R.Scheduler.Core
             }
 
             IList<FireInstance> retval = temp.OrderBy(i => i.FireTimeUtc).Take(count).ToList();
+
+            return retval;
+        }
+
+
+        /// <summary>
+        /// Get a specified number of upcoming jobs
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        public IEnumerable<FireInstance> GetUpcomingJobsBetween(DateTime from, DateTime to)
+        {
+            IList<FireInstance> temp = new List<FireInstance>();
+
+            var allTriggerKeys = _scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.AnyGroup());
+
+            try
+            {
+                foreach (var triggerKey in allTriggerKeys)
+                {
+                    ITrigger trigger = _scheduler.GetTrigger(triggerKey);
+
+                    ICalendar cal = null;
+                    if (!string.IsNullOrEmpty(trigger.CalendarName))
+                    {
+                        cal = _scheduler.GetCalendar(trigger.CalendarName);
+                    }
+                    var fireTimes = TriggerUtils.ComputeFireTimesBetween(trigger as IOperableTrigger, cal, from, to);
+
+                    foreach (var dateTimeOffset in fireTimes)
+                    {
+                        if (dateTimeOffset > DateTime.UtcNow) // Paused triggers might have the next firetime in the past.
+                        {
+                            temp.Add(new FireInstance
+                            {
+                                FireTimeUtc = dateTimeOffset,
+                                JobName = trigger.JobKey.Name,
+                                JobGroup = trigger.JobKey.Group,
+                                TriggerName = trigger.Key.Name,
+                                TriggerGroup = trigger.Key.Group,
+                                JobId = _persistanceStore.GetJobId(trigger.JobKey)
+                            });
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Error getting upcoming job", e);
+                throw;
+            }
+
+            IList<FireInstance> retval = temp.OrderBy(i => i.FireTimeUtc).ToList();
 
             return retval;
         }

@@ -82,8 +82,11 @@ namespace R.Scheduler.Ftp.Controllers
                 if (new EncryptionFeatureToggle().FeatureEnabled)
                 {
                     username = AESGCM.SimpleDecrypt(username, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
-                    password = AESGCM.SimpleDecrypt(password, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
 
+                    if (!string.IsNullOrEmpty(password))
+                    {
+                        password = AESGCM.SimpleDecrypt(password, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
+                    }
 
                     if (!string.IsNullOrEmpty(sshPrivateKeyPassword))
                     {
@@ -150,13 +153,23 @@ namespace R.Scheduler.Ftp.Controllers
         {
             string username = model.Username;
             string password = model.Password;
+            string sshPrivateKeyPassword = model.SshPrivateKeyPassword;
 
             try
             {
                 if (new EncryptionFeatureToggle().FeatureEnabled)
                 {
                     username = AESGCM.SimpleEncrypt(username, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
-                    password = AESGCM.SimpleEncrypt(password, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
+
+                    if (!string.IsNullOrEmpty(password))
+                    {
+                        password = AESGCM.SimpleEncrypt(password, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
+                    }
+
+                    if (!string.IsNullOrEmpty(sshPrivateKeyPassword))
+                    {
+                        sshPrivateKeyPassword = AESGCM.SimpleDecrypt(sshPrivateKeyPassword, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
+                    }
                 }
             }
             catch (Exception ex)
@@ -175,7 +188,7 @@ namespace R.Scheduler.Ftp.Controllers
                 {"fileExtensions", model.FileExtensions},
                 {"cutOffTimeSpan", model.CutOffTimeSpan},
                 {"sshPrivateKeyPath", model.SshPrivateKeyPath},
-                {"sshPrivateKeyPassword", model.SshPrivateKeyPassword}
+                {"sshPrivateKeyPassword", sshPrivateKeyPassword}
             };
 
             return base.CreateJob(model, typeof (FtpDownloadJob), dataMap, model.Description);

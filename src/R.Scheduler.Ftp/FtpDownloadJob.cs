@@ -89,7 +89,11 @@ namespace R.Scheduler.Ftp
                 if (new EncryptionFeatureToggle().FeatureEnabled)
                 {
                     userName = AESGCM.SimpleDecrypt(userName, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
-                    password = AESGCM.SimpleDecrypt(password, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
+
+                    if (!string.IsNullOrEmpty(password))
+                    {
+                        password = AESGCM.SimpleDecrypt(password, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
+                    }
 
                     if (!string.IsNullOrEmpty(sshPrivateKeyPassword))
                     {

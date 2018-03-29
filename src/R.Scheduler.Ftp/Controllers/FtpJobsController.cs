@@ -168,7 +168,7 @@ namespace R.Scheduler.Ftp.Controllers
 
                     if (!string.IsNullOrEmpty(sshPrivateKeyPassword))
                     {
-                        sshPrivateKeyPassword = AESGCM.SimpleDecrypt(sshPrivateKeyPassword, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
+                        sshPrivateKeyPassword = AESGCM.SimpleEncrypt(sshPrivateKeyPassword, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
                     }
                 }
             }

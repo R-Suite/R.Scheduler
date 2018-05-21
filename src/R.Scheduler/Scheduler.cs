@@ -175,6 +175,7 @@ namespace R.Scheduler
             var properties = new NameValueCollection();
             properties["quartz.scheduler.instanceName"] = Configuration.InstanceName;
             properties["quartz.scheduler.instanceId"] = Configuration.InstanceId;
+            properties["quartz.threadPool.threadCount"] = Configuration.ThreadCount.ToString();
 
             switch (Configuration.PersistanceStoreType)
             {

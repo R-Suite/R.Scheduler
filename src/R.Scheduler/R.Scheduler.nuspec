@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>R.Scheduler</id>
-    <version>1.2.15</version>
+    <version>1.2.16</version>
     <title>R.Scheduler</title>
     <authors>Jakub Pachansky</authors>
     <owners>Jakub Pachansky</owners>
@@ -22,6 +22,7 @@
       <dependency id="AutoMapper" version="4.1.1" />
       <dependency id="Newtonsoft.Json" version="8.0.3" />
       <dependency id="FeatureToggle" version="3.4.0" />
+      <dependency id="BouncyCastle.NetCore" version="1.8.1.3" />
   </dependencies>
   </metadata>
   <files>

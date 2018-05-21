@@ -15,6 +15,7 @@ namespace R.Scheduler
             InstanceName = "RScheduler";
             InstanceId = "instance_one";
             UseProperties = "false";
+            ThreadCount = 10;
 
             EnableWebApiSelfHost = true;
             WebApiBaseAddress = "http://localhost:5000/";
@@ -34,6 +35,7 @@ namespace R.Scheduler
         public string InstanceId { get; set; }
 
         public bool AutoStart { get; set; }
+        public int ThreadCount { get; set; }
 
         /// <summary>
         /// Instruct AdoJobStore that all values in JobDataMaps will be Strings,

@@ -21,5 +21,6 @@ namespace R.Scheduler.Interfaces
         string GetCalendarName(Guid id);
         void RemoveCalendarIdMap(string name);
         Guid GetCalendarId(string name);
+        IEnumerable<AuditLog> GetJobExecutionsBetween(Guid id, DateTime from, DateTime to);
     }
 }

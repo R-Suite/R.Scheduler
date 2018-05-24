@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Common.Logging;
 using Npgsql;
@@ -696,7 +698,28 @@ namespace R.Scheduler.Persistance
             }
         }
 
-        private IEnumerable<AuditLog> GetAuditLogs(string sql)
+        /// <summary>
+        /// Get <see cref="AuditLog"/> of executed jobs within a specified date range
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        public IEnumerable<AuditLog> GetJobExecutionsBetween(Guid id, DateTime from, DateTime to)
+        {
+            string sql = @"SELECT a.*, m.id as ""job_id"" FROM rsched_audit_history a, rsched_job_id_key_map m WHERE a.action = 'JobWasExecuted' AND a.job_name = m.job_name AND a.job_group = m.job_group AND m.id = :id AND a.scheduled_fire_time_utc > :from AND a.scheduled_fire_time_utc < :to order by a.time_stamp desc limit 1000";
+
+            IList<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
+            parameters.Add(new NpgsqlParameter("id", id));
+            parameters.Add(new NpgsqlParameter("from", from));
+            parameters.Add(new NpgsqlParameter("to", to));
+
+            IEnumerable<AuditLog> retval = GetAuditLogs(sql, parameters);
+
+            return retval;
+        }
+
+        private IEnumerable<AuditLog> GetAuditLogs(string sql, IEnumerable<NpgsqlParameter> parameters = null)
         {
             IList<AuditLog> retval = new List<AuditLog>();
 
@@ -707,6 +730,14 @@ namespace R.Scheduler.Persistance
                     con.Open();
                     using (var command = new NpgsqlCommand(sql, con))
                     {
+                        if (parameters != null)
+                        {
+                            foreach (var p in parameters)
+                            {
+                                command.Parameters.Add(p);
+                            }
+                        }
+
                         using (NpgsqlDataReader rs = command.ExecuteReader())
                         {
                             while (rs.Read())

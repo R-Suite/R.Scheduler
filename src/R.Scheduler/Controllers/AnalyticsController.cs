@@ -145,5 +145,29 @@ namespace R.Scheduler.Controllers
 
             return upcomingJobs;
         }
+
+        /// <summary>
+        /// Get job executions between dates
+        /// </summary>
+        /// <returns></returns>
+        [AcceptVerbs("GET")]
+        [Route("api/jobExecutionsBetween")]
+        [SchedulerAuthorize(AppSettingRoles = "Read.Roles", AppSettingUsers = "Read.Users")]
+        public IList<FireInstance> GetJobExecutionsBetween(Guid id, DateTime from, DateTime to)
+        {
+            Logger.Debug("Entered AnalyticsController.GetJobExecutionsBetween().");
+
+            var executedJobs = _analytics.GetJobExecutionsBetween(id, from, to);
+
+            IList<FireInstance> executedFireInstances = new List<FireInstance>();
+
+            foreach (AuditLog executedJob in executedJobs)
+            {
+                var fi = Mapper.Map<FireInstance>(executedJob);
+                executedFireInstances.Add(fi);
+            }
+
+            return executedFireInstances;
+        }
     }
 }

@@ -293,5 +293,10 @@ namespace R.Scheduler.Persistance
 
             return retval;
         }
+
+        public IEnumerable<AuditLog> GetJobExecutionsBetween(Guid id, DateTime @from, DateTime to)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

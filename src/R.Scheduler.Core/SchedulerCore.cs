@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Transactions;
+using System.Web.Http;
 using Quartz;
 using Quartz.Impl.Calendar;
 using Quartz.Impl.Matchers;
@@ -19,7 +22,7 @@ namespace R.Scheduler.Core
         private readonly IScheduler _scheduler;
         private readonly IPersistanceStore _persistanceStore;
 
-        public string SchedulerName { get { return _scheduler.SchedulerName; } }
+        public string SchedulerName => _scheduler.SchedulerName;
 
         public SchedulerCore(IScheduler scheduler, IPersistanceStore persistanceStore)
         {
@@ -31,15 +34,25 @@ namespace R.Scheduler.Core
         /// Get job details of type <see cref="jobType"/>.
         /// Get all the job details if <see cref="jobType"/> is not specified
         /// </summary>
+        /// <param name="authorizedJobGroups"> List of job groups user is authorized for</param>
         /// <param name="jobType"></param>
         /// <returns></returns>
-        public IDictionary<IJobDetail, Guid> GetJobDetails(Type jobType = null)
+        public IDictionary<IJobDetail, Guid> GetJobDetails(IEnumerable<string> authorizedJobGroups = null,Type jobType = null)// , Dictionary<string, string> identities = null
         {
             IDictionary<IJobDetail, Guid> jobDetails = new Dictionary<IJobDetail, Guid>();
+
+            // Map user or roles to list of job groups
+            // Only get job if user or role is related to job group
             IList<string> jobGroups = _scheduler.GetJobGroupNames();
+            
+            // If user has job group access to '*' wildcard, get all jobs
+            jobGroups = (IList<string>) (authorizedJobGroups.Contains("*") ? jobGroups : authorizedJobGroups);
 
             foreach (string group in jobGroups)
             {
+                // TODO: look at case sensitivity (same job name and group name?)
+                if (!jobGroups.Contains(@group)) continue;
+
                 var groupMatcher = GroupMatcher<JobKey>.GroupEquals(group);
                 var jobKeys = _scheduler.GetJobKeys(groupMatcher);
                 foreach (var jobKey in jobKeys)
@@ -60,7 +73,7 @@ namespace R.Scheduler.Core
                     }
                 }
             }
-
+            
             return jobDetails;
         }
 
@@ -240,7 +253,7 @@ namespace R.Scheduler.Core
             // If jobDetail does not exist, throw
             if (!_scheduler.CheckExists(jobKey))
             {
-                throw new Exception(string.Format("Job does not exist. Name = {0}, Group = {1}", myTrigger.CalendarName, myTrigger.JobGroup));
+                throw new ArgumentException(string.Format("Job does not exist. Name = {0}, Group = {1}", myTrigger.CalendarName, myTrigger.JobGroup));
             }
 
             IJobDetail jobDetail = _scheduler.GetJobDetail(jobKey);
@@ -351,23 +364,29 @@ namespace R.Scheduler.Core
         /// Get all triggers of a specified job
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="authorizedJobGroups"></param>
         /// <returns></returns>
-        public IDictionary<ITrigger, Guid> GetTriggersOfJob(Guid id)
+        public IDictionary<ITrigger, Guid> GetTriggersOfJob(Guid id, IEnumerable<string> authorizedJobGroups = null)
         {
             IDictionary<ITrigger, Guid> triggers = new Dictionary<ITrigger, Guid>();
 
             var jobKey = _persistanceStore.GetJobKey(id);
 
-            var jobTriggers = _scheduler.GetTriggersOfJob(jobKey);
-
-            foreach (var jobTrigger in jobTriggers)
+            if (authorizedJobGroups == null || authorizedJobGroups.Contains("*") ||
+                authorizedJobGroups.Contains(jobKey.Group))
             {
-                var triggerId = _persistanceStore.GetTriggerId(jobTrigger.Key);
+                var jobTriggers = _scheduler.GetTriggersOfJob(jobKey);
 
-                triggers.Add(jobTrigger, triggerId);
+                foreach (var jobTrigger in jobTriggers)
+                {
+                    var triggerId = _persistanceStore.GetTriggerId(jobTrigger.Key);
+
+                    triggers.Add(jobTrigger, triggerId);
+                }
+
+                return triggers;
             }
-
-            return triggers;
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         /// <summary>
@@ -375,8 +394,9 @@ namespace R.Scheduler.Core
         /// </summary>
         /// <param name="start"></param>
         /// <param name="end"></param>
+        /// <param name="authorizedJobGroups"></param>
         /// <returns></returns>
-        public IEnumerable<TriggerFireTime> GetFireTimesBetween(DateTime start, DateTime end)
+        public IEnumerable<TriggerFireTime> GetFireTimesBetween(DateTime start, DateTime end, IEnumerable<string> authorizedJobGroups = null)
         {
             IList<TriggerFireTime> retval = new List<TriggerFireTime>();
 
@@ -384,12 +404,18 @@ namespace R.Scheduler.Core
             foreach (var triggerKey in allTriggerKeys)
             {
                 ITrigger trigger = _scheduler.GetTrigger(triggerKey);
+
+                if (authorizedJobGroups != null && !authorizedJobGroups.Contains(trigger.JobKey.Group) &&
+                    !authorizedJobGroups.Contains("*")) continue;
+
                 ICalendar cal = null;
                 if (!string.IsNullOrEmpty(trigger.CalendarName))
                 {
                     cal = _scheduler.GetCalendar(trigger.CalendarName);
                 }
-                var fireTimes = TriggerUtils.ComputeFireTimesBetween(trigger as IOperableTrigger, cal, start, end);
+
+                var fireTimes =
+                    TriggerUtils.ComputeFireTimesBetween(trigger as IOperableTrigger, cal, start, end);
 
                 foreach (var fireTime in fireTimes)
                 {

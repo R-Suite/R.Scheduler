@@ -196,5 +196,15 @@ namespace R.Scheduler.Core
 
             return retval;
         }
+
+
+        /// <summary>
+        /// Get executions for a specified job
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<AuditLog> GetJobExecutionsBetween(Guid id, DateTime from, DateTime to)
+        {
+            return _persistanceStore.GetJobExecutionsBetween(id, from, to);
+        }
     }
 }

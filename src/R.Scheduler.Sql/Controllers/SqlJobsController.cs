@@ -10,6 +10,7 @@ using R.Scheduler.Contracts.Model;
 using R.Scheduler.Core;
 using R.Scheduler.Core.FeatureToggles;
 using R.Scheduler.Interfaces;
+using R.Scheduler;
 using StructureMap;
 
 namespace R.Scheduler.Sql.Controllers
@@ -36,7 +37,16 @@ namespace R.Scheduler.Sql.Controllers
         {
             Logger.Debug("Entered SqlJobsController.Get().");
 
-            var jobDetailsMap = _schedulerCore.GetJobDetails(typeof(SqlJob));
+            var scheduler = ObjectFactory.GetInstance<IScheduler>();
+
+            var permissionsManager = scheduler.Context.ContainsKey("CustomPermissionsManagerType")
+                ? (IPermissionsManager)Activator.CreateInstance(
+                    (Type)scheduler.Context["CustomPermissionsManagerType"])
+                : new DefaultPermissionsManager();
+
+            var authorizedJobGroups = permissionsManager.GetPermittedJobGroups();
+
+            var jobDetailsMap = _schedulerCore.GetJobDetails(authorizedJobGroups, typeof(SqlJob));
 
             var retval = new List<Contracts.JobTypes.Sql.Model.SqlJob>();
 

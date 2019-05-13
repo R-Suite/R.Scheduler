@@ -36,7 +36,16 @@ namespace R.Scheduler.Ftp.Controllers
         {
             Logger.Debug("Entered FtpJobsController.Get().");
 
-            var jobDetailsMap = _schedulerCore.GetJobDetails(typeof(FtpDownloadJob));
+            var scheduler = ObjectFactory.GetInstance<IScheduler>();
+
+            var permissionsManager = scheduler.Context.ContainsKey("CustomPermissionsManagerType")
+                ? (IPermissionsManager)Activator.CreateInstance(
+                    (Type)scheduler.Context["CustomPermissionsManagerType"])
+                : new DefaultPermissionsManager();
+
+            var authorizedJobGroups = permissionsManager.GetPermittedJobGroups();
+
+            var jobDetailsMap = _schedulerCore.GetJobDetails(authorizedJobGroups, typeof(FtpDownloadJob));
 
             return jobDetailsMap.Select(mapItem =>
                                                     new Contracts.JobTypes.Ftp.Model.FtpDownloadJob

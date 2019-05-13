@@ -35,7 +35,16 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         {
             Logger.Debug("Entered AssemblyPluginsController.Get().");
 
-            var jobDetailsMap = _schedulerCore.GetJobDetails(typeof(AssemblyPluginJob));
+            var scheduler = ObjectFactory.GetInstance<IScheduler>();
+
+            var permissionsManager = scheduler.Context.ContainsKey("CustomPermissionsManagerType")
+                ? (IPermissionsManager)Activator.CreateInstance(
+                    (Type)scheduler.Context["CustomPermissionsManagerType"])
+                : new DefaultPermissionsManager();
+
+            var authorizedJobGroups = permissionsManager.GetPermittedJobGroups();
+
+            var jobDetailsMap = _schedulerCore.GetJobDetails(authorizedJobGroups, typeof(AssemblyPluginJob));
 
             return jobDetailsMap.Select(mapItem =>
                                                     new PluginJob

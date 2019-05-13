@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Reflection;
+using System.Web;
 using System.Web.Http;
 using Common.Logging;
 using Quartz;
@@ -9,6 +11,7 @@ using R.Scheduler.Contracts.JobTypes;
 using R.Scheduler.Contracts.Model;
 using R.Scheduler.Core;
 using R.Scheduler.Interfaces;
+using R.Scheduler.Persistance;
 using StructureMap;
 
 namespace R.Scheduler.Controllers
@@ -30,16 +33,18 @@ namespace R.Scheduler.Controllers
         /// <returns></returns>
         [AcceptVerbs("GET")]
         [Route("api/jobs")]
-        [SchedulerAuthorize(AppSettingRoles = "Read.Roles", AppSettingUsers = "Read.Users")]
+        [SchedulerAuthorize(AppSettingRoles = "Read.Roles", AppSettingUsers = "Read.Users") ]
         public IEnumerable<BaseJob> Get()
         {
             Logger.Debug("Entered JobsController.Get().");
+
+            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups();
 
             IDictionary<IJobDetail, Guid> jobDetailsMap;
 
             try
             {
-                jobDetailsMap = _schedulerCore.GetJobDetails();
+                jobDetailsMap = _schedulerCore.GetJobDetails(authorizedJobGroups);
             }
             catch (Exception ex)
             {
@@ -71,17 +76,33 @@ namespace R.Scheduler.Controllers
         {
             Logger.Debug("Entered JobsController.Get().");
 
-            var jobDetail = _schedulerCore.GetJobDetail(id);
+            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups();
 
-            return new BaseJob
+            IJobDetail jobDetail;
+
+            try
             {
-                Id = id,
-                JobName = jobDetail.Key.Name,
-                JobGroup = jobDetail.Key.Group,
-                JobType = jobDetail.JobType.Name,
-                SchedulerName = _schedulerCore.SchedulerName,
-                Description = jobDetail.Description
-            };
+                jobDetail = _schedulerCore.GetJobDetail(id);
+            }
+            catch (Exception ex)
+            {
+                Logger.Debug(string.Format("Error getting JobDetail: {0}", ex.Message));
+                return null;
+            }
+
+            if (jobDetail != null && (authorizedJobGroups.Contains(jobDetail.Key.Group) || authorizedJobGroups.Contains("*")))
+            {
+                return new BaseJob
+                {
+                    Id = id,
+                    JobName = jobDetail.Key.Name,
+                    JobGroup = jobDetail.Key.Group,
+                    JobType = jobDetail.JobType.Name,
+                    SchedulerName = _schedulerCore.SchedulerName,
+                    Description = jobDetail.Description
+                };
+            }
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         /// <summary>
@@ -98,25 +119,44 @@ namespace R.Scheduler.Controllers
 
             var response = new QueryResponse { Valid = true, Id = id };
 
+            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups();
+
+            IJobDetail jobDetail;
+
             try
             {
-                _schedulerCore.ExecuteJob(id);
+                jobDetail = _schedulerCore.GetJobDetail(id);
             }
             catch (Exception ex)
             {
-                response.Valid = false;
-                response.Errors = new List<Error>
-                {
-                    new Error
-                    {
-                        Code = "ErrorExecutingJob",
-                        Type = "Server",
-                        Message = string.Format("Error: {0}", ex.Message)
-                    }
-                };
+                Logger.Debug(string.Format("Error getting JobDetail: {0}", ex.Message));
+                return null;
             }
 
-            return response;
+            if (jobDetail != null && (authorizedJobGroups.Contains(jobDetail.Key.Group) || authorizedJobGroups.Contains("*")))
+            {
+
+                try
+                {
+                    _schedulerCore.ExecuteJob(id);
+                }
+                catch (Exception ex)
+                {
+                    response.Valid = false;
+                    response.Errors = new List<Error>
+                    {
+                        new Error
+                        {
+                            Code = "ErrorExecutingJob",
+                            Type = "Server",
+                            Message = string.Format("Error: {0}", ex.Message)
+                        }
+                    };
+                }
+
+                return response;
+            }
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         /// <summary>
@@ -133,31 +173,50 @@ namespace R.Scheduler.Controllers
 
             var response = new QueryResponse { Valid = true, Id = id };
 
+            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups();
+
+            IJobDetail jobDetail;
+
             try
             {
-                _schedulerCore.RemoveJob(id);
+                jobDetail = _schedulerCore.GetJobDetail(id);
             }
             catch (Exception ex)
             {
-                string type = "Server";
-                if (ex is ArgumentException)
-                {
-                    type = "Sender";
-                }
-
-                response.Valid = false;
-                response.Errors = new List<Error>
-                {
-                    new Error
-                    {
-                        Code = "ErrorRemovingJob",
-                        Type = type,
-                        Message = string.Format("Error removing job {0}.", ex.Message)
-                    }
-                };
+                Logger.Debug(string.Format("Error getting JobDetail: {0}", ex.Message));
+                return null;
             }
 
-            return response;
+            if (jobDetail != null && (authorizedJobGroups.Contains(jobDetail.Key.Group) || authorizedJobGroups.Contains("*")))
+            {
+
+                try
+                {
+                    _schedulerCore.RemoveJob(id);
+                }
+                catch (Exception ex)
+                {
+                    string type = "Server";
+                    if (ex is ArgumentException)
+                    {
+                        type = "Sender";
+                    }
+
+                    response.Valid = false;
+                    response.Errors = new List<Error>
+                    {
+                        new Error
+                        {
+                            Code = "ErrorRemovingJob",
+                            Type = type,
+                            Message = string.Format("Error removing job {0}.", ex.Message)
+                        }
+                    };
+                }
+
+                return response;
+            }
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
     }
 }

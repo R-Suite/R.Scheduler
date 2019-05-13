@@ -34,6 +34,9 @@ namespace R.Scheduler.Controllers
         {
             Logger.DebugFormat("Entered TriggersController.Get(). jobId = {0}", jobId);
 
+            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups();
+
+
             IDictionary<ITrigger, Guid> quartzTriggers = _schedulerCore.GetTriggersOfJob(jobId);
 
             return TriggerHelper.GetTriggerDetails(quartzTriggers);
@@ -50,7 +53,8 @@ namespace R.Scheduler.Controllers
         {
             Logger.Debug("Entered TriggersController.Get()");
 
-            IEnumerable<TriggerFireTime> fireTimes = _schedulerCore.GetFireTimesBetween(start, end);
+            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups();
+            IEnumerable<TriggerFireTime> fireTimes = _schedulerCore.GetFireTimesBetween(start, end, authorizedJobGroups);
 
             return fireTimes as IList<TriggerFireTime>;
         }

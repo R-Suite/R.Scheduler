@@ -79,5 +79,10 @@ namespace R.Scheduler
         /// Assembly name that contains custom WebApp settings
         /// </summary>
         public string CustomWebAppSettingsAssemblyName { get; set; }
+
+        /// <summary>
+        /// Assembly that contains custom permissions manager class implementing <see cref="IPermissionsManager"/>
+        /// </summary>
+        public string CustomPermissionsManagerAssemblyName { get; set; }
     }
 }

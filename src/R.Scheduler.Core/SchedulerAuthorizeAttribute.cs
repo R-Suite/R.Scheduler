@@ -20,6 +20,11 @@ namespace R.Scheduler.Core
 
         public string AppSettingUsers { get; set; }
         public string AppSettingRoles { get; set; }
+        
+        /// <summary>
+        /// List of Job Groups user is authorized to access
+        /// </summary>
+        public List<string> AuthorizedJobGroups { get; set; }
 
         protected override bool IsAuthorized(HttpActionContext actionContext)
         {
@@ -49,7 +54,7 @@ namespace R.Scheduler.Core
                 {
                     users.AddRange(ConfigurationManager.AppSettings[AppSettingUsers].Split(sep, StringSplitOptions.RemoveEmptyEntries));
                 }
-
+                
                 var authorize = (IAuthorize)Activator.CreateInstance((Type)scheduler.Context["CustomAuthorizerType"]);
                 authorize.Roles = roles;
                 authorize.Users = users;

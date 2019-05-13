@@ -41,7 +41,7 @@ namespace R.Scheduler
         {
             if (null != _instance)
             {
-                throw new Exception("Scheduler cannot be initialized after the Scheduler Instance has been created.");
+                throw new InvalidOperationException("Scheduler cannot be initialized after the Scheduler Instance has been created.");
             }
 
             var configuration = new Configuration();
@@ -104,6 +104,7 @@ namespace R.Scheduler
 
                         // Custom Authorization
                         AddCustomAuthorization();
+                        AddCustomPermissionsManager();
 
                         if (Configuration.EnableWebApiSelfHost)
                         {
@@ -205,12 +206,12 @@ namespace R.Scheduler
                     break;
 
                 default:
-                    throw new Exception(string.Format("Unsupported PersistanceStoreType {0}", Configuration.PersistanceStoreType));
+                    throw new ArgumentException(string.Format("Unsupported PersistanceStoreType {0}", Configuration.PersistanceStoreType));
             }
 
             return properties;
         }
-        
+
         private static void AddCustomTriggerListeners()
         {
             if (Configuration.CustomTriggerListenerAssemblyNames != null)
@@ -314,6 +315,35 @@ namespace R.Scheduler
                 {
                     Logger.Error(string.Format("Error adding authorizer from {0}", authorizerAssemblyName), ex);
                 }
+            }
+        }
+
+        private static void AddCustomPermissionsManager()
+        {
+            if (!string.IsNullOrEmpty(Configuration.CustomPermissionsManagerAssemblyName))
+            {
+                var permissionsManagerAssemblyName = Configuration.CustomPermissionsManagerAssemblyName;
+
+                try
+                {
+                    var asm = GetAssembly(permissionsManagerAssemblyName);
+                    Type permissionsManagerType = asm != null
+                        ? asm.GetTypes().FirstOrDefault(i => IsOfType(i, typeof(IPermissionsManager)))
+                        : null;
+
+                    if (permissionsManagerType != null)
+                    {
+                        _instance.Context.Add("CustomPermissionsManagerType", permissionsManagerType);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(string.Format("Error adding authorizer from {0}", permissionsManagerAssemblyName), ex);
+                }
+            }
+            else
+            {
+                _instance.Context.Add("CustomPermissionsManagerType", new DefaultPermissionsManager()); // TODO: Review this.
             }
         }
 

@@ -8,7 +8,7 @@ using StructureMap.Interceptors;
 namespace R.Scheduler.Core
 {
     /// <summary>
-    /// Everytime a default instance of <see cref="IPersistanceStore"/> is created by StructureMap,
+    /// Every time a default instance of <see cref="IPersistanceStore"/> is created by StructureMap,
     /// replace it with an implementation configured during the scheduler startup.
     /// Used mainly for injecting the IPersistanceStore implementation 
     /// into the StructureMap registries of CustomJobTypes projects to ensure 

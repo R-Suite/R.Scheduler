@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Web.Http;
 using Common.Logging;
@@ -39,11 +40,13 @@ namespace R.Scheduler.Controllers
         {
             Logger.Debug("Entered SendEmailJobsController.Get().");
 
+            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups();
+
             IDictionary<IJobDetail, Guid> jobDetailsMap;
 
             try
             {
-                jobDetailsMap = _schedulerCore.GetJobDetails(typeof(SendMailJob));
+                jobDetailsMap = _schedulerCore.GetJobDetails(authorizedJobGroups, typeof(SendMailJob));
             }
             catch (Exception ex)
             {
@@ -84,6 +87,8 @@ namespace R.Scheduler.Controllers
         {
             Logger.Debug("Entered SendEmailJobsController.Get().");
 
+            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups();
+
             IJobDetail jobDetail;
 
             try
@@ -96,25 +101,31 @@ namespace R.Scheduler.Controllers
                 return null;
             }
 
-            return new EmailJob
+            if (jobDetail != null &&
+                (authorizedJobGroups.Contains(jobDetail.Key.Group) || authorizedJobGroups.Contains("*")))
             {
-                Id = id,
-                JobName = jobDetail.Key.Name,
-                JobGroup = jobDetail.Key.Group,
-                SchedulerName = _schedulerCore.SchedulerName,
-                Subject = jobDetail.JobDataMap.GetString("subject"),
-                Body = jobDetail.JobDataMap.GetString("message"),
-                CcRecipient = jobDetail.JobDataMap.GetString("cc_recipient"),
-                Encoding = jobDetail.JobDataMap.GetString("encoding"),
-                Password = jobDetail.JobDataMap.GetString("smtp_password"),
-                Recipient = jobDetail.JobDataMap.GetString("recipient"),
-                ReplyTo = jobDetail.JobDataMap.GetString("reply_to"),
-                Username = jobDetail.JobDataMap.GetString("smtp_username"),
-                SmtpHost = jobDetail.JobDataMap.GetString("smtp_host"),
-                SmtpPort = jobDetail.JobDataMap.GetString("smtp_port"),
-                Sender = jobDetail.JobDataMap.GetString("sender"),
-                Description = jobDetail.Description
-            };
+                return new EmailJob
+                {
+                    Id = id,
+                    JobName = jobDetail.Key.Name,
+                    JobGroup = jobDetail.Key.Group,
+                    SchedulerName = _schedulerCore.SchedulerName,
+                    Subject = jobDetail.JobDataMap.GetString("subject"),
+                    Body = jobDetail.JobDataMap.GetString("message"),
+                    CcRecipient = jobDetail.JobDataMap.GetString("cc_recipient"),
+                    Encoding = jobDetail.JobDataMap.GetString("encoding"),
+                    Password = jobDetail.JobDataMap.GetString("smtp_password"),
+                    Recipient = jobDetail.JobDataMap.GetString("recipient"),
+                    ReplyTo = jobDetail.JobDataMap.GetString("reply_to"),
+                    Username = jobDetail.JobDataMap.GetString("smtp_username"),
+                    SmtpHost = jobDetail.JobDataMap.GetString("smtp_host"),
+                    SmtpPort = jobDetail.JobDataMap.GetString("smtp_port"),
+                    Sender = jobDetail.JobDataMap.GetString("sender"),
+                    Description = jobDetail.Description
+                };
+            }
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
+
         }
 
         /// <summary>
@@ -129,7 +140,16 @@ namespace R.Scheduler.Controllers
         {
             Logger.DebugFormat("Entered EmailsController.Post(). Job Name = {0}", model.JobName);
 
-            return CreateJob(model);
+            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups();
+
+            if (string.IsNullOrEmpty(model.JobGroup))
+                return CreateJob(model);
+
+            if (authorizedJobGroups.Contains(model.JobGroup))
+            {
+                return CreateJob(model);
+            }
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         /// <summary>
@@ -144,7 +164,16 @@ namespace R.Scheduler.Controllers
         {
             Logger.DebugFormat("Entered EmailsController.Put(). Job Name = {0}", model.JobName);
 
-            return CreateJob(model);
+            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups();
+
+            if (string.IsNullOrEmpty(model.JobGroup))
+                return CreateJob(model);
+
+            if (authorizedJobGroups.Contains(model.JobGroup))
+            {
+                return CreateJob(model);
+            }
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         private QueryResponse CreateJob(EmailJob model)

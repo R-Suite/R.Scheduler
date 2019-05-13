@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Web.Http;
 using Common.Logging;
@@ -38,11 +39,13 @@ namespace R.Scheduler.Controllers
         {
             Logger.Info("Entered DirectoryScanJobsController.Get().");
 
+            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups();
+
             IDictionary<IJobDetail, Guid> jobDetailsMap;
 
             try
             {
-                jobDetailsMap = _schedulerCore.GetJobDetails(typeof(NativeJob));
+                jobDetailsMap = _schedulerCore.GetJobDetails(authorizedJobGroups, typeof(NativeJob));
             }
             catch (Exception ex)
             {
@@ -76,6 +79,8 @@ namespace R.Scheduler.Controllers
         {
             Logger.Info("Entered DirectoryScanJobsController.Get().");
 
+            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups();
+
             IJobDetail jobDetail;
 
             try
@@ -88,17 +93,23 @@ namespace R.Scheduler.Controllers
                 return null;
             }
 
-            return new Contracts.JobTypes.DirectoryScan.Model.DirectoryScanJob
+            if (jobDetail != null &&
+                (authorizedJobGroups.Contains(jobDetail.Key.Group) || authorizedJobGroups.Contains("*")))
             {
-                Id = id,
-                JobName = jobDetail.Key.Name,
-                JobGroup = jobDetail.Key.Group,
-                SchedulerName = _schedulerCore.SchedulerName,
-                DirectoryName = jobDetail.JobDataMap.GetString("DIRECTORY_NAME"),
-                CallbackUrl = jobDetail.JobDataMap.GetString("CALLBACK_URL"),
-                MinimumUpdateAge = jobDetail.JobDataMap.GetLong("MINIMUM_UPDATE_AGE"),
-                LastModifiedTime = jobDetail.JobDataMap.GetDateTime("LAST_MODIFIED_TIME")
-            };
+                return new DirectoryScanJob
+                {
+                    Id = id,
+                    JobName = jobDetail.Key.Name,
+                    JobGroup = jobDetail.Key.Group,
+                    SchedulerName = _schedulerCore.SchedulerName,
+                    DirectoryName = jobDetail.JobDataMap.GetString("DIRECTORY_NAME"),
+                    CallbackUrl = jobDetail.JobDataMap.GetString("CALLBACK_URL"),
+                    MinimumUpdateAge = jobDetail.JobDataMap.GetLong("MINIMUM_UPDATE_AGE"),
+                    LastModifiedTime = jobDetail.JobDataMap.GetDateTime("LAST_MODIFIED_TIME")
+                };
+            }
+
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         /// <summary>
@@ -113,7 +124,16 @@ namespace R.Scheduler.Controllers
         {
             Logger.InfoFormat("Entered DirectoryScanJobsController.Post(). Job Name = {0}", model.JobName);
 
-            return CreateJob(model);
+            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups();
+
+            if (string.IsNullOrEmpty(model.JobGroup))
+                return CreateJob(model);
+
+            if (authorizedJobGroups.Contains(model.JobGroup))
+            {
+                return CreateJob(model);
+            }
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         /// <summary>
@@ -128,7 +148,16 @@ namespace R.Scheduler.Controllers
         {
             Logger.InfoFormat("Entered DirectoryScanJobsController.Put(). Job Name = {0}", model.JobName);
 
-            return CreateJob(model);
+            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups();
+
+            if (string.IsNullOrEmpty(model.JobGroup))
+                return CreateJob(model);
+
+            if (authorizedJobGroups.Contains(model.JobGroup))
+            {
+                return CreateJob(model);
+            }
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         private QueryResponse CreateJob(DirectoryScanJob model)

@@ -654,7 +654,28 @@ namespace R.Scheduler.Persistance
             return id;
         }
 
-        private IEnumerable<AuditLog> GetAuditLogs(string sql)
+        /// <summary>
+        /// Get <see cref="AuditLog"/> of executed jobs within a specified date range
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        public IEnumerable<AuditLog> GetJobExecutionsBetween(Guid id, DateTime from, DateTime to)
+        {
+            string sql = @"SELECT TOP 1000 a.*, m.[ID] as 'JOB_ID'  FROM [RSCHED_AUDIT_HISTORY] a, [RSCHED_JOB_ID_KEY_MAP] m WHERE a.[ACTION] = 'JobWasExecuted' AND a.[JOB_NAME] = m.[JOB_NAME] AND a.[JOB_GROUP] = m.[JOB_GROUP] AND m.[ID] = @id AND a.[SCHEDULED_FIRE_TIME_UTC] > @from AND a.[SCHEDULED_FIRE_TIME_UTC] < @to order by a.[TIME_STAMP] DESC";
+
+            IList<SqlParameter> parameters = new List<SqlParameter>();
+            parameters.Add(new SqlParameter("id", id));
+            parameters.Add(new SqlParameter("from", from));
+            parameters.Add(new SqlParameter("to", to));
+
+            IEnumerable<AuditLog> retval = GetAuditLogs(sql, parameters);
+
+            return retval;
+        }
+
+        private IEnumerable<AuditLog> GetAuditLogs(string sql, IEnumerable<SqlParameter> parameters = null)
         {
             IList<AuditLog> retval = new List<AuditLog>();
 
@@ -665,6 +686,14 @@ namespace R.Scheduler.Persistance
                     con.Open();
                     using (var command = new SqlCommand(sql, con))
                     {
+                        if (parameters != null)
+                        {
+                            foreach (var p in parameters)
+                            {
+                                command.Parameters.Add(p);
+                            }
+                        }
+
                         using (IDataReader rs = command.ExecuteReader())
                         {
                             while (rs.Read())

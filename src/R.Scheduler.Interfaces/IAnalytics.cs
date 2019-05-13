@@ -13,5 +13,6 @@ namespace R.Scheduler.Interfaces
         IEnumerable<AuditLog> GetExecutedJobs(int count);
         IEnumerable<FireInstance> GetUpcomingJobs(int count);
         IEnumerable<FireInstance> GetUpcomingJobsBetween(DateTime from, DateTime to);
+        IEnumerable<AuditLog> GetJobExecutionsBetween(Guid id, DateTime from, DateTime to);
     }
 }

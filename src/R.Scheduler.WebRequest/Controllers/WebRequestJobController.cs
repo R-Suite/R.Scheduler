@@ -34,8 +34,17 @@ namespace R.Scheduler.WebRequest.Controllers
         {
             Logger.Debug("Entered WebRequestJobController.Get().");
 
-            var jobDetailsMap = _schedulerCore.GetJobDetails(typeof(WebRequestJob));
+            var scheduler = ObjectFactory.GetInstance<IScheduler>();
 
+            var permissionsManager = scheduler.Context.ContainsKey("CustomPermissionsManagerType")
+                ? (IPermissionsManager)Activator.CreateInstance(
+                    (Type)scheduler.Context["CustomPermissionsManagerType"])
+                : new DefaultPermissionsManager();
+
+            var authorizedJobGroups = permissionsManager.GetPermittedJobGroups();
+
+            var jobDetailsMap = _schedulerCore.GetJobDetails(authorizedJobGroups, typeof(WebRequestJob));
+            
             return jobDetailsMap.Select(mapItem =>
                                                     new Contracts.JobTypes.WebRequest.Model.WebRequestJob
                                                     {

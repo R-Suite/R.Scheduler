@@ -76,7 +76,7 @@ namespace R.Scheduler.Controllers
         {
             Logger.Debug("Entered JobsController.Get().");
 
-            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups();
+            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups().ToList();
 
             IJobDetail jobDetail;
 
@@ -90,8 +90,6 @@ namespace R.Scheduler.Controllers
                 return null;
             }
 
-            // Avoid multiple enumeration of list.
-            authorizedJobGroups = authorizedJobGroups.ToList();
             if ((authorizedJobGroups.Any() && jobDetail != null) || jobDetail != null && (authorizedJobGroups.Contains(jobDetail.Key.Group) || authorizedJobGroups.Contains("*")))
             {
                 return new BaseJob

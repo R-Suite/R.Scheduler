@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Web.Http;
 using Common.Logging;
@@ -35,16 +36,19 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         {
             Logger.Debug("Entered AssemblyPluginsController.Get().");
 
-            var scheduler = ObjectFactory.GetInstance<IScheduler>();
+            var authorizedJobGroups = GetAuthorizedJobGroups();
 
-            var permissionsManager = scheduler.Context.ContainsKey("CustomPermissionsManagerType")
-                ? (IPermissionsManager)Activator.CreateInstance(
-                    (Type)scheduler.Context["CustomPermissionsManagerType"])
-                : new DefaultPermissionsManager();
-
-            var authorizedJobGroups = permissionsManager.GetPermittedJobGroups();
-
-            var jobDetailsMap = _schedulerCore.GetJobDetails(authorizedJobGroups, typeof(AssemblyPluginJob));
+            IDictionary<IJobDetail, Guid> jobDetailsMap;
+            
+            try
+            {
+                jobDetailsMap = _schedulerCore.GetJobDetails(authorizedJobGroups, typeof(AssemblyPluginJob));
+            }
+            catch (Exception ex)
+            {
+                Logger.Info(string.Format("Error getting JobDetails: {0}", ex.Message));
+                return null;
+            }
 
             return jobDetailsMap.Select(mapItem =>
                                                     new PluginJob
@@ -69,6 +73,8 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         {
             Logger.Debug("Entered AssemblyPluginsController.Get().");
 
+            var authorizedJobGroups = GetAuthorizedJobGroups().ToList();
+
             IJobDetail jobDetail;
 
             try
@@ -81,15 +87,20 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
                 return null;
             }
 
-            return new PluginJob
+            if (jobDetail != null &&
+                (authorizedJobGroups.Contains(jobDetail.Key.Group) || authorizedJobGroups.Contains("*")))
             {
-                Id = id,
-                JobName = jobDetail.Key.Name,
-                JobGroup = jobDetail.Key.Group,
-                SchedulerName = _schedulerCore.SchedulerName,
-                AssemblyPath = jobDetail.JobDataMap.GetString("pluginPath"),
-                Description = jobDetail.Description
-            };
+                return new PluginJob
+                {
+                    Id = id,
+                    JobName = jobDetail.Key.Name,
+                    JobGroup = jobDetail.Key.Group,
+                    SchedulerName = _schedulerCore.SchedulerName,
+                    AssemblyPath = jobDetail.JobDataMap.GetString("pluginPath"),
+                    Description = jobDetail.Description
+                };
+            }
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         /// <summary>
@@ -103,8 +114,16 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         public QueryResponse Post([FromBody]PluginJob model)
         {
             Logger.DebugFormat("Entered AssemblyPluginsController.Post(). Job Name = {0}", model.JobName);
+            var authorizedJobGroups = GetAuthorizedJobGroups().ToList();
 
-            return CreateJob(model);
+            if (string.IsNullOrEmpty(model.JobGroup))
+                return CreateJob(model);
+
+            if ((authorizedJobGroups.Contains(model.JobGroup) || authorizedJobGroups.Contains("*")) && model.JobGroup != "*")
+            {
+                return CreateJob(model);
+            }
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         /// <summary>
@@ -119,7 +138,16 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         {
             Logger.DebugFormat("Entered AssemblyPluginsController.Put(). Job Name = {0}", model.JobName);
 
-            return CreateJob(model);
+            var authorizedJobGroups = GetAuthorizedJobGroups().ToList();
+
+            if (string.IsNullOrEmpty(model.JobGroup))
+                return CreateJob(model);
+
+            if ((authorizedJobGroups.Contains(model.JobGroup) || authorizedJobGroups.Contains("*")) && model.JobGroup != "*")
+            {
+                return CreateJob(model);
+            }
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         private QueryResponse CreateJob(PluginJob model)
@@ -130,6 +158,19 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
             };
 
             return base.CreateJob(model, typeof (AssemblyPluginJob), dataMap, model.Description);
+        }
+
+        private static IEnumerable<string> GetAuthorizedJobGroups()
+        {
+            var scheduler = ObjectFactory.GetInstance<IScheduler>();
+
+            // Return wildcard if no custom permissions manager
+            if (!scheduler.Context.ContainsKey("CustomPermissionsManagerType")) return new List<string> { "*" };
+
+            var permissionsManager = (IPermissionsManager)Activator.CreateInstance(
+                (Type)scheduler.Context["CustomPermissionsManagerType"]);
+            return permissionsManager.GetPermittedJobGroups();
+
         }
     }
 }

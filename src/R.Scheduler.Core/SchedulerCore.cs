@@ -37,7 +37,7 @@ namespace R.Scheduler.Core
         /// <param name="authorizedJobGroups"> List of job groups user is authorized for</param>
         /// <param name="jobType"></param>
         /// <returns></returns>
-        public IDictionary<IJobDetail, Guid> GetJobDetails(IEnumerable<string> authorizedJobGroups = null,Type jobType = null)// , Dictionary<string, string> identities = null
+        public IDictionary<IJobDetail, Guid> GetJobDetails(IEnumerable<string> authorizedJobGroups,Type jobType = null)// , Dictionary<string, string> identities = null
         {
             IDictionary<IJobDetail, Guid> jobDetails = new Dictionary<IJobDetail, Guid>();
 
@@ -46,6 +46,7 @@ namespace R.Scheduler.Core
             IList<string> jobGroups = _scheduler.GetJobGroupNames();
             
             // If user has job group access to '*' wildcard, get all jobs
+            authorizedJobGroups = authorizedJobGroups.ToList();
             jobGroups = (IList<string>) (authorizedJobGroups.Contains("*") ? jobGroups : authorizedJobGroups);
 
             foreach (string group in jobGroups)
@@ -364,29 +365,22 @@ namespace R.Scheduler.Core
         /// Get all triggers of a specified job
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="authorizedJobGroups"></param>
         /// <returns></returns>
-        public IDictionary<ITrigger, Guid> GetTriggersOfJob(Guid id, IEnumerable<string> authorizedJobGroups = null)
+        public IDictionary<ITrigger, Guid> GetTriggersOfJob(Guid id)
         {
             IDictionary<ITrigger, Guid> triggers = new Dictionary<ITrigger, Guid>();
 
             var jobKey = _persistanceStore.GetJobKey(id);
+            var jobTriggers = _scheduler.GetTriggersOfJob(jobKey);
 
-            if (authorizedJobGroups == null || authorizedJobGroups.Contains("*") ||
-                authorizedJobGroups.Contains(jobKey.Group))
+            foreach (var jobTrigger in jobTriggers)
             {
-                var jobTriggers = _scheduler.GetTriggersOfJob(jobKey);
+                var triggerId = _persistanceStore.GetTriggerId(jobTrigger.Key);
 
-                foreach (var jobTrigger in jobTriggers)
-                {
-                    var triggerId = _persistanceStore.GetTriggerId(jobTrigger.Key);
-
-                    triggers.Add(jobTrigger, triggerId);
-                }
-
-                return triggers;
+                triggers.Add(jobTrigger, triggerId);
             }
-            throw new HttpResponseException(HttpStatusCode.Unauthorized);
+
+            return triggers;
         }
 
         /// <summary>
@@ -598,6 +592,13 @@ namespace R.Scheduler.Core
             }
 
             return retval;
+        }
+
+        public IJobDetail GetJobDetailOfTrigger(Guid triggerId)
+        {
+            var triggerKey = _persistanceStore.GetTriggerKey(triggerId);
+            var jobKey = _scheduler.GetTrigger(triggerKey).JobKey;
+            return _scheduler.GetJobDetail(jobKey);
         }
     }
 }

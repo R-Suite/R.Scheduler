@@ -21,9 +21,7 @@ namespace R.Scheduler.UnitTests
         {
             // Arrange
             var controller = new DirectoryScanJobsController();
-            var model = new DirectoryScanJob();
-            model.JobName = "TestJob";
-            model.CallbackUrl = "notvalidurl";
+            var model = new DirectoryScanJob {JobName = "TestJob", CallbackUrl = "notvalidurl"};
 
             // Act 
             var result = controller.Post(model);
@@ -52,9 +50,7 @@ namespace R.Scheduler.UnitTests
         {
             // Arrange
             var controller = new DirectoryScanJobsController();
-            var model = new DirectoryScanJob();
-            model.JobName = "TestJob";
-            model.CallbackUrl = "http://valid.com/test/";
+            var model = new DirectoryScanJob {JobName = "TestJob", CallbackUrl = "http://valid.com/test/"};
 
             // Act 
             var result = controller.Post(model);

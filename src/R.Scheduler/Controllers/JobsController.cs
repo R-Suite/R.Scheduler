@@ -90,7 +90,9 @@ namespace R.Scheduler.Controllers
                 return null;
             }
 
-            if (jobDetail != null && (authorizedJobGroups.Contains(jobDetail.Key.Group) || authorizedJobGroups.Contains("*")))
+            // Avoid multiple enumeration of list.
+            authorizedJobGroups = authorizedJobGroups.ToList();
+            if ((authorizedJobGroups.Any() && jobDetail != null) || jobDetail != null && (authorizedJobGroups.Contains(jobDetail.Key.Group) || authorizedJobGroups.Contains("*")))
             {
                 return new BaseJob
                 {
@@ -173,7 +175,7 @@ namespace R.Scheduler.Controllers
 
             var response = new QueryResponse { Valid = true, Id = id };
 
-            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups();
+            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups().ToList();
 
             IJobDetail jobDetail;
 

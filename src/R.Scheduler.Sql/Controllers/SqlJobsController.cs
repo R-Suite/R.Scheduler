@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Web.Http;
 using Common.Logging;
-using FeatureToggle.Core;
 using Quartz;
 using R.Scheduler.Contracts.Model;
 using R.Scheduler.Core;
 using R.Scheduler.Core.FeatureToggles;
 using R.Scheduler.Interfaces;
-using R.Scheduler;
 using StructureMap;
 
 namespace R.Scheduler.Sql.Controllers
@@ -37,14 +37,7 @@ namespace R.Scheduler.Sql.Controllers
         {
             Logger.Debug("Entered SqlJobsController.Get().");
 
-            var scheduler = ObjectFactory.GetInstance<IScheduler>();
-
-            var permissionsManager = scheduler.Context.ContainsKey("CustomPermissionsManagerType")
-                ? (IPermissionsManager)Activator.CreateInstance(
-                    (Type)scheduler.Context["CustomPermissionsManagerType"])
-                : new DefaultPermissionsManager();
-
-            var authorizedJobGroups = permissionsManager.GetPermittedJobGroups();
+            var authorizedJobGroups = GetAuthorizedJobGroups();
 
             var jobDetailsMap = _schedulerCore.GetJobDetails(authorizedJobGroups, typeof(SqlJob));
 
@@ -96,6 +89,8 @@ namespace R.Scheduler.Sql.Controllers
         {
             Logger.Debug("Entered SqlJobsController.Get().");
 
+            var authorizedJobGroups = GetAuthorizedJobGroups().ToList();
+
             IJobDetail jobDetail;
 
             try
@@ -108,35 +103,41 @@ namespace R.Scheduler.Sql.Controllers
                 return null;
             }
 
-            string connectionString = jobDetail.JobDataMap.GetString("connectionString");
-
-            try
+            if (jobDetail != null &&
+                (authorizedJobGroups.Contains(jobDetail.Key.Group) || authorizedJobGroups.Contains("*")))
             {
-                if (new EncryptionFeatureToggle().FeatureEnabled)
+                var connectionString = jobDetail.JobDataMap.GetString("connectionString");
+
+                try
                 {
-                    connectionString = AESGCM.SimpleDecrypt(connectionString, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
+                    if (new EncryptionFeatureToggle().FeatureEnabled)
+                    {
+                        connectionString = AESGCM.SimpleDecrypt(connectionString,
+                            Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                Logger.Warn("ConfigurationError getting SqlJob job.", ex);
-            }
+                catch (Exception ex)
+                {
+                    Logger.Warn("ConfigurationError getting SqlJob job.", ex);
+                }
 
-            return new Contracts.JobTypes.Sql.Model.SqlJob
-            {
-                Id = id,
-                JobName = jobDetail.Key.Name,
-                JobGroup = jobDetail.Key.Group,
-                SchedulerName = _schedulerCore.SchedulerName,
-                ConnectionString = connectionString,
-                CommandClass = jobDetail.JobDataMap.GetString("commandClass"),
-                ConnectionClass = jobDetail.JobDataMap.GetString("connectionClass"),
-                CommandStyle = jobDetail.JobDataMap.GetString("commandStyle"),
-                ProviderAssemblyName = jobDetail.JobDataMap.GetString("providerAssemblyName"),
-                NonQueryCommand = jobDetail.JobDataMap.GetString("nonQueryCommand"),
-                DataAdapterClass = jobDetail.JobDataMap.GetString("dataAdapterClass"),
-                Description = jobDetail.Description
-            };
+                return new Contracts.JobTypes.Sql.Model.SqlJob
+                {
+                    Id = id,
+                    JobName = jobDetail.Key.Name,
+                    JobGroup = jobDetail.Key.Group,
+                    SchedulerName = _schedulerCore.SchedulerName,
+                    ConnectionString = connectionString,
+                    CommandClass = jobDetail.JobDataMap.GetString("commandClass"),
+                    ConnectionClass = jobDetail.JobDataMap.GetString("connectionClass"),
+                    CommandStyle = jobDetail.JobDataMap.GetString("commandStyle"),
+                    ProviderAssemblyName = jobDetail.JobDataMap.GetString("providerAssemblyName"),
+                    NonQueryCommand = jobDetail.JobDataMap.GetString("nonQueryCommand"),
+                    DataAdapterClass = jobDetail.JobDataMap.GetString("dataAdapterClass"),
+                    Description = jobDetail.Description
+                };
+            }
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         /// <summary>
@@ -151,7 +152,16 @@ namespace R.Scheduler.Sql.Controllers
         {
             Logger.DebugFormat("Entered SqlJobsController.Post(). Job Name = {0}", model.JobName);
 
-            return CreateJob(model);
+            var authorizedJobGroups = GetAuthorizedJobGroups().ToList();
+
+            if (string.IsNullOrEmpty(model.JobGroup))
+                return CreateJob(model);
+
+            if ((authorizedJobGroups.Contains(model.JobGroup) || authorizedJobGroups.Contains("*")) && model.JobGroup != "*")
+            {
+                return CreateJob(model);
+            }
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         /// <summary>
@@ -166,12 +176,21 @@ namespace R.Scheduler.Sql.Controllers
         {
             Logger.DebugFormat("Entered SqlJobsController.Put(). Job Name = {0}", model.JobName);
 
-            return CreateJob(model);
+            var authorizedJobGroups = GetAuthorizedJobGroups().ToList();
+
+            if (string.IsNullOrEmpty(model.JobGroup))
+                return CreateJob(model);
+
+            if ((authorizedJobGroups.Contains(model.JobGroup) || authorizedJobGroups.Contains("*")) && model.JobGroup != "*")
+            {
+                return CreateJob(model);
+            }
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         private QueryResponse CreateJob(Contracts.JobTypes.Sql.Model.SqlJob model)
         {
-            string connectionString = model.ConnectionString;
+            var connectionString = model.ConnectionString;
 
             try
             {
@@ -197,6 +216,19 @@ namespace R.Scheduler.Sql.Controllers
             };
 
             return base.CreateJob(model, typeof (SqlJob), dataMap, model.Description);
+        }
+
+        private static IEnumerable<string> GetAuthorizedJobGroups()
+        {
+            var scheduler = ObjectFactory.GetInstance<IScheduler>();
+
+            // Return wildcard if no custom permissions manager
+            if (!scheduler.Context.ContainsKey("CustomPermissionsManagerType")) return new List<string> { "*" };
+
+            var permissionsManager = (IPermissionsManager)Activator.CreateInstance(
+                (Type)scheduler.Context["CustomPermissionsManagerType"]);
+            return permissionsManager.GetPermittedJobGroups();
+
         }
     }
 }

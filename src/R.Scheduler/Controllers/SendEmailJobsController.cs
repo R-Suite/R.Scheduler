@@ -140,12 +140,12 @@ namespace R.Scheduler.Controllers
         {
             Logger.DebugFormat("Entered EmailsController.Post(). Job Name = {0}", model.JobName);
 
-            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups();
+            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups().ToList();
 
             if (string.IsNullOrEmpty(model.JobGroup))
                 return CreateJob(model);
 
-            if (authorizedJobGroups.Contains(model.JobGroup))
+            if ((authorizedJobGroups.Contains(model.JobGroup) || authorizedJobGroups.Contains("*")) && model.JobGroup != "*")
             {
                 return CreateJob(model);
             }
@@ -164,12 +164,12 @@ namespace R.Scheduler.Controllers
         {
             Logger.DebugFormat("Entered EmailsController.Put(). Job Name = {0}", model.JobName);
 
-            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups();
+            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups().ToList();
 
             if (string.IsNullOrEmpty(model.JobGroup))
                 return CreateJob(model);
 
-            if (authorizedJobGroups.Contains(model.JobGroup))
+            if ((authorizedJobGroups.Contains(model.JobGroup) || authorizedJobGroups.Contains("*")) && model.JobGroup != "*")
             {
                 return CreateJob(model);
             }

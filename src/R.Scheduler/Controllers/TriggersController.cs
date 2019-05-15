@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Web.Http;
 using Common.Logging;
@@ -34,12 +36,17 @@ namespace R.Scheduler.Controllers
         {
             Logger.DebugFormat("Entered TriggersController.Get(). jobId = {0}", jobId);
 
-            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups();
-
+            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups().ToList();
+            IJobDetail jobDetail = _schedulerCore.GetJobDetail(jobId);
 
             IDictionary<ITrigger, Guid> quartzTriggers = _schedulerCore.GetTriggersOfJob(jobId);
 
-            return TriggerHelper.GetTriggerDetails(quartzTriggers);
+            if (jobDetail != null &&
+                (authorizedJobGroups.Contains(jobDetail.Key.Group) || authorizedJobGroups.Contains("*")))
+            {
+                return TriggerHelper.GetTriggerDetails(quartzTriggers);
+            }
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         /// <summary>
@@ -73,25 +80,30 @@ namespace R.Scheduler.Controllers
 
             var response = new QueryResponse { Valid = true };
 
-            try
+            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups().ToList();
+            if (authorizedJobGroups.Contains(model.Group) || authorizedJobGroups.Contains("*"))
             {
-                _schedulerCore.ScheduleTrigger(model);
-            }
-            catch (Exception ex)
-            {
-                response.Valid = false;
-                response.Errors = new List<Error>
+                try
                 {
-                    new Error
+                    _schedulerCore.ScheduleTrigger(model);
+                }
+                catch (Exception ex)
+                {
+                    response.Valid = false;
+                    response.Errors = new List<Error>
                     {
-                        Code = "ErrorSchedulingTrigger",
-                        Type = "Server",
-                        Message = string.Format("Error scheduling trigger {0}", ex.Message)
-                    }
-                };
-            }
+                        new Error
+                        {
+                            Code = "ErrorSchedulingTrigger",
+                            Type = "Server",
+                            Message = string.Format("Error scheduling trigger {0}", ex.Message)
+                        }
+                    };
+                }
 
-            return response;
+                return response;
+            }
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         /// <summary>
@@ -104,37 +116,43 @@ namespace R.Scheduler.Controllers
         [SchedulerAuthorize(AppSettingRoles = "Create.Roles", AppSettingUsers = "Create.Users")]
         public QueryResponse Post([FromBody] CronTrigger model)
         {
+            
             Logger.DebugFormat("Entered TriggersController.Post(). Name = {0}", model.Name);
 
             var response = new QueryResponse { Valid = true };
 
-            try
+            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups().ToList();
+            if (authorizedJobGroups.Contains(model.Group) || authorizedJobGroups.Contains("*"))
             {
-                var id = _schedulerCore.ScheduleTrigger(model);
-                response.Id = id;
-            }
-            catch (Exception ex)
-            {
-                string type = "Server";
-
-                if (ex is FormatException)
+                try
                 {
-                    type = "Sender";
+                    var id = _schedulerCore.ScheduleTrigger(model);
+                    response.Id = id;
+                }
+                catch (Exception ex)
+                {
+                    string type = "Server";
+
+                    if (ex is FormatException)
+                    {
+                        type = "Sender";
+                    }
+
+                    response.Valid = false;
+                    response.Errors = new List<Error>
+                    {
+                        new Error
+                        {
+                            Code = "ErrorSchedulingTrigger",
+                            Type = type,
+                            Message = string.Format("Error scheduling CronTrigger {0}", ex.Message)
+                        }
+                    };
                 }
 
-                response.Valid = false;
-                response.Errors = new List<Error>
-                {
-                    new Error
-                    {
-                        Code = "ErrorSchedulingTrigger",
-                        Type = type,
-                        Message = string.Format("Error scheduling CronTrigger {0}", ex.Message)
-                    }
-                };
+                return response;
             }
-
-            return response;
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         /// <summary>
@@ -148,34 +166,41 @@ namespace R.Scheduler.Controllers
         public QueryResponse Unschedule(Guid jobId)
         {
             Logger.DebugFormat("Entered TriggersController.Unschedule(). jobId = {0}", jobId);
-
             var response = new QueryResponse { Valid = true };
 
-            try
-            {
-                _schedulerCore.RemoveJobTriggers(jobId);
-            }
-            catch (Exception ex)
-            {
-                response.Valid = false;
-                response.Errors = new List<Error>
-                {
-                    new Error
-                    {
-                        Code = "ErrorUnschedulingJob",
-                        Type = "Server",
-                        Message = string.Format("Error: {0}", ex.Message)
-                    }
-                };
-            }
+            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups().ToList();
+            IJobDetail jobDetail = _schedulerCore.GetJobDetail(jobId);
 
-            return response;
+            if (jobDetail != null &&
+                (authorizedJobGroups.Contains(jobDetail.Key.Group) || authorizedJobGroups.Contains("*")))
+            {
+                try
+                {
+                    _schedulerCore.RemoveJobTriggers(jobId);
+                }
+                catch (Exception ex)
+                {
+                    response.Valid = false;
+                    response.Errors = new List<Error>
+                    {
+                        new Error
+                        {
+                            Code = "ErrorUnschedulingJob",
+                            Type = "Server",
+                            Message = string.Format("Error: {0}", ex.Message)
+                        }
+                    };
+                }
+
+                return response;
+            }
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         /// <summary>
         /// Remove specified trigger
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">Trigger id</param>
         /// <returns></returns>
         [AcceptVerbs("DELETE")]
         [Route("api/triggers/{id}")]
@@ -184,35 +209,44 @@ namespace R.Scheduler.Controllers
         {
             Logger.DebugFormat("Entered TriggersController.DeleteTrigger(). id = {0}", id);
 
-            var response = new QueryResponse { Valid = true };
+            var response = new QueryResponse {Valid = true};
 
-            try
-            {
-                _schedulerCore.RemoveTrigger(id);
-            }
-            catch (Exception ex)
-            {
-                Logger.ErrorFormat("Error removing trigger {0}. {1}", id, ex.Message);
+            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups().ToList();
+            IJobDetail jobDetail = _schedulerCore.GetJobDetailOfTrigger(id);
 
-                string type = "Server";
-                if (ex is ArgumentException)
+            if (jobDetail != null &&
+                (authorizedJobGroups.Contains(jobDetail.Key.Group) || authorizedJobGroups.Contains("*")))
+            {
+
+                try
                 {
-                    type = "Sender";
+                    _schedulerCore.RemoveTrigger(id);
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error removing trigger {0}. {1}", id, ex.Message);
+
+                    string type = "Server";
+                    if (ex is ArgumentException)
+                    {
+                        type = "Sender";
+                    }
+
+                    response.Valid = false;
+                    response.Errors = new List<Error>
+                    {
+                        new Error
+                        {
+                            Code = "ErrorRemovingTrigger",
+                            Type = type,
+                            Message = string.Format("Error removing trigger {0}.", id)
+                        }
+                    };
                 }
 
-                response.Valid = false;
-                response.Errors = new List<Error>
-                {
-                    new Error
-                    {
-                        Code = "ErrorRemovingTrigger",
-                        Type = type,
-                        Message = string.Format("Error removing trigger {0}.", id)
-                    }
-                };
+                return response;
             }
-
-            return response;
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         /// <summary>
@@ -230,41 +264,49 @@ namespace R.Scheduler.Controllers
 
             var response = new QueryResponse { Valid = true, Id = id};
 
-            try
+            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups().ToList();
+            IJobDetail jobDetail = _schedulerCore.GetJobDetailOfTrigger(id);
+
+            if (jobDetail != null &&
+                (authorizedJobGroups.Contains(jobDetail.Key.Group) || authorizedJobGroups.Contains("*")))
             {
-                if (null == state || (state.ToLower() != "on" && state.ToLower() != "off"))
+                try
                 {
-                    throw new Exception("Invalid state. Provide state value 'ON' or 'OFF'");
-                }
-
-                if (state.ToLower() == "off")
-                    _schedulerCore.PauseTrigger(id);
-                else
-                    _schedulerCore.ResumeTrigger(id);
-            }
-            catch (Exception ex)
-            {
-                Logger.ErrorFormat("Error toggling trigger {0}. {1}", id, ex.Message);
-
-                string type = "Server";
-                if (ex is ArgumentException)
-                {
-                    type = "Sender";
-                }
-
-                response.Valid = false;
-                response.Errors = new List<Error>
-                {
-                    new Error
+                    if (null == state || (state.ToLower() != "on" && state.ToLower() != "off"))
                     {
-                        Code = "ErrorTogglingTrigger",
-                        Type = type,
-                        Message = string.Format("Error toggling trigger state. ({0})", ex.Message)
+                        throw new ArgumentException("Invalid state. Provide state value 'ON' or 'OFF'");
                     }
-                };
-            }
 
-            return response;
+                    if (state.ToLower() == "off")
+                        _schedulerCore.PauseTrigger(id);
+                    else
+                        _schedulerCore.ResumeTrigger(id);
+                }
+                catch (Exception ex)
+                {
+                    Logger.ErrorFormat("Error toggling trigger {0}. {1}", id, ex.Message);
+
+                    string type = "Server";
+                    if (ex is ArgumentException)
+                    {
+                        type = "Sender";
+                    }
+
+                    response.Valid = false;
+                    response.Errors = new List<Error>
+                    {
+                        new Error
+                        {
+                            Code = "ErrorTogglingTrigger",
+                            Type = type,
+                            Message = string.Format("Error toggling trigger state. ({0})", ex.Message)
+                        }
+                    };
+                }
+
+                return response;
+            }
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
     }
 }

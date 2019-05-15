@@ -81,7 +81,7 @@ namespace R.Scheduler.Controllers
         {
             Logger.Debug("Entered NativeJobsController.Get().");
 
-            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups();
+            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups().ToList();
 
             IJobDetail jobDetail;
 
@@ -128,12 +128,12 @@ namespace R.Scheduler.Controllers
         {
             Logger.DebugFormat("Entered NativeJobsController.Post(). Job Name = {0}", model.JobName);
 
-            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups();
+            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups().ToList();
 
             if (string.IsNullOrEmpty(model.JobGroup))
                 return CreateJob(model);
 
-            if (authorizedJobGroups.Contains(model.JobGroup))
+            if ((authorizedJobGroups.Contains(model.JobGroup) || authorizedJobGroups.Contains("*")) && model.JobGroup != "*")
             {
                 return CreateJob(model);
             }
@@ -152,12 +152,12 @@ namespace R.Scheduler.Controllers
         {
             Logger.DebugFormat("Entered NativeJobsController.Put(). Job Name = {0}", model.JobName);
 
-            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups();
+            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups().ToList();
 
             if (string.IsNullOrEmpty(model.JobGroup))
                 return CreateJob(model);
 
-            if (authorizedJobGroups.Contains(model.JobGroup))
+            if ((authorizedJobGroups.Contains(model.JobGroup) || authorizedJobGroups.Contains("*")) && model.JobGroup != "*")
             {
                 return CreateJob(model);
             }

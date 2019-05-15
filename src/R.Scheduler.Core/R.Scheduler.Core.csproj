@@ -91,7 +91,6 @@
     <Compile Include="AuditJobListener.cs" />
     <Compile Include="AuditTriggerListener.cs" />
     <Compile Include="BaseJobsImpController.cs" />
-    <Compile Include="DefaultPermissionsManager.cs" />
     <Compile Include="CronExpressionEx.cs" />
     <Compile Include="FeatureToggles\EncryptionFeatureToggle.cs" />
     <Compile Include="PersistanceStoreInterceptor.cs" />

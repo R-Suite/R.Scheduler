@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using log4net.Repository.Hierarchy;
 using Quartz;
 using R.Scheduler.Core;
 using R.Scheduler.Interfaces;
@@ -13,13 +15,13 @@ namespace R.Scheduler
         {
             var scheduler = ObjectFactory.GetInstance<IScheduler>();
 
-            var permissionsManager = scheduler.Context.ContainsKey("CustomPermissionsManagerType")
-                ? (IPermissionsManager)Activator.CreateInstance(
-                    (Type)scheduler.Context["CustomPermissionsManagerType"])
-                : new DefaultPermissionsManager();
+            // Return wildcard if no custom permissions manager
+            if (!scheduler.Context.ContainsKey("CustomPermissionsManagerType")) return new List<string>{"*"};
 
-            var authorizedJobGroups = permissionsManager.GetPermittedJobGroups();
-            return authorizedJobGroups;
+            var permissionsManager = (IPermissionsManager) Activator.CreateInstance(
+                (Type) scheduler.Context["CustomPermissionsManagerType"]);
+            return permissionsManager.GetPermittedJobGroups();
+
         }
     }
 }

@@ -144,7 +144,7 @@ namespace R.Scheduler
                             else
                             {
                                 // No custom WebApp Settings defined, use the built-in default.
-                                IDisposable webApiHost = WebApp.Start<Startup>(url: Configuration.WebApiBaseAddress);
+                                WebApp.Start<Startup>(url: Configuration.WebApiBaseAddress);
                             }
                         }
                     }
@@ -156,7 +156,7 @@ namespace R.Scheduler
 
         private static void WebAppStart<T>(string webApiBaseAddress)
         {
-            IDisposable webApiHost = WebApp.Start<T>(url: webApiBaseAddress);
+            WebApp.Start<T>(url: webApiBaseAddress);
         }
 
         /// <summary>
@@ -323,6 +323,7 @@ namespace R.Scheduler
             if (!string.IsNullOrEmpty(Configuration.CustomPermissionsManagerAssemblyName))
             {
                 var permissionsManagerAssemblyName = Configuration.CustomPermissionsManagerAssemblyName;
+                Console.WriteLine($"perm asm = {permissionsManagerAssemblyName}");
 
                 try
                 {
@@ -338,12 +339,8 @@ namespace R.Scheduler
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(string.Format("Error adding authorizer from {0}", permissionsManagerAssemblyName), ex);
+                    Logger.Error(string.Format("Error adding permissions manager from {0}", permissionsManagerAssemblyName), ex);
                 }
-            }
-            else
-            {
-                _instance.Context.Add("CustomPermissionsManagerType", new DefaultPermissionsManager()); // TODO: Review this.
             }
         }
 

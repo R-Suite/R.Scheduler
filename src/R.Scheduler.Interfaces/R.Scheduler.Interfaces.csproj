@@ -76,6 +76,7 @@
     <Compile Include="IAnalytics.cs" />
     <Compile Include="IAuthorize.cs" />
     <Compile Include="IConfiguration.cs" />
+    <Compile Include="IPermissionsHelper.cs" />
     <Compile Include="IPermissionsManager.cs" />
     <Compile Include="IPersistanceStore.cs" />
     <Compile Include="IJobTypeManager.cs" />

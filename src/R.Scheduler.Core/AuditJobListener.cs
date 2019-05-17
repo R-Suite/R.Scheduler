@@ -24,9 +24,9 @@ namespace R.Scheduler.Core
             get { return "AuditJobListener"; }
         }
 
-        public AuditJobListener()
+        public AuditJobListener(IPersistanceStore persistancestore)
         {
-            _persistanceStore = ObjectFactory.GetInstance<IPersistanceStore>();
+            _persistanceStore = persistancestore;
         }
 
         /// <summary>

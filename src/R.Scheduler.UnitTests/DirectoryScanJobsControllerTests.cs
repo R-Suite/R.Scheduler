@@ -1,6 +1,8 @@
-﻿using Moq;
+﻿using System.Collections.Generic;
+using Moq;
 using R.Scheduler.Contracts.JobTypes.DirectoryScan.Model;
 using R.Scheduler.Controllers;
+using R.Scheduler.Core;
 using R.Scheduler.Interfaces;
 using StructureMap;
 using Xunit;
@@ -20,9 +22,14 @@ namespace R.Scheduler.UnitTests
         public void CreateNewJobShouldReturnInvalidResponseWhenCallbackUrlIsInvalid()
         {
             // Arrange
-            var controller = new DirectoryScanJobsController();
-            var model = new DirectoryScanJob {JobName = "TestJob", CallbackUrl = "notvalidurl"};
+            var mockPermissionsHelper = new Mock<IPermissionsHelper>();
+            mockPermissionsHelper.Setup(i => i.GetAuthorizedJobGroups()).Returns(new List<string>{"*"});
+            Mock<ISchedulerCore> mockSchedulerCore = new Mock<ISchedulerCore>();
 
+            var controller = new DirectoryScanJobsController(mockPermissionsHelper.Object, mockSchedulerCore.Object);
+
+            var model = new DirectoryScanJob {JobName = "TestJob", CallbackUrl = "notvalidurl"};
+             
             // Act 
             var result = controller.Post(model);
 
@@ -34,10 +41,13 @@ namespace R.Scheduler.UnitTests
         public void CreateNewJobShouldReturnInvalidResponseWhenCallbackUrlIsMissing()
         {
             // Arrange
-            var controller = new DirectoryScanJobsController();
-            var model = new DirectoryScanJob();
-            model.JobName = "TestJob";
+            var mockPermissionsHelper = new Mock<IPermissionsHelper>();
+            mockPermissionsHelper.Setup(i => i.GetAuthorizedJobGroups()).Returns(new List<string> { "*" });
+            Mock<ISchedulerCore> mockSchedulerCore = new Mock<ISchedulerCore>();
 
+            var controller = new DirectoryScanJobsController(mockPermissionsHelper.Object, mockSchedulerCore.Object);
+
+            var model = new DirectoryScanJob {JobName = "TestJob"};
             // Act 
             var result = controller.Post(model);
 
@@ -49,7 +59,12 @@ namespace R.Scheduler.UnitTests
         public void CreateNewJobShouldReturnValidResponseWhenCallbackUrlIsValid()
         {
             // Arrange
-            var controller = new DirectoryScanJobsController();
+            var mockPermissionsHelper = new Mock<IPermissionsHelper>();
+            mockPermissionsHelper.Setup(i => i.GetAuthorizedJobGroups()).Returns(new List<string> { "*" });
+            Mock<ISchedulerCore> mockSchedulerCore = new Mock<ISchedulerCore>();
+
+            var controller = new DirectoryScanJobsController(mockPermissionsHelper.Object, mockSchedulerCore.Object);
+
             var model = new DirectoryScanJob {JobName = "TestJob", CallbackUrl = "http://valid.com/test/"};
 
             // Act 

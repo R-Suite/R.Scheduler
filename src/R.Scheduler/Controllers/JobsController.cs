@@ -21,10 +21,12 @@ namespace R.Scheduler.Controllers
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         readonly ISchedulerCore _schedulerCore;
+        private readonly IPermissionsHelper _permissionsHelper;
 
-        public JobsController()
+        public JobsController(IPermissionsHelper permissionsHelper, ISchedulerCore schedulerCore)
         {
-            _schedulerCore = ObjectFactory.GetInstance<ISchedulerCore>();
+            _permissionsHelper = permissionsHelper;
+            _schedulerCore = schedulerCore;
         }
 
         /// <summary>
@@ -38,7 +40,7 @@ namespace R.Scheduler.Controllers
         {
             Logger.Debug("Entered JobsController.Get().");
 
-            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups();
 
             IDictionary<IJobDetail, Guid> jobDetailsMap;
 
@@ -76,7 +78,7 @@ namespace R.Scheduler.Controllers
         {
             Logger.Debug("Entered JobsController.Get().");
 
-            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups().ToList();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
 
             IJobDetail jobDetail;
 
@@ -90,7 +92,8 @@ namespace R.Scheduler.Controllers
                 return null;
             }
 
-            if ((authorizedJobGroups.Any() && jobDetail != null) || jobDetail != null && (authorizedJobGroups.Contains(jobDetail.Key.Group) || authorizedJobGroups.Contains("*")))
+            if (jobDetail != null &&
+                (authorizedJobGroups.Contains(jobDetail.Key.Group) || authorizedJobGroups.Contains("*")))
             {
                 return new BaseJob
                 {
@@ -119,7 +122,7 @@ namespace R.Scheduler.Controllers
 
             var response = new QueryResponse { Valid = true, Id = id };
 
-            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
 
             IJobDetail jobDetail;
 
@@ -173,7 +176,7 @@ namespace R.Scheduler.Controllers
 
             var response = new QueryResponse { Valid = true, Id = id };
 
-            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups().ToList();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
 
             IJobDetail jobDetail;
 

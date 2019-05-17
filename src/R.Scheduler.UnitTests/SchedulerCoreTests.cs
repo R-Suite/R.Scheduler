@@ -4,6 +4,7 @@ using Moq;
 using Quartz;
 using Quartz.Impl;
 using Quartz.Impl.Calendar;
+using Quartz.Impl.Triggers;
 using Quartz.Job;
 using R.Scheduler.Contracts.Model;
 using R.Scheduler.Core;
@@ -279,6 +280,26 @@ namespace R.Scheduler.UnitTests
 
             // Assert
             _mockScheduler.VerifyAll();
+        }
+
+        [Fact]
+        public void ShouldGetJobDetailWhenCalledGetJobDetailOfTrigger()
+        {
+            // Arrange
+            Guid triggerId = Guid.NewGuid();
+            var triggerKey = new TriggerKey("TestTrigger", "TestTriggerGroup");
+            ITrigger trigger = new SimpleTriggerImpl{JobKey = new JobKey("TestJob", "TestJobGroup")};
+            _mockPersistanceStore.Setup(x => x.GetTriggerKey(triggerId)).Returns(triggerKey);
+            _mockScheduler.Setup(x => x.GetTrigger(triggerKey)).Returns(trigger);
+            _mockScheduler.Setup(i => i.GetJobDetail(trigger.JobKey)).Returns(new JobDetailImpl() {Key = trigger.JobKey , Group = "TestJobGroup" });
+
+            ISchedulerCore schedulerCore = new SchedulerCore(_mockScheduler.Object, _mockPersistanceStore.Object);
+
+            // Act 
+            var group = schedulerCore.GetJobDetailOfTrigger(triggerId).Key.Group;
+
+            // Assert
+            Assert.Equal("TestJobGroup", group);
         }
     }
 }

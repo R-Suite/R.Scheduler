@@ -23,10 +23,12 @@ namespace R.Scheduler.Controllers
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         readonly ISchedulerCore _schedulerCore;
+        private readonly IPermissionsHelper _permissionsHelper;
 
-        protected NativeJobsController()
+        public NativeJobsController(IPermissionsHelper permissionsHelper, ISchedulerCore schedulerCore)
         {
-            _schedulerCore = ObjectFactory.GetInstance<ISchedulerCore>();
+            _permissionsHelper = permissionsHelper;
+            _schedulerCore = schedulerCore;
         }
 
         /// <summary>
@@ -40,7 +42,7 @@ namespace R.Scheduler.Controllers
         {
             Logger.Debug("Entered NativeJobsController.Get().");
 
-            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups();
 
             IDictionary<IJobDetail, Guid> jobDetailsMap;
 
@@ -81,7 +83,7 @@ namespace R.Scheduler.Controllers
         {
             Logger.Debug("Entered NativeJobsController.Get().");
 
-            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups().ToList();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
 
             IJobDetail jobDetail;
 
@@ -128,7 +130,7 @@ namespace R.Scheduler.Controllers
         {
             Logger.DebugFormat("Entered NativeJobsController.Post(). Job Name = {0}", model.JobName);
 
-            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups().ToList();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
 
             if (string.IsNullOrEmpty(model.JobGroup))
                 return CreateJob(model);
@@ -152,7 +154,7 @@ namespace R.Scheduler.Controllers
         {
             Logger.DebugFormat("Entered NativeJobsController.Put(). Job Name = {0}", model.JobName);
 
-            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups().ToList();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
 
             if (string.IsNullOrEmpty(model.JobGroup))
                 return CreateJob(model);

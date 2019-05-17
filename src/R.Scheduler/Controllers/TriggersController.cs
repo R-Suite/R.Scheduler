@@ -18,10 +18,12 @@ namespace R.Scheduler.Controllers
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         readonly ISchedulerCore _schedulerCore;
+        private readonly IPermissionsHelper _permissionsHelper;
 
-        public TriggersController()
+        public TriggersController(IPermissionsHelper permissionsHelper, ISchedulerCore schedulerCore)
         {
-            _schedulerCore = ObjectFactory.GetInstance<ISchedulerCore>();
+            _permissionsHelper = permissionsHelper;
+            _schedulerCore = schedulerCore;
         }
 
         /// <summary>
@@ -36,7 +38,7 @@ namespace R.Scheduler.Controllers
         {
             Logger.DebugFormat("Entered TriggersController.Get(). jobId = {0}", jobId);
 
-            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups().ToList();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
             IJobDetail jobDetail = _schedulerCore.GetJobDetail(jobId);
 
             IDictionary<ITrigger, Guid> quartzTriggers = _schedulerCore.GetTriggersOfJob(jobId);
@@ -60,7 +62,7 @@ namespace R.Scheduler.Controllers
         {
             Logger.Debug("Entered TriggersController.Get()");
 
-            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups();
             IEnumerable<TriggerFireTime> fireTimes = _schedulerCore.GetFireTimesBetween(start, end, authorizedJobGroups);
 
             return fireTimes as IList<TriggerFireTime>;
@@ -80,7 +82,7 @@ namespace R.Scheduler.Controllers
 
             var response = new QueryResponse { Valid = true };
 
-            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups().ToList();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
             if (authorizedJobGroups.Contains(model.Group) || authorizedJobGroups.Contains("*"))
             {
                 try
@@ -121,7 +123,7 @@ namespace R.Scheduler.Controllers
 
             var response = new QueryResponse { Valid = true };
 
-            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups().ToList();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
             if (authorizedJobGroups.Contains(model.Group) || authorizedJobGroups.Contains("*"))
             {
                 try
@@ -168,7 +170,7 @@ namespace R.Scheduler.Controllers
             Logger.DebugFormat("Entered TriggersController.Unschedule(). jobId = {0}", jobId);
             var response = new QueryResponse { Valid = true };
 
-            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups().ToList();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
             IJobDetail jobDetail = _schedulerCore.GetJobDetail(jobId);
 
             if (jobDetail != null &&
@@ -211,7 +213,7 @@ namespace R.Scheduler.Controllers
 
             var response = new QueryResponse {Valid = true};
 
-            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups().ToList();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
             IJobDetail jobDetail = _schedulerCore.GetJobDetailOfTrigger(id);
 
             if (jobDetail != null &&
@@ -264,7 +266,7 @@ namespace R.Scheduler.Controllers
 
             var response = new QueryResponse { Valid = true, Id = id};
 
-            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups().ToList();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
             IJobDetail jobDetail = _schedulerCore.GetJobDetailOfTrigger(id);
 
             if (jobDetail != null &&

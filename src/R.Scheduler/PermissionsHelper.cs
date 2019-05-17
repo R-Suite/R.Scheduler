@@ -9,19 +9,23 @@ using StructureMap;
 
 namespace R.Scheduler
 {
-    public static class PermissionsHelper
+    public class PermissionsHelper : IPermissionsHelper
     {
-        public static IEnumerable<string> GetAuthorizedJobGroups()
-        {
-            var scheduler = ObjectFactory.GetInstance<IScheduler>();
+        private readonly IScheduler _scheduler;
 
+        public PermissionsHelper(IScheduler scheduler)
+        {
+            _scheduler = scheduler;
+        }
+
+        public IEnumerable<string> GetAuthorizedJobGroups()
+        {
             // Return wildcard if no custom permissions manager
-            if (!scheduler.Context.ContainsKey("CustomPermissionsManagerType")) return new List<string>{"*"};
+            if (!_scheduler.Context.ContainsKey("CustomPermissionsManagerType")) return new List<string> {"*"};
 
             var permissionsManager = (IPermissionsManager) Activator.CreateInstance(
-                (Type) scheduler.Context["CustomPermissionsManagerType"]);
+                (Type) _scheduler.Context["CustomPermissionsManagerType"]);
             return permissionsManager.GetPermittedJobGroups();
-
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Quartz;
+using R.Scheduler.Controllers;
 using R.Scheduler.Core;
 using R.Scheduler.Interfaces;
 using R.Scheduler.Persistance;
@@ -16,9 +17,10 @@ namespace R.Scheduler
             For<ISchedulerCore>().Use<SchedulerCore>();
             For<IScheduler>().Use(Scheduler.Instance);
             For<IAnalytics>().Use<Analytics>();
+            For<IPermissionsHelper>().Use<PermissionsHelper>();
             // Default that my be overriden (using Sm TypeInterceptor) to use 
             // data store implementation selected in Scheduler Configuration
-            For<IPersistanceStore>().Use<InMemoryStore>();
+            //For<IPersistanceStore>().Use<InMemoryStore>();
         }
     }
 }

@@ -22,10 +22,12 @@ namespace R.Scheduler.Controllers
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         readonly ISchedulerCore _schedulerCore;
+        private readonly IPermissionsHelper _permissionsHelper;
 
-        public DirectoryScanJobsController()
+        public DirectoryScanJobsController(IPermissionsHelper permissionsHelper, ISchedulerCore schedulerCore)
         {
-            _schedulerCore = ObjectFactory.GetInstance<ISchedulerCore>();
+            _schedulerCore = schedulerCore;
+            _permissionsHelper = permissionsHelper;
         }
 
         /// <summary>
@@ -35,11 +37,11 @@ namespace R.Scheduler.Controllers
         [AcceptVerbs("GET")]
         [Route("api/dirScanJobs")]
         [SchedulerAuthorize(AppSettingRoles = "Read.Roles", AppSettingUsers = "Read.Users")]
-        public IEnumerable<Contracts.JobTypes.DirectoryScan.Model.DirectoryScanJob> Get()
+        public IEnumerable<DirectoryScanJob> Get()
         {
             Logger.Info("Entered DirectoryScanJobsController.Get().");
 
-            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups();
 
             IDictionary<IJobDetail, Guid> jobDetailsMap;
 
@@ -54,7 +56,7 @@ namespace R.Scheduler.Controllers
             }
 
             return jobDetailsMap.Select(jobDetail =>
-                                                    new Contracts.JobTypes.DirectoryScan.Model.DirectoryScanJob
+                                                    new DirectoryScanJob
                                                     {
                                                         Id = jobDetail.Value,
                                                         JobName = jobDetail.Key.Key.Name,
@@ -75,11 +77,11 @@ namespace R.Scheduler.Controllers
         [AcceptVerbs("GET")]
         [Route("api/dirScanJobs/{id}")]
         [SchedulerAuthorize(AppSettingRoles = "Read.Roles", AppSettingUsers = "Read.Users")]
-        public Contracts.JobTypes.DirectoryScan.Model.DirectoryScanJob Get(Guid id)
+        public DirectoryScanJob Get(Guid id)
         {
             Logger.Info("Entered DirectoryScanJobsController.Get().");
 
-            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups().ToList();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
 
             IJobDetail jobDetail;
 
@@ -120,11 +122,11 @@ namespace R.Scheduler.Controllers
         [AcceptVerbs("POST")]
         [Route("api/dirScanJobs")]
         [SchedulerAuthorize(AppSettingRoles = "Create.Roles", AppSettingUsers = "Create.Users")]
-        public QueryResponse Post([FromBody]Contracts.JobTypes.DirectoryScan.Model.DirectoryScanJob model)
+        public QueryResponse Post([FromBody]DirectoryScanJob model)
         {
             Logger.InfoFormat("Entered DirectoryScanJobsController.Post(). Job Name = {0}", model.JobName);
 
-            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups().ToList();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
 
             if (string.IsNullOrEmpty(model.JobGroup))
                 return CreateJob(model);
@@ -144,11 +146,11 @@ namespace R.Scheduler.Controllers
         [AcceptVerbs("PUT")]
         [Route("api/dirScanJobs/{id}")]
         [SchedulerAuthorize(AppSettingRoles = "Update.Roles", AppSettingUsers = "Update.Users")]
-        public QueryResponse Put([FromBody]Contracts.JobTypes.DirectoryScan.Model.DirectoryScanJob model)
+        public QueryResponse Put([FromBody]DirectoryScanJob model)
         {
             Logger.InfoFormat("Entered DirectoryScanJobsController.Put(). Job Name = {0}", model.JobName);
 
-            var authorizedJobGroups = PermissionsHelper.GetAuthorizedJobGroups().ToList();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
 
             if (string.IsNullOrEmpty(model.JobGroup))
                 return CreateJob(model);

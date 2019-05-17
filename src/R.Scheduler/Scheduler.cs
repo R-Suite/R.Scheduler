@@ -10,6 +10,7 @@ using Quartz.Impl;
 using Quartz.Impl.Matchers;
 using R.Scheduler.Core;
 using R.Scheduler.Interfaces;
+using R.Scheduler.Persistance;
 using StructureMap;
 using IConfiguration = R.Scheduler.Interfaces.IConfiguration;
 
@@ -19,9 +20,11 @@ namespace R.Scheduler
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private static IScheduler _instance;
+        private static IPersistanceStore _persistanceStore;
         private static readonly object SyncRoot = new Object();
 
         public static IConfiguration Configuration { get; set; }
+        public static IContainer Container { get; set; }
 
         static Scheduler()
         {
@@ -53,8 +56,19 @@ namespace R.Scheduler
 
             Configuration = configuration;
 
-            // Ensure container resolves persistance store based on configuration settings
-            ObjectFactory.Configure(x => x.RegisterInterceptor(new PersistanceStoreInterceptor(Configuration)));
+            // Ensure container resolves persistence store based on configuration settings
+            
+            // Create Temp store,
+            IPersistanceStore ps = new InMemoryStore();
+            // Determine store type from configuration
+            var psi = new PersistanceStoreInterceptor(Configuration);
+            var store = (IPersistanceStore)psi.Process(ps, null);
+            _persistanceStore = store;
+            Container = new Container();
+            Container.Configure(c => c.AddRegistry<SmRegistry>());
+            // Inject the persistence store after initialization
+            Container.Inject(store);
+
 
             // Initialise JobTypes modules
             var jobTypeStartups = ObjectFactory.GetAllInstances<IJobTypeStartup>();
@@ -87,14 +101,13 @@ namespace R.Scheduler
                         {
                             Configuration = new Configuration();
                         }
-
                         ISchedulerFactory schedFact = new StdSchedulerFactory(GetProperties());
                         _instance = schedFact.GetScheduler();
 
                         if (Configuration.EnableAuditHistory)
                         {
-                            _instance.ListenerManager.AddJobListener(new AuditJobListener(), GroupMatcher<JobKey>.AnyGroup());
-                            _instance.ListenerManager.AddTriggerListener(new AuditTriggerListener(), GroupMatcher<TriggerKey>.AnyGroup());
+                            _instance.ListenerManager.AddJobListener(new AuditJobListener(_persistanceStore), GroupMatcher<JobKey>.AnyGroup());
+                            _instance.ListenerManager.AddTriggerListener(new AuditTriggerListener(_persistanceStore), GroupMatcher<TriggerKey>.AnyGroup());
                         }
 
                         // Custom listeners
@@ -323,7 +336,6 @@ namespace R.Scheduler
             if (!string.IsNullOrEmpty(Configuration.CustomPermissionsManagerAssemblyName))
             {
                 var permissionsManagerAssemblyName = Configuration.CustomPermissionsManagerAssemblyName;
-                Console.WriteLine($"perm asm = {permissionsManagerAssemblyName}");
 
                 try
                 {

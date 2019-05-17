@@ -18,9 +18,9 @@ namespace R.Scheduler.Controllers
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly IAnalytics _analytics;
 
-        public AnalyticsController()
+        public AnalyticsController(IAnalytics analytics)
         {
-            _analytics = ObjectFactory.GetInstance<IAnalytics>();
+            _analytics = analytics;
             Mapper.CreateMap<AuditLog, FireInstance>();
         }
 

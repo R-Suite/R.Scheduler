@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Web;
 using System.Web.Http;
 using Common.Logging;
 using Quartz;
@@ -11,8 +10,6 @@ using R.Scheduler.Contracts.JobTypes;
 using R.Scheduler.Contracts.Model;
 using R.Scheduler.Core;
 using R.Scheduler.Interfaces;
-using R.Scheduler.Persistance;
-using StructureMap;
 
 namespace R.Scheduler.Controllers
 {
@@ -105,6 +102,7 @@ namespace R.Scheduler.Controllers
                     Description = jobDetail.Description
                 };
             }
+            if (jobDetail == null) throw new HttpResponseException(HttpStatusCode.NotFound);
             throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
@@ -159,7 +157,9 @@ namespace R.Scheduler.Controllers
 
                 return response;
             }
+            if (jobDetail == null) throw new HttpResponseException(HttpStatusCode.NotFound);
             throw new HttpResponseException(HttpStatusCode.Unauthorized);
+            
         }
 
         /// <summary>
@@ -219,6 +219,7 @@ namespace R.Scheduler.Controllers
 
                 return response;
             }
+            if (jobDetail == null) throw new HttpResponseException(HttpStatusCode.NotFound);
             throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
     }

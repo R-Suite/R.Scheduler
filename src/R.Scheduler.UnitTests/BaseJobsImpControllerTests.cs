@@ -19,6 +19,10 @@ namespace R.Scheduler.UnitTests
         {
             return base.CreateJob(model, jobType, dataMap);
         }
+
+        public TestController(ISchedulerCore schedulerCore) : base(schedulerCore)
+        {
+        }
     }
 
     public class BaseJobsImpControllerTests
@@ -34,8 +38,8 @@ namespace R.Scheduler.UnitTests
         public void CreateJobShouldReturnErrorQueryResponseWhenExceptionIsThrownInSchedulerCore()
         {
             // Arrange
-            var controller = new TestController();
             _mockSchedulerCore.Setup(i => i.CreateJob(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Type>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<string>(), null)).Throws(new Exception());
+            var controller = new TestController(_mockSchedulerCore.Object);
 
             // Act 
             var result = controller.CreateJob(null, null, null);

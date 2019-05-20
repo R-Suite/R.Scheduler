@@ -125,6 +125,7 @@
     <Compile Include="AnalyticsTests.cs" />
     <Compile Include="AssemblyPluginJobTests.cs" />
     <Compile Include="FtpDownloadJobTests.cs" />
+    <Compile Include="PermissionsManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SchedulerCoreTests.cs" />
     <Compile Include="SchedulerTests.cs" />

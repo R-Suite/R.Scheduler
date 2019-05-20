@@ -44,8 +44,8 @@ namespace R.Scheduler.IntegrationTests
                 config.EnableWebApiSelfHost = false;
                 config.EnableAuditHistory = false;
             }));
-            IPersistanceStore persistanceStore = new InMemoryStore();
-            _schedulerCore = new SchedulerCore(Scheduler.Instance(), persistanceStore);
+            IPersistanceStore persistenceStore = new InMemoryStore();
+            _schedulerCore = new SchedulerCore(Scheduler.Instance(), persistenceStore);
 
             const string jobName = "Job1";
             const string jobGroup = "Group1";

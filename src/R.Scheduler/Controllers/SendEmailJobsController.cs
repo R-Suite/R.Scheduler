@@ -25,7 +25,7 @@ namespace R.Scheduler.Controllers
         readonly ISchedulerCore _schedulerCore;
         private readonly IPermissionsHelper _permissionsHelper;
 
-        public SendEmailJobsController(IPermissionsHelper permissionsHelper, ISchedulerCore schedulerCore)
+        public SendEmailJobsController(IPermissionsHelper permissionsHelper, ISchedulerCore schedulerCore) : base(schedulerCore)
         {
             _permissionsHelper = permissionsHelper;
             _schedulerCore = schedulerCore;
@@ -126,6 +126,7 @@ namespace R.Scheduler.Controllers
                     Description = jobDetail.Description
                 };
             }
+            if (jobDetail == null) throw new HttpResponseException(HttpStatusCode.NotFound);
             throw new HttpResponseException(HttpStatusCode.Unauthorized);
 
         }
@@ -143,7 +144,7 @@ namespace R.Scheduler.Controllers
             Logger.DebugFormat("Entered EmailsController.Post(). Job Name = {0}", model.JobName);
 
             var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
-
+            
             if (string.IsNullOrEmpty(model.JobGroup))
                 return CreateJob(model);
 

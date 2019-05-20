@@ -9,7 +9,6 @@ using Quartz;
 using R.Scheduler.Contracts.Model;
 using R.Scheduler.Core;
 using R.Scheduler.Interfaces;
-using StructureMap;
 
 namespace R.Scheduler.Controllers
 {
@@ -48,6 +47,7 @@ namespace R.Scheduler.Controllers
             {
                 return TriggerHelper.GetTriggerDetails(quartzTriggers);
             }
+            if (jobDetail == null) throw new HttpResponseException(HttpStatusCode.NotFound);
             throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 

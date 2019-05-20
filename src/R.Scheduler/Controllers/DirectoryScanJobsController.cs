@@ -24,7 +24,7 @@ namespace R.Scheduler.Controllers
         readonly ISchedulerCore _schedulerCore;
         private readonly IPermissionsHelper _permissionsHelper;
 
-        public DirectoryScanJobsController(IPermissionsHelper permissionsHelper, ISchedulerCore schedulerCore)
+        public DirectoryScanJobsController(IPermissionsHelper permissionsHelper, ISchedulerCore schedulerCore) : base(schedulerCore)
         {
             _schedulerCore = schedulerCore;
             _permissionsHelper = permissionsHelper;
@@ -110,7 +110,7 @@ namespace R.Scheduler.Controllers
                     LastModifiedTime = jobDetail.JobDataMap.GetDateTime("LAST_MODIFIED_TIME")
                 };
             }
-
+            if (jobDetail == null) throw new HttpResponseException(HttpStatusCode.NotFound);
             throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 

@@ -18,10 +18,12 @@ namespace R.Scheduler.WebRequest.Controllers
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         readonly ISchedulerCore _schedulerCore;
+        private readonly IPermissionsHelper _permissionsHelper;
 
-        protected WebRequestJobController()
+        protected WebRequestJobController(IPermissionsHelper permissionsHelper, ISchedulerCore schedulerCore) : base(schedulerCore)
         {
-            _schedulerCore = ObjectFactory.GetInstance<ISchedulerCore>();
+            _schedulerCore = schedulerCore;
+            _permissionsHelper = permissionsHelper;
         }
 
         /// <summary>
@@ -35,7 +37,7 @@ namespace R.Scheduler.WebRequest.Controllers
         {
             Logger.Debug("Entered WebRequestJobController.Get().");
 
-            var authorizedJobGroups = GetAuthorizedJobGroups();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups();
 
             var jobDetailsMap = _schedulerCore.GetJobDetails(authorizedJobGroups, typeof(WebRequestJob));
             
@@ -63,7 +65,7 @@ namespace R.Scheduler.WebRequest.Controllers
         {
             Logger.Info("Entered WebRequestJobController.Get().");
 
-            var authorizedJobGroups = GetAuthorizedJobGroups().ToList();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
 
             IJobDetail jobDetail;
 
@@ -94,6 +96,7 @@ namespace R.Scheduler.WebRequest.Controllers
                     Description = jobDetail.Description
                 };
             }
+            if (jobDetail == null) throw new HttpResponseException(HttpStatusCode.NotFound);
             throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
@@ -109,7 +112,7 @@ namespace R.Scheduler.WebRequest.Controllers
         {
             Logger.InfoFormat("Entered WebRequestJobController.Post(). Job Name = {0}", model.JobName);
 
-            var authorizedJobGroups = GetAuthorizedJobGroups().ToList();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
 
             if (string.IsNullOrEmpty(model.JobGroup))
                 return CreateJob(model);
@@ -133,7 +136,7 @@ namespace R.Scheduler.WebRequest.Controllers
         {
             Logger.InfoFormat("Entered WebRequestJobController.Put(). Job Name = {0}", model.JobName);
 
-            var authorizedJobGroups = GetAuthorizedJobGroups().ToList();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
 
             if (string.IsNullOrEmpty(model.JobGroup))
                 return CreateJob(model);
@@ -157,19 +160,6 @@ namespace R.Scheduler.WebRequest.Controllers
             };
 
             return base.CreateJob(model, typeof (WebRequestJob), dataMap, model.Description);
-        }
-
-        private static IEnumerable<string> GetAuthorizedJobGroups()
-        {
-            var scheduler = ObjectFactory.GetInstance<IScheduler>();
-
-            // Return wildcard if no custom permissions manager
-            if (!scheduler.Context.ContainsKey("CustomPermissionsManagerType")) return new List<string> { "*" };
-
-            var permissionsManager = (IPermissionsManager)Activator.CreateInstance(
-                (Type)scheduler.Context["CustomPermissionsManagerType"]);
-            return permissionsManager.GetPermittedJobGroups();
-
         }
     }
 }

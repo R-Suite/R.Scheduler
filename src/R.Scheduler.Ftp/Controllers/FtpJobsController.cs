@@ -20,10 +20,12 @@ namespace R.Scheduler.Ftp.Controllers
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         readonly ISchedulerCore _schedulerCore;
+        private readonly IPermissionsHelper _permissionsHelper;
 
-        protected FtpJobsController()
+        protected FtpJobsController(IPermissionsHelper permissionsHelper, ISchedulerCore schedulerCore) : base(schedulerCore)
         {
-            _schedulerCore = ObjectFactory.GetInstance<ISchedulerCore>();
+            _permissionsHelper = permissionsHelper;
+            _schedulerCore = schedulerCore;
         }
 
         /// <summary>
@@ -37,7 +39,7 @@ namespace R.Scheduler.Ftp.Controllers
         {
             Logger.Debug("Entered FtpJobsController.Get().");
 
-            var authorizedJobGroups = GetAuthorizedJobGroups().ToList();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
 
             var jobDetailsMap = _schedulerCore.GetJobDetails(authorizedJobGroups, typeof(FtpDownloadJob));
 
@@ -64,7 +66,7 @@ namespace R.Scheduler.Ftp.Controllers
         {
             Logger.Debug("Entered FtpJobsController.Get().");
 
-            var authorizedJobGroups = GetAuthorizedJobGroups().ToList();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
 
             IJobDetail jobDetail;
 
@@ -129,6 +131,7 @@ namespace R.Scheduler.Ftp.Controllers
                     SshPrivateKeyPassword = sshPrivateKeyPassword
                 };
             }
+            if (jobDetail == null) throw new HttpResponseException(HttpStatusCode.NotFound);
             throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
@@ -144,7 +147,7 @@ namespace R.Scheduler.Ftp.Controllers
         {
             Logger.DebugFormat("Entered FtpJobsController.Post(). Job Name = {0}", model.JobName);
 
-            var authorizedJobGroups = GetAuthorizedJobGroups().ToList();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
 
             if (string.IsNullOrEmpty(model.JobGroup))
                 return CreateJob(model);
@@ -168,7 +171,7 @@ namespace R.Scheduler.Ftp.Controllers
         {
             Logger.DebugFormat("Entered FtpJobsController.Put(). Job Name = {0}", model.JobName);
 
-            var authorizedJobGroups = GetAuthorizedJobGroups().ToList();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
 
             if (string.IsNullOrEmpty(model.JobGroup))
                 return CreateJob(model);
@@ -223,19 +226,6 @@ namespace R.Scheduler.Ftp.Controllers
             };
 
             return base.CreateJob(model, typeof (FtpDownloadJob), dataMap, model.Description);
-        }
-
-        private static IEnumerable<string> GetAuthorizedJobGroups()
-        {
-            var scheduler = ObjectFactory.GetInstance<IScheduler>();
-
-            // Return wildcard if no custom permissions manager
-            if (!scheduler.Context.ContainsKey("CustomPermissionsManagerType")) return new List<string> { "*" };
-
-            var permissionsManager = (IPermissionsManager)Activator.CreateInstance(
-                (Type)scheduler.Context["CustomPermissionsManagerType"]);
-            return permissionsManager.GetPermittedJobGroups();
-
         }
     }
 }

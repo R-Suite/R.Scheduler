@@ -25,7 +25,7 @@ namespace R.Scheduler.Controllers
         readonly ISchedulerCore _schedulerCore;
         private readonly IPermissionsHelper _permissionsHelper;
 
-        public NativeJobsController(IPermissionsHelper permissionsHelper, ISchedulerCore schedulerCore)
+        public NativeJobsController(IPermissionsHelper permissionsHelper, ISchedulerCore schedulerCore) : base(schedulerCore)
         {
             _permissionsHelper = permissionsHelper;
             _schedulerCore = schedulerCore;
@@ -114,8 +114,8 @@ namespace R.Scheduler.Controllers
                     Description = jobDetail.Description
                 };
             }
+            if (jobDetail == null) throw new HttpResponseException(HttpStatusCode.NotFound);
             throw new HttpResponseException(HttpStatusCode.Unauthorized);
-
         }
 
         /// <summary>

@@ -51,7 +51,6 @@ namespace R.Scheduler.Core
 
             foreach (string group in jobGroups)
             {
-                // TODO: look at case sensitivity (same job name and group name?)
                 if (!jobGroups.Contains(@group)) continue;
 
                 var groupMatcher = GroupMatcher<JobKey>.GroupEquals(group);
@@ -135,8 +134,8 @@ namespace R.Scheduler.Core
             // Use DefaultGroup if jobGroup is null or empty
             jobGroup = (!string.IsNullOrEmpty(jobGroup)) ? jobGroup : JobKey.DefaultGroup;
 
-            var jobbuilder = JobBuilder.Create(jobType);
-            IJobDetail jobDetail = jobbuilder.WithDescription(description)
+            var jobBuilder = JobBuilder.Create(jobType);
+            IJobDetail jobDetail = jobBuilder.WithDescription(description)
                 .WithIdentity(jobName, jobGroup).StoreDurably(true).RequestRecovery(false)
                 .Build();
 

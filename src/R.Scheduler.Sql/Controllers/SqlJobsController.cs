@@ -157,9 +157,6 @@ namespace R.Scheduler.Sql.Controllers
 
             var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
 
-            if (string.IsNullOrEmpty(model.JobGroup))
-                return CreateJob(model);
-
             if ((authorizedJobGroups.Contains(model.JobGroup) || authorizedJobGroups.Contains("*")) && model.JobGroup != "*")
             {
                 return CreateJob(model);
@@ -180,9 +177,6 @@ namespace R.Scheduler.Sql.Controllers
             Logger.DebugFormat("Entered SqlJobsController.Put(). Job Name = {0}", model.JobName);
 
             var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
-
-            if (string.IsNullOrEmpty(model.JobGroup))
-                return CreateJob(model);
 
             if ((authorizedJobGroups.Contains(model.JobGroup) || authorizedJobGroups.Contains("*")) && model.JobGroup != "*")
             {

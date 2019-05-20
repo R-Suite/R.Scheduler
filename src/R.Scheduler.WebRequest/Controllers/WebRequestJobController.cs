@@ -114,9 +114,6 @@ namespace R.Scheduler.WebRequest.Controllers
 
             var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
 
-            if (string.IsNullOrEmpty(model.JobGroup))
-                return CreateJob(model);
-
             if ((authorizedJobGroups.Contains(model.JobGroup) || authorizedJobGroups.Contains("*")) && model.JobGroup != "*")
             {
                 return CreateJob(model);
@@ -137,9 +134,6 @@ namespace R.Scheduler.WebRequest.Controllers
             Logger.InfoFormat("Entered WebRequestJobController.Put(). Job Name = {0}", model.JobName);
 
             var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
-
-            if (string.IsNullOrEmpty(model.JobGroup))
-                return CreateJob(model);
 
             if ((authorizedJobGroups.Contains(model.JobGroup) || authorizedJobGroups.Contains("*")) && model.JobGroup != "*")
             {

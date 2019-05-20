@@ -128,10 +128,7 @@ namespace R.Scheduler.Controllers
 
             var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
 
-            if (string.IsNullOrEmpty(model.JobGroup))
-                return CreateJob(model);
-
-            if ((authorizedJobGroups.Contains(model.JobGroup) || authorizedJobGroups.Contains("*")) && model.JobGroup != "*")
+           if ((authorizedJobGroups.Contains(model.JobGroup) || authorizedJobGroups.Contains("*")) && model.JobGroup != "*")
             {
                 return CreateJob(model);
             }
@@ -151,9 +148,6 @@ namespace R.Scheduler.Controllers
             Logger.InfoFormat("Entered DirectoryScanJobsController.Put(). Job Name = {0}", model.JobName);
 
             var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
-
-            if (string.IsNullOrEmpty(model.JobGroup))
-                return CreateJob(model);
 
             if ((authorizedJobGroups.Contains(model.JobGroup) || authorizedJobGroups.Contains("*")) && model.JobGroup != "*")
             {

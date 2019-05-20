@@ -118,9 +118,6 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
             Logger.DebugFormat("Entered AssemblyPluginsController.Post(). Job Name = {0}", model.JobName);
             var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
 
-            if (string.IsNullOrEmpty(model.JobGroup))
-                return CreateJob(model);
-
             if ((authorizedJobGroups.Contains(model.JobGroup) || authorizedJobGroups.Contains("*")) && model.JobGroup != "*")
             {
                 return CreateJob(model);
@@ -141,9 +138,6 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
             Logger.DebugFormat("Entered AssemblyPluginsController.Put(). Job Name = {0}", model.JobName);
 
             var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
-
-            if (string.IsNullOrEmpty(model.JobGroup))
-                return CreateJob(model);
 
             if ((authorizedJobGroups.Contains(model.JobGroup) || authorizedJobGroups.Contains("*")) && model.JobGroup != "*")
             {

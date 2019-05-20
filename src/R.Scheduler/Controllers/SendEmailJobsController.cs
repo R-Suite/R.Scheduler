@@ -11,7 +11,6 @@ using R.Scheduler.Contracts.JobTypes.Email.Model;
 using R.Scheduler.Contracts.Model;
 using R.Scheduler.Core;
 using R.Scheduler.Interfaces;
-using StructureMap;
 
 namespace R.Scheduler.Controllers
 {
@@ -145,10 +144,7 @@ namespace R.Scheduler.Controllers
 
             var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
             
-            if (string.IsNullOrEmpty(model.JobGroup))
-                return CreateJob(model);
-
-            if ((authorizedJobGroups.Contains(model.JobGroup) || authorizedJobGroups.Contains("*")) && model.JobGroup != "*")
+           if ((authorizedJobGroups.Contains(model.JobGroup) || authorizedJobGroups.Contains("*")) && model.JobGroup != "*")
             {
                 return CreateJob(model);
             }
@@ -168,9 +164,6 @@ namespace R.Scheduler.Controllers
             Logger.DebugFormat("Entered EmailsController.Put(). Job Name = {0}", model.JobName);
 
             var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
-
-            if (string.IsNullOrEmpty(model.JobGroup))
-                return CreateJob(model);
 
             if ((authorizedJobGroups.Contains(model.JobGroup) || authorizedJobGroups.Contains("*")) && model.JobGroup != "*")
             {

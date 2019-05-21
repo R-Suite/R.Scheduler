@@ -93,6 +93,7 @@
     <Compile Include="BaseJobsImpController.cs" />
     <Compile Include="CronExpressionEx.cs" />
     <Compile Include="FeatureToggles\EncryptionFeatureToggle.cs" />
+    <Compile Include="PermissionsHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SampleFeatureToggles\SampleFeatureToggle.cs" />
     <Compile Include="SchedulerAuthorizeAttribute.cs" />

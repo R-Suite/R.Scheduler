@@ -19,8 +19,8 @@ namespace R.Scheduler.IntegrationTests
         public void TestExecuteMethodInvokesConnectAndGetFilesMethods()
         {
             // Arrange
-            var container = new Container();
-            container.Configure(config =>
+            SchedulerContainer.Container = new Container();
+            SchedulerContainer.Container.Configure(config =>
             {
                 config.For<IFtpLibrary>().Use(_mockFtpLibrary.Object);
             });

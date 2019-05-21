@@ -16,7 +16,7 @@ namespace R.Scheduler.UnitTests
     public class SchedulerCoreTests
     {
         private readonly Mock<IScheduler> _mockScheduler = new Mock<IScheduler>();
-        private readonly Mock<IPersistanceStore> _mockPersistanceStore = new Mock<IPersistanceStore>();
+        private readonly Mock<IPersistenceStore> _mockPersistanceStore = new Mock<IPersistenceStore>();
 
         [Fact]
         public void ShouldDeleteJobInDefaultJobGroupsWhenJobGroupIsNotSpecifiedInRemoveJob()

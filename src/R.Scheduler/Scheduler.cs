@@ -2,17 +2,17 @@
 using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection;
-using Common.Logging;
 using Microsoft.Owin.Hosting;
 using Owin;
 using Quartz;
 using Quartz.Impl;
 using Quartz.Impl.Matchers;
 using R.Scheduler.Core;
+using R.Scheduler.Persistence;
 using R.Scheduler.Interfaces;
-using R.Scheduler.Persistance;
 using StructureMap;
 using IConfiguration = R.Scheduler.Interfaces.IConfiguration;
+using log4net;
 
 namespace R.Scheduler
 {
@@ -20,15 +20,14 @@ namespace R.Scheduler
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private static IScheduler _instance;
-        private static IPersistanceStore _persistanceStore;
+        private static IPersistenceStore _persistenceStore;
         private static readonly object SyncRoot = new Object();
 
         public static IConfiguration Configuration { get; set; }
-        public static IContainer Container { get; set; }
 
         static Scheduler()
         {
-            ObjectFactory.Initialize(x => x.Scan(scan =>
+            SchedulerContainer.Container = new Container(x => x.Scan(scan =>
             {
                 scan.TheCallingAssembly();
                 scan.AssembliesFromApplicationBaseDirectory();
@@ -40,6 +39,7 @@ namespace R.Scheduler
         /// Instantiates Scheduler, including any configuration.
         /// </summary>
         /// <param name="action">A lambda that configures that sets the Scheduler configuration.</param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public static void Initialize(Action<IConfiguration> action = null)
         {
             if (null != _instance)
@@ -48,7 +48,6 @@ namespace R.Scheduler
             }
 
             var configuration = new Configuration();
-
             if (null != action)
             {
                 action(configuration);
@@ -57,31 +56,42 @@ namespace R.Scheduler
             Configuration = configuration;
 
             // Ensure container resolves persistence store based on configuration settings
-            
-            // Create Temp store,
-            IPersistanceStore ps = new InMemoryStore();
-            // Determine store type from configuration
-            var psi = new PersistanceStoreInterceptor(Configuration);
-            var store = (IPersistanceStore)psi.Process(ps, null);
-            _persistanceStore = store;
-            Container = new Container();
-            Container.Configure(c => c.AddRegistry<SmRegistry>());
-            // Inject the persistence store after initialization
-            Container.Inject(store);
 
+
+            // Create Temp store,
+            _persistenceStore = new InMemoryStore();
+            // Determine store type from configuration
+            switch (Configuration.PersistenceStoreType)
+            {
+                case PersistenceStoreType.Postgre:
+                    _persistenceStore = new PostgreStore(Configuration.ConnectionString);
+                    break;
+                case PersistenceStoreType.SqlServer:
+                    _persistenceStore = new SqlServerStore(Configuration.ConnectionString);
+                    break;
+                case PersistenceStoreType.InMemory:
+                    _persistenceStore = new InMemoryStore();
+                    break;
+            }
+
+            // Inject the persistence store after initialization
+            SchedulerContainer.Container.Inject(_persistenceStore);
 
             // Initialise JobTypes modules
-            var jobTypeStartups = ObjectFactory.GetAllInstances<IJobTypeStartup>();
+            var jobTypeStartups = SchedulerContainer.Container.GetAllInstances<IJobTypeStartup>();
             foreach (var jobTypeStartup in jobTypeStartups)
             {
                 jobTypeStartup.Initialise(Configuration);
             }
 
+
             if (configuration.AutoStart)
             {
                 IScheduler sched = Instance();
                 sched.Start();
+                SchedulerContainer.Container.Inject(sched);
             }
+            
         }
 
         /// <summary>
@@ -106,8 +116,8 @@ namespace R.Scheduler
 
                         if (Configuration.EnableAuditHistory)
                         {
-                            _instance.ListenerManager.AddJobListener(new AuditJobListener(_persistanceStore), GroupMatcher<JobKey>.AnyGroup());
-                            _instance.ListenerManager.AddTriggerListener(new AuditTriggerListener(_persistanceStore), GroupMatcher<TriggerKey>.AnyGroup());
+                            _instance.ListenerManager.AddJobListener(new AuditJobListener(_persistenceStore), GroupMatcher<JobKey>.AnyGroup());
+                            _instance.ListenerManager.AddTriggerListener(new AuditTriggerListener(_persistenceStore), GroupMatcher<TriggerKey>.AnyGroup());
                         }
 
                         // Custom listeners
@@ -191,14 +201,14 @@ namespace R.Scheduler
             properties["quartz.scheduler.instanceId"] = Configuration.InstanceId;
             properties["quartz.threadPool.threadCount"] = Configuration.ThreadCount.ToString();
 
-            switch (Configuration.PersistanceStoreType)
+            switch (Configuration.PersistenceStoreType)
             {
-                case PersistanceStoreType.InMemory:
+                case PersistenceStoreType.InMemory:
 
                     properties["quartz.jobStore.type"] = "Quartz.Simpl.RAMJobStore, Quartz";
                     break;
 
-                case PersistanceStoreType.Postgre:
+                case PersistenceStoreType.Postgre:
 
                     properties["quartz.jobStore.type"] = "Quartz.Impl.AdoJobStore.JobStoreTX, Quartz";
                     properties["quartz.jobStore.useProperties"] = Configuration.UseProperties;
@@ -208,7 +218,7 @@ namespace R.Scheduler
                     properties["quartz.dataSource.default.provider"] = "Npgsql-20";
                     break;
 
-                case PersistanceStoreType.SqlServer:
+                case PersistenceStoreType.SqlServer:
 
                     properties["quartz.jobStore.type"] = "Quartz.Impl.AdoJobStore.JobStoreTX, Quartz";
                     properties["quartz.jobStore.useProperties"] = Configuration.UseProperties;
@@ -219,7 +229,7 @@ namespace R.Scheduler
                     break;
 
                 default:
-                    throw new ArgumentException(string.Format("Unsupported PersistanceStoreType {0}", Configuration.PersistanceStoreType));
+                    throw new ArgumentException(string.Format("Unsupported PersistenceStoreType {0}", Configuration.PersistenceStoreType));
             }
 
             return properties;

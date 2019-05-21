@@ -63,8 +63,8 @@
       <HintPath>..\packages\Quartz.2.6.1\lib\net40\Quartz.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="StructureMap">
-      <HintPath>..\packages\structuremap.2.6.4.1\lib\net40\StructureMap.dll</HintPath>
+    <Reference Include="StructureMap, Version=4.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\StructureMap.4.7.1\lib\net45\StructureMap.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -93,10 +93,10 @@
     <Compile Include="BaseJobsImpController.cs" />
     <Compile Include="CronExpressionEx.cs" />
     <Compile Include="FeatureToggles\EncryptionFeatureToggle.cs" />
-    <Compile Include="PersistanceStoreInterceptor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SampleFeatureToggles\SampleFeatureToggle.cs" />
     <Compile Include="SchedulerAuthorizeAttribute.cs" />
+    <Compile Include="SchedulerContainer.cs" />
     <Compile Include="SchedulerCore.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -108,9 +108,9 @@
       <Project>{4010D63D-4BA3-4E41-9087-16CDD341FEBF}</Project>
       <Name>R.Scheduler.Interfaces</Name>
     </ProjectReference>
-    <ProjectReference Include="..\R.Scheduler.Persistance\R.Scheduler.Persistance.csproj">
+    <ProjectReference Include="..\R.Scheduler.Persistence\R.Scheduler.Persistence.csproj">
       <Project>{FBADF088-E56E-4862-9C1C-3FF81C4BD92B}</Project>
-      <Name>R.Scheduler.Persistance</Name>
+      <Name>R.Scheduler.Persistence</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

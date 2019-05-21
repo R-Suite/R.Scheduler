@@ -20,7 +20,7 @@ namespace R.Scheduler.AssemblyPlugin.Controllers
         private readonly ISchedulerCore _schedulerCore;
         private readonly IPermissionsHelper _permissionsHelper;
 
-        protected AssemblyPluginsController(IPermissionsHelper permissionsHelper, ISchedulerCore schedulerCore) : base(schedulerCore)
+        public AssemblyPluginsController(IPermissionsHelper permissionsHelper, ISchedulerCore schedulerCore) : base(schedulerCore)
         {
             _permissionsHelper = permissionsHelper;
             _schedulerCore = schedulerCore;

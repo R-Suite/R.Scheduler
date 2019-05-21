@@ -25,7 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CustomJobTypes", "CustomJob
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.TestHost", "R.Scheduler.TestHost\R.Scheduler.TestHost.csproj", "{F8F159E1-50E1-4755-BBDE-945794E11431}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.Persistance", "R.Scheduler.Persistance\R.Scheduler.Persistance.csproj", "{FBADF088-E56E-4862-9C1C-3FF81C4BD92B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.Persistence", "R.Scheduler.Persistence\R.Scheduler.Persistence.csproj", "{FBADF088-E56E-4862-9C1C-3FF81C4BD92B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.Core", "R.Scheduler.Core\R.Scheduler.Core.csproj", "{0B05F704-2CFF-4571-B63C-D9ABC7FD5666}"
 EndProject

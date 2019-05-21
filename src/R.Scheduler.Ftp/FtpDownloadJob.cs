@@ -109,7 +109,7 @@ namespace R.Scheduler.Ftp
             // Get files
             try
             {
-                using (var ftpLibrary = ObjectFactory.GetInstance<IFtpLibrary>())
+                using (var ftpLibrary = SchedulerContainer.Container.GetInstance<IFtpLibrary>())
                 {
                     ftpLibrary.Connect(ftpHost, port, userName, password, sshPrivateKeyPath, sshPrivateKeyPassword);
                     ftpLibrary.GetFiles(remoteDirectoryPath, localDirectoryPath, fileExtensions, cutOffTimeSpan);

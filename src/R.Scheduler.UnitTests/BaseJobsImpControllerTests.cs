@@ -28,10 +28,10 @@ namespace R.Scheduler.UnitTests
     public class BaseJobsImpControllerTests
     {
         private readonly Mock<ISchedulerCore> _mockSchedulerCore = new Mock<ISchedulerCore>();
-
+        readonly IContainer _container = new Container();
         public BaseJobsImpControllerTests()
         {
-            ObjectFactory.Configure(c => c.For<ISchedulerCore>().Use(_mockSchedulerCore.Object));
+            _container.Configure(c => c.For<ISchedulerCore>().Use(_mockSchedulerCore.Object));
         }
 
         [Fact]

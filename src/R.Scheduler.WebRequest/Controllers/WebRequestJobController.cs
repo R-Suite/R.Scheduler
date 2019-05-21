@@ -20,7 +20,7 @@ namespace R.Scheduler.WebRequest.Controllers
         readonly ISchedulerCore _schedulerCore;
         private readonly IPermissionsHelper _permissionsHelper;
 
-        protected WebRequestJobController(IPermissionsHelper permissionsHelper, ISchedulerCore schedulerCore) : base(schedulerCore)
+        public WebRequestJobController(IPermissionsHelper permissionsHelper, ISchedulerCore schedulerCore) : base(schedulerCore)
         {
             _schedulerCore = schedulerCore;
             _permissionsHelper = permissionsHelper;

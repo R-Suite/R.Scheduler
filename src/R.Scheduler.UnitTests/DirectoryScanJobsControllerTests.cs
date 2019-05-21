@@ -12,10 +12,11 @@ namespace R.Scheduler.UnitTests
     public class DirectoryScanJobsControllerTests
     {
         private readonly Mock<ISchedulerCore> _mockSchedulerCore = new Mock<ISchedulerCore>();
+        private readonly IContainer _container = new Container();
 
         public DirectoryScanJobsControllerTests()
         {
-            ObjectFactory.Configure(c => c.For<ISchedulerCore>().Use(_mockSchedulerCore.Object));
+            _container.Configure(c => c.For<ISchedulerCore>().Use(_mockSchedulerCore.Object));
         }
 
         [Fact]

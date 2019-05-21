@@ -22,7 +22,7 @@ namespace R.Scheduler.Ftp.Controllers
         readonly ISchedulerCore _schedulerCore;
         private readonly IPermissionsHelper _permissionsHelper;
 
-        protected FtpJobsController(IPermissionsHelper permissionsHelper, ISchedulerCore schedulerCore) : base(schedulerCore)
+        public FtpJobsController(IPermissionsHelper permissionsHelper, ISchedulerCore schedulerCore) : base(schedulerCore)
         {
             _permissionsHelper = permissionsHelper;
             _schedulerCore = schedulerCore;

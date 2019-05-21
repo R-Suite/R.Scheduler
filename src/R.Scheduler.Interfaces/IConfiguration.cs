@@ -5,7 +5,7 @@ namespace R.Scheduler.Interfaces
 {
     public interface IConfiguration
     {
-        PersistanceStoreType PersistanceStoreType { get; set; }
+        PersistenceStoreType PersistenceStoreType { get; set; }
         string ConnectionString { get; set; }
         string TablePrefix { get; set; }
         string InstanceName { get; set; }

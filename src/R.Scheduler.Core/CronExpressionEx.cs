@@ -12,12 +12,6 @@ namespace R.Scheduler.Core
     {
         private readonly IScheduler _scheduler;
 
-        public CronExpressionEx(string cronExpression)
-            : base(cronExpression)
-        {
-            _scheduler = ObjectFactory.GetInstance<IScheduler>();
-        }
-
         public CronExpressionEx(string cronExpression, IScheduler scheduler)
             : base(cronExpression)
         {

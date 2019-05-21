@@ -10,7 +10,7 @@ namespace R.Scheduler
     {
         public Configuration()
         {
-            PersistanceStoreType = PersistanceStoreType.InMemory;
+            PersistenceStoreType = PersistenceStoreType.InMemory;
             TablePrefix = "QRTZ_";
             InstanceName = "RScheduler";
             InstanceId = "instance_one";
@@ -24,7 +24,7 @@ namespace R.Scheduler
             AutoStart = true;
         }
 
-        public PersistanceStoreType PersistanceStoreType { get; set; }
+        public PersistenceStoreType PersistenceStoreType { get; set; }
 
         public string ConnectionString { get; set; }
 

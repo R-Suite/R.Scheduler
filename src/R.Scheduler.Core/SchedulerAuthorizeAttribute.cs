@@ -19,8 +19,10 @@ namespace R.Scheduler.Core
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public string AppSettingUsers { get; set; }
+
         public string AppSettingRoles { get; set; }
-        
+
+
         /// <summary>
         /// List of Job Groups user is authorized to access
         /// </summary>
@@ -30,7 +32,7 @@ namespace R.Scheduler.Core
         {
             Logger.DebugFormat("Entered SchedulerAuthorizeAttribute.IsAuthorized");
 
-            var scheduler = ObjectFactory.GetInstance<IScheduler>();
+            var scheduler = SchedulerContainer.Container.GetInstance<IScheduler>();
 
             if (scheduler.Context.ContainsKey("CustomAuthorizerType"))
             {

@@ -10,7 +10,7 @@ using StructureMap;
 namespace R.Scheduler.Core
 {
     /// <summary>
-    /// Persist history of all trigger firings via implementation of <see cref="IPersistanceStore"/> 
+    /// Persist history of all trigger firings via implementation of <see cref="IPersistenceStore"/> 
     /// configured during the Scheduler initialisation.
     /// Log history of all trigger firings via <see cref="Common.Logging"/>.
     /// </summary>
@@ -18,16 +18,16 @@ namespace R.Scheduler.Core
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly IPersistanceStore _persistanceStore;
+        private readonly IPersistenceStore _persistenceStore;
 
         public string Name
         {
             get { return "AuditTriggerListener"; }
         }
 
-        public AuditTriggerListener(IPersistanceStore persistancestore)
+        public AuditTriggerListener(IPersistenceStore persistancestore)
         {
-            _persistanceStore = persistancestore;
+            _persistenceStore = persistancestore;
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace R.Scheduler.Core
             Logger.InfoFormat("TriggerFired: {0}, {1}", trigger.Key.Name, trigger.Key.Group);
 
             var auditLog = GetAuditLog(trigger, "TriggerFired", context);
-            _persistanceStore.InsertAuditLog(auditLog);
+            _persistenceStore.InsertAuditLog(auditLog);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace R.Scheduler.Core
             Logger.InfoFormat("TriggerMisfired: {0}, {1}", trigger.Key.Name, trigger.Key.Group);
 
             var auditLog = GetAuditLog(trigger, "TriggerMisfired");
-            _persistanceStore.InsertAuditLog(auditLog);
+            _persistenceStore.InsertAuditLog(auditLog);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace R.Scheduler.Core
             Logger.InfoFormat("TriggerComplete: {0}, {1}", trigger.Key.Name, trigger.Key.Group);
 
             var auditLog = GetAuditLog(trigger, "TriggerComplete", context);
-            _persistanceStore.InsertAuditLog(auditLog);
+            _persistenceStore.InsertAuditLog(auditLog);
         }
 
         private static AuditLog GetAuditLog(ITrigger trigger, string action, IJobExecutionContext context = null)

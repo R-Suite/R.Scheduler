@@ -30,7 +30,7 @@
     <file src="bin\Release\R.Scheduler.Interfaces.dll" target="lib\net40\R.Scheduler.Interfaces.dll" />
     <file src="bin\Release\R.Scheduler.Contracts.dll" target="lib\net40\R.Scheduler.Contracts.dll" />
     <file src="bin\Release\R.Scheduler.Core.dll" target="lib\net40\R.Scheduler.Core.dll" />
-    <file src="bin\Release\R.Scheduler.Persistance.dll" target="lib\net40\R.Scheduler.Persistance.dll" />
+    <file src="bin\Release\R.Scheduler.Persistence.dll" target="lib\net40\R.Scheduler.Persistence.dll" />
     <file src="bin\Release\R.Scheduler.AssemblyPlugin.dll" target="lib\net40\R.Scheduler.AssemblyPlugin.dll" />
     <file src="bin\Release\R.Scheduler.Ftp.dll" target="lib\net40\R.Scheduler.Ftp.dll" />
     <file src="bin\Release\R.Scheduler.WebRequest.dll" target="lib\net40\R.Scheduler.WebRequest.dll" />

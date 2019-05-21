@@ -8,9 +8,7 @@ using Quartz.Job;
 using R.Scheduler.Controllers;
 using R.Scheduler.Core;
 using R.Scheduler.Interfaces;
-using R.Scheduler.Persistance;
-using R.Scheduler.Sql.Controllers;
-using R.Scheduler.WebRequest.Controllers;
+using R.Scheduler.Persistence;
 using Xunit;
 
 namespace R.Scheduler.IntegrationTests
@@ -25,14 +23,14 @@ namespace R.Scheduler.IntegrationTests
         public void TestJobsControllerGetByIdThrowsUnauthorized()
         {
             // Arrange
-            IPersistanceStore persistenceStore = new InMemoryStore();
+            IPersistenceStore persistenceStore = new InMemoryStore();
             Scheduler.Shutdown();
 
             Scheduler.Initialize((config =>
             {
                 config.EnableWebApiSelfHost = false;
                 config.EnableAuditHistory = false;
-                config.PersistanceStoreType = PersistanceStoreType.InMemory;
+                config.PersistenceStoreType = PersistenceStoreType.InMemory;
                 config.AutoStart = false;
             }));
 
@@ -64,18 +62,18 @@ namespace R.Scheduler.IntegrationTests
         public void TestJobsControllerGetByIdWithWildcard()
         {
             // Arrange
-            IPersistanceStore persistanceStore = new InMemoryStore();
+            IPersistenceStore persistenceStore = new InMemoryStore();
             Scheduler.Shutdown();
 
             Scheduler.Initialize((config =>
             {
                 config.EnableWebApiSelfHost = false;
                 config.EnableAuditHistory = false;
-                config.PersistanceStoreType = PersistanceStoreType.InMemory;
+                config.PersistenceStoreType = PersistenceStoreType.InMemory;
                 config.AutoStart = false;
             }));
 
-            var schedulerCore = new SchedulerCore(Scheduler.Instance(), persistanceStore);
+            var schedulerCore = new SchedulerCore(Scheduler.Instance(), persistenceStore);
 
             const string jobName = "Job1";
             const string jobGroup = "Group1";
@@ -99,14 +97,14 @@ namespace R.Scheduler.IntegrationTests
         public void TestJobsControllerGetByIdWithJobGroupName()
         {
             // Arrange
-            IPersistanceStore persistenceStore = new InMemoryStore();
+            IPersistenceStore persistenceStore = new InMemoryStore();
             Scheduler.Shutdown();
 
             Scheduler.Initialize((config =>
             {
                 config.EnableWebApiSelfHost = false;
                 config.EnableAuditHistory = false;
-                config.PersistanceStoreType = PersistanceStoreType.InMemory;
+                config.PersistenceStoreType = PersistenceStoreType.InMemory;
                 config.AutoStart = false;
             }));
 
@@ -134,14 +132,14 @@ namespace R.Scheduler.IntegrationTests
         public void TestJobsControllerDeleteByIdWithJobGroupName()
         {
             // Arrange
-            IPersistanceStore persistenceStore = new InMemoryStore();
+            IPersistenceStore persistenceStore = new InMemoryStore();
             Scheduler.Shutdown();
 
             Scheduler.Initialize((config =>
             {
                 config.EnableWebApiSelfHost = false;
                 config.EnableAuditHistory = false;
-                config.PersistanceStoreType = PersistanceStoreType.InMemory;
+                config.PersistenceStoreType = PersistenceStoreType.InMemory;
                 config.AutoStart = false;
             }));
 
@@ -178,14 +176,14 @@ namespace R.Scheduler.IntegrationTests
         public void TestJobsControllerDeleteByIdWithWildcard()
         {
             // Arrange
-            IPersistanceStore persistenceStore = new InMemoryStore();
+            IPersistenceStore persistenceStore = new InMemoryStore();
             Scheduler.Shutdown();
 
             Scheduler.Initialize((config =>
             {
                 config.EnableWebApiSelfHost = false;
                 config.EnableAuditHistory = false;
-                config.PersistanceStoreType = PersistanceStoreType.InMemory;
+                config.PersistenceStoreType = PersistenceStoreType.InMemory;
                 config.AutoStart = false;
             }));
 
@@ -222,14 +220,14 @@ namespace R.Scheduler.IntegrationTests
         public void TestJobsControllerDeleteUnauthorized()
         {
             // Arrange
-            IPersistanceStore persistenceStore = new InMemoryStore();
+            IPersistenceStore persistenceStore = new InMemoryStore();
             Scheduler.Shutdown();
 
             Scheduler.Initialize((config =>
             {
                 config.EnableWebApiSelfHost = false;
                 config.EnableAuditHistory = false;
-                config.PersistanceStoreType = PersistanceStoreType.InMemory;
+                config.PersistenceStoreType = PersistenceStoreType.InMemory;
                 config.AutoStart = false;
             }));
 
@@ -328,14 +326,14 @@ namespace R.Scheduler.IntegrationTests
         public void TestNativeJobsControllerGetByIdThrowsUnauthorized()
         {
             // Arrange
-            IPersistanceStore persistenceStore = new InMemoryStore();
+            IPersistenceStore persistenceStore = new InMemoryStore();
             Scheduler.Shutdown();
 
             Scheduler.Initialize((config =>
             {
                 config.EnableWebApiSelfHost = false;
                 config.EnableAuditHistory = false;
-                config.PersistanceStoreType = PersistanceStoreType.InMemory;
+                config.PersistenceStoreType = PersistenceStoreType.InMemory;
                 config.AutoStart = false;
             }));
 
@@ -367,14 +365,14 @@ namespace R.Scheduler.IntegrationTests
         public void TestNativeJobsControllerGetByIdWithWildcard()
         {
             // Arrange
-            IPersistanceStore persistenceStore = new InMemoryStore();
+            IPersistenceStore persistenceStore = new InMemoryStore();
             Scheduler.Shutdown();
 
             Scheduler.Initialize((config =>
             {
                 config.EnableWebApiSelfHost = false;
                 config.EnableAuditHistory = false;
-                config.PersistanceStoreType = PersistanceStoreType.InMemory;
+                config.PersistenceStoreType = PersistenceStoreType.InMemory;
                 config.AutoStart = false;
             }));
 
@@ -404,14 +402,14 @@ namespace R.Scheduler.IntegrationTests
         public void TestNativeJobsControllerGetByIdWithJobGroupName()
         {
             // Arrange
-            IPersistanceStore persistenceStore = new InMemoryStore();
+            IPersistenceStore persistenceStore = new InMemoryStore();
             Scheduler.Shutdown();
 
             Scheduler.Initialize((config =>
             {
                 config.EnableWebApiSelfHost = false;
                 config.EnableAuditHistory = false;
-                config.PersistanceStoreType = PersistanceStoreType.InMemory;
+                config.PersistenceStoreType = PersistenceStoreType.InMemory;
                 config.AutoStart = false;
             }));
 
@@ -444,14 +442,14 @@ namespace R.Scheduler.IntegrationTests
         public void TestDirectoryScanJobsControllerGetByIdThrowsUnauthorized()
         {
             // Arrange
-            IPersistanceStore persistenceStore = new InMemoryStore();
+            IPersistenceStore persistenceStore = new InMemoryStore();
             Scheduler.Shutdown();
 
             Scheduler.Initialize((config =>
             {
                 config.EnableWebApiSelfHost = false;
                 config.EnableAuditHistory = false;
-                config.PersistanceStoreType = PersistanceStoreType.InMemory;
+                config.PersistenceStoreType = PersistenceStoreType.InMemory;
                 config.AutoStart = false;
             }));
 
@@ -483,14 +481,14 @@ namespace R.Scheduler.IntegrationTests
         public void TestDirectoryScanJobsControllerGetByIdWithWildcard()
         {
             // Arrange
-            IPersistanceStore persistenceStore = new InMemoryStore();
+            IPersistenceStore persistenceStore = new InMemoryStore();
             Scheduler.Shutdown();
 
             Scheduler.Initialize((config =>
             {
                 config.EnableWebApiSelfHost = false;
                 config.EnableAuditHistory = false;
-                config.PersistanceStoreType = PersistanceStoreType.InMemory;
+                config.PersistenceStoreType = PersistenceStoreType.InMemory;
                 config.AutoStart = false;
             }));
 
@@ -520,14 +518,14 @@ namespace R.Scheduler.IntegrationTests
         public void TestDirectoryScanJobsControllerGetByIdWithJobGroupName()
         {
             // Arrange
-            IPersistanceStore persistenceStore = new InMemoryStore();
+            IPersistenceStore persistenceStore = new InMemoryStore();
             Scheduler.Shutdown();
 
             Scheduler.Initialize((config =>
             {
                 config.EnableWebApiSelfHost = false;
                 config.EnableAuditHistory = false;
-                config.PersistanceStoreType = PersistanceStoreType.InMemory;
+                config.PersistenceStoreType = PersistenceStoreType.InMemory;
                 config.AutoStart = false;
             }));
 
@@ -560,14 +558,14 @@ namespace R.Scheduler.IntegrationTests
         public void TestSendEmailJobsControllerGetByIdThrowsUnauthorized()
         {
             // Arrange
-            IPersistanceStore persistenceStore = new InMemoryStore();
+            IPersistenceStore persistenceStore = new InMemoryStore();
             Scheduler.Shutdown();
 
             Scheduler.Initialize((config =>
             {
                 config.EnableWebApiSelfHost = false;
                 config.EnableAuditHistory = false;
-                config.PersistanceStoreType = PersistanceStoreType.InMemory;
+                config.PersistenceStoreType = PersistenceStoreType.InMemory;
                 config.AutoStart = false;
             }));
 
@@ -599,14 +597,14 @@ namespace R.Scheduler.IntegrationTests
         public void TestSendEmailJobsControllerGetByIdWithWildcard()
         {
             // Arrange
-            IPersistanceStore persistenceStore = new InMemoryStore();
+            IPersistenceStore persistenceStore = new InMemoryStore();
             Scheduler.Shutdown();
 
             Scheduler.Initialize((config =>
             {
                 config.EnableWebApiSelfHost = false;
                 config.EnableAuditHistory = false;
-                config.PersistanceStoreType = PersistanceStoreType.InMemory;
+                config.PersistenceStoreType = PersistenceStoreType.InMemory;
                 config.AutoStart = false;
             }));
 
@@ -636,14 +634,14 @@ namespace R.Scheduler.IntegrationTests
         public void TestSendEmailJobsControllerGetByIdWithJobGroupName()
         {
             // Arrange
-            IPersistanceStore persistenceStore = new InMemoryStore();
+            IPersistenceStore persistenceStore = new InMemoryStore();
             Scheduler.Shutdown();
 
             Scheduler.Initialize((config =>
             {
                 config.EnableWebApiSelfHost = false;
                 config.EnableAuditHistory = false;
-                config.PersistanceStoreType = PersistanceStoreType.InMemory;
+                config.PersistenceStoreType = PersistenceStoreType.InMemory;
                 config.AutoStart = false;
             }));
 

@@ -51,8 +51,8 @@
       <HintPath>..\packages\Quartz.2.6.1\lib\net40\Quartz.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="StructureMap">
-      <HintPath>..\packages\structuremap.2.6.4.1\lib\net40\StructureMap.dll</HintPath>
+    <Reference Include="StructureMap, Version=4.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\StructureMap.4.7.1\lib\net45\StructureMap.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -78,11 +78,11 @@
     <Compile Include="IConfiguration.cs" />
     <Compile Include="IPermissionsHelper.cs" />
     <Compile Include="IPermissionsManager.cs" />
-    <Compile Include="IPersistanceStore.cs" />
+    <Compile Include="IPersistenceStore.cs" />
     <Compile Include="IJobTypeManager.cs" />
     <Compile Include="IJobTypeStartup.cs" />
     <Compile Include="ISchedulerCore.cs" />
-    <Compile Include="PersistanceStoreType.cs" />
+    <Compile Include="PersistenceStoreType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

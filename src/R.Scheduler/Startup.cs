@@ -9,6 +9,7 @@ using System.Web.Http.Controllers;
 using System.Web.Http.Dispatcher;
 using Newtonsoft.Json.Serialization;
 using Owin;
+using R.Scheduler.Core;
 using StructureMap;
 
 namespace R.Scheduler
@@ -35,7 +36,7 @@ namespace R.Scheduler
             config.EnsureInitialized();
 
             config.Services.Replace(typeof(IHttpControllerActivator),
-                new StructureMapHttpControllerActivator(Scheduler.Container));
+                new StructureMapHttpControllerActivator(SchedulerContainer.Container));
 
             appBuilder.UseWebApi(config);
         } 

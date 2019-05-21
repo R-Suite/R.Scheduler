@@ -1,20 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using R.Scheduler.Interfaces;
-using R.Scheduler.Persistance;
-using StructureMap;
-using StructureMap.Interceptors;
+using R.Scheduler.Persistence;
+using StructureMap.Building.Interception;
+using StructureMap.Pipeline;
 
 namespace R.Scheduler.Core
 {
     /// <summary>
-    /// Every time a default instance of <see cref="IPersistanceStore"/> is created by StructureMap,
+    /// Every time a default instance of <see cref="IPersistenceStore"/> is created by StructureMap,
     /// replace it with an implementation configured during the scheduler startup.
-    /// Used mainly for injecting the IPersistanceStore implementation 
+    /// Used mainly for injecting the IPersistenceStore implementation 
     /// into the StructureMap registries of CustomJobTypes projects to ensure 
     /// a single persistence store for monitoring and auditing different types of jobs. 
     /// </summary>
-    public class PersistanceStoreInterceptor : TypeInterceptor
+    public class PersistanceStoreInterceptor : IInterceptorPolicy
     {
         private readonly IConfiguration _config;
 
@@ -23,37 +24,37 @@ namespace R.Scheduler.Core
             _config = config;
         }
 
-        public object Process(object target, IContext context)
-        {
-            IPersistanceStore retval = null;
+        public string Description { get; }
 
-            if (target.GetType().GetInterfaces().Contains(typeof(IPersistanceStore)))
+        public IEnumerable<IInterceptor> DetermineInterceptors(Type pluginType, Instance instance)
+        {
+            if (pluginType.GetInterfaces().Contains(typeof(IPersistenceStore)))
             {
-                switch (_config.PersistanceStoreType)
+                yield return new ActivatorInterceptor<IPersistenceStore>((context, x) => this.Activate(x));
+            }
+        }
+
+        private IPersistenceStore Activate(object target)
+        {
+            IPersistenceStore retval = null;
+
+            if (target.GetType().GetInterfaces().Contains(typeof(IPersistenceStore)))
+            {
+                switch (_config.PersistenceStoreType)
                 {
-                    case PersistanceStoreType.Postgre:
+                    case PersistenceStoreType.Postgre:
                         retval = new PostgreStore(_config.ConnectionString);
                         break;
-                    case PersistanceStoreType.SqlServer:
+                    case PersistenceStoreType.SqlServer:
                         retval = new SqlServerStore(_config.ConnectionString);
                         break;
-                    case PersistanceStoreType.InMemory:
+                    case PersistenceStoreType.InMemory:
                         retval = new InMemoryStore();
                         break;
                 }
             }
 
             return retval;
-        }
-
-        public bool MatchesType(Type type)
-        {
-            if (type.GetInterfaces().Contains(typeof(IPersistanceStore)))
-            {
-                return true;
-            }
-
-            return false;
         }
     }
 }

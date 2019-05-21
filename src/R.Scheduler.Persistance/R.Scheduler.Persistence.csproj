@@ -7,8 +7,8 @@
     <ProjectGuid>{FBADF088-E56E-4862-9C1C-3FF81C4BD92B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>R.Scheduler.Persistance</RootNamespace>
-    <AssemblyName>R.Scheduler.Persistance</AssemblyName>
+    <RootNamespace>R.Scheduler.Persistence</RootNamespace>
+    <AssemblyName>R.Scheduler.Persistence</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -56,11 +56,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Caching" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="InMemoryStore.cs" />

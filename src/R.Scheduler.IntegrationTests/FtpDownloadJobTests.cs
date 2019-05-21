@@ -19,7 +19,8 @@ namespace R.Scheduler.IntegrationTests
         public void TestExecuteMethodInvokesConnectAndGetFilesMethods()
         {
             // Arrange
-            ObjectFactory.Configure(config =>
+            var container = new Container();
+            container.Configure(config =>
             {
                 config.For<IFtpLibrary>().Use(_mockFtpLibrary.Object);
             });
@@ -34,7 +35,7 @@ namespace R.Scheduler.IntegrationTests
             var userName = AESGCM.SimpleEncrypt(plainTextUserName, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
             var password = AESGCM.SimpleEncrypt(plainTextPassword, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
 
-            //string currentDirectory = Directory.GetCurrentDirectory();
+            
             IJobDetail jobDetail = new JobDetailImpl("TestFtpDownloadJob1", typeof(IJob));
             jobDetail.JobDataMap.Add("ftpHost", host);
             jobDetail.JobDataMap.Add("localDirectoryPath", localDirectoryPath);

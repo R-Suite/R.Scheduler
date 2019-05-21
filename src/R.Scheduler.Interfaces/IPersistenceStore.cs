@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace R.Scheduler.Interfaces
 {
-    public interface IPersistanceStore
+    public interface IPersistenceStore
     {
         void InsertAuditLog(AuditLog log);
         IEnumerable<AuditLog> GetErroredJobs(int count);

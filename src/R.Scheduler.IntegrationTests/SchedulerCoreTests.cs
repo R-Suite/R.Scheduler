@@ -6,7 +6,7 @@ using Quartz.Job;
 using R.Scheduler.Contracts.Model;
 using R.Scheduler.Core;
 using R.Scheduler.Interfaces;
-using R.Scheduler.Persistance;
+using R.Scheduler.Persistence;
 using Xunit;
 
 namespace R.Scheduler.IntegrationTests
@@ -20,8 +20,8 @@ namespace R.Scheduler.IntegrationTests
         public void TestCreateJobWithInMemoryPersistance()
         {
             // Arrange
-            IPersistanceStore persistanceStore = new InMemoryStore();
-            _schedulerCore = new SchedulerCore(_mockScheduler.Object, persistanceStore);
+            IPersistenceStore persistenceStore = new InMemoryStore();
+            _schedulerCore = new SchedulerCore(_mockScheduler.Object, persistenceStore);
 
             const string jobName = "Job1";
             const string jobGroup = "Group1";
@@ -30,8 +30,8 @@ namespace R.Scheduler.IntegrationTests
             var result = _schedulerCore.CreateJob(jobName, jobGroup, typeof(NoOpJob), new Dictionary<string, object>(), string.Empty);
 
             // Assert
-            Assert.Equal(jobName, persistanceStore.GetJobKey(result).Name);
-            Assert.Equal(jobGroup, persistanceStore.GetJobKey(result).Group);
+            Assert.Equal(jobName, persistenceStore.GetJobKey(result).Name);
+            Assert.Equal(jobGroup, persistenceStore.GetJobKey(result).Group);
         }
 
         [Fact]
@@ -44,7 +44,7 @@ namespace R.Scheduler.IntegrationTests
                 config.EnableWebApiSelfHost = false;
                 config.EnableAuditHistory = false;
             }));
-            IPersistanceStore persistenceStore = new InMemoryStore();
+            IPersistenceStore persistenceStore = new InMemoryStore();
             _schedulerCore = new SchedulerCore(Scheduler.Instance(), persistenceStore);
 
             const string jobName = "Job1";
@@ -64,7 +64,7 @@ namespace R.Scheduler.IntegrationTests
             };
 
             // Act
-            var result = _schedulerCore.ScheduleTrigger(simpleTrigger);
+            _schedulerCore.ScheduleTrigger(simpleTrigger);
 
             // Assert
             Assert.Equal(triggerName, Scheduler.Instance().GetTrigger(new TriggerKey(triggerName)).Key.Name);
@@ -81,8 +81,8 @@ namespace R.Scheduler.IntegrationTests
                 config.EnableWebApiSelfHost = false;
                 config.EnableAuditHistory = false;
             }));
-            IPersistanceStore persistanceStore = new InMemoryStore();
-            _schedulerCore = new SchedulerCore(Scheduler.Instance(), persistanceStore);
+            IPersistenceStore persistenceStore = new InMemoryStore();
+            _schedulerCore = new SchedulerCore(Scheduler.Instance(), persistenceStore);
 
             const string jobName = "Job1";
             const string jobGroup = "Group1";
@@ -100,7 +100,7 @@ namespace R.Scheduler.IntegrationTests
             };
 
             // Act
-            var result = _schedulerCore.ScheduleTrigger(simpleTrigger);
+            _schedulerCore.ScheduleTrigger(simpleTrigger);
 
             // Assert
             Assert.Equal(triggerName, Scheduler.Instance().GetTrigger(new TriggerKey(triggerName)).Key.Name);
@@ -117,8 +117,8 @@ namespace R.Scheduler.IntegrationTests
                 config.EnableWebApiSelfHost = false;
                 config.EnableAuditHistory = false;
             }));
-            IPersistanceStore persistanceStore = new InMemoryStore();
-            _schedulerCore = new SchedulerCore(Scheduler.Instance(), persistanceStore);
+            IPersistenceStore persistenceStore = new InMemoryStore();
+            _schedulerCore = new SchedulerCore(Scheduler.Instance(), persistenceStore);
 
             const string jobName = "Job1";
             const string jobGroup = "Group1";

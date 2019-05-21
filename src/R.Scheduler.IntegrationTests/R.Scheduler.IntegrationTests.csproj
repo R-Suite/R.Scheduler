@@ -83,9 +83,8 @@
       <HintPath>..\packages\Quartz.2.6.1\lib\net40\Quartz.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="StructureMap, Version=2.6.4.0, Culture=neutral, PublicKeyToken=e60ad81abae3c223, processorArchitecture=MSIL">
-      <HintPath>..\packages\structuremap.2.6.4.1\lib\net40\StructureMap.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="StructureMap, Version=4.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\StructureMap.4.7.1\lib\net45\StructureMap.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -161,9 +160,9 @@
       <Project>{A338A7FE-D041-41C3-9CDD-5E35171961DD}</Project>
       <Name>R.Scheduler.AssemblyPlugin</Name>
     </ProjectReference>
-    <ProjectReference Include="..\R.Scheduler.Persistance\R.Scheduler.Persistance.csproj">
+    <ProjectReference Include="..\R.Scheduler.Persistence\R.Scheduler.Persistence.csproj">
       <Project>{FBADF088-E56E-4862-9C1C-3FF81C4BD92B}</Project>
-      <Name>R.Scheduler.Persistance</Name>
+      <Name>R.Scheduler.Persistence</Name>
     </ProjectReference>
     <ProjectReference Include="..\R.Scheduler.Sql\R.Scheduler.Sql.csproj">
       <Project>{99edf966-9370-4fa2-8ce7-6089f88e83cc}</Project>

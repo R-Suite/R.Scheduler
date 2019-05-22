@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Web.Http;
 using Common.Logging;
+using Quartz;
 using R.Scheduler.Core;
 
 namespace R.Scheduler.Controllers
@@ -11,6 +12,12 @@ namespace R.Scheduler.Controllers
     public class CronExpressionsController : ApiController
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly IScheduler _scheduler;
+
+        public CronExpressionsController(IScheduler scheduler)
+        {
+            _scheduler = scheduler;
+        }
 
         /// <summary>
         /// Get specified number of fire times after a specified date.
@@ -31,7 +38,7 @@ namespace R.Scheduler.Controllers
                 dta = DateTime.Parse(dateTimeAfter);
             }
 
-            var cronExpressionEx = new CronExpressionEx(cronExpression);
+            var cronExpressionEx = new CronExpressionEx(cronExpression, _scheduler);
 
             return cronExpressionEx.GetFutureFireDateTimesUtcAfter(dta, count, calendarName);
         }
@@ -47,7 +54,7 @@ namespace R.Scheduler.Controllers
         {
             Logger.Debug("Entered CronExpressionController.GetExpressionSummary()");
 
-            var cronExpressionEx = new CronExpressionEx(cronExpression);
+            var cronExpressionEx = new CronExpressionEx(cronExpression, _scheduler);
 
             return cronExpressionEx.GetExpressionSummary();
         }

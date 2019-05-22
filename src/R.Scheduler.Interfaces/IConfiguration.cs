@@ -5,7 +5,7 @@ namespace R.Scheduler.Interfaces
 {
     public interface IConfiguration
     {
-        PersistanceStoreType PersistanceStoreType { get; set; }
+        PersistenceStoreType PersistenceStoreType { get; set; }
         string ConnectionString { get; set; }
         string TablePrefix { get; set; }
         string InstanceName { get; set; }
@@ -48,5 +48,10 @@ namespace R.Scheduler.Interfaces
         /// Assembly that contains custom WebApp settings class
         /// </summary>
         string CustomWebAppSettingsAssemblyName { get; set; }
+
+        /// <summary>
+        /// Assembly that contains custom permissions manager class implementing <see cref="IPermissionsManager"/>
+        /// </summary>
+        string CustomPermissionsManagerAssemblyName { get; set; }
     }
 }

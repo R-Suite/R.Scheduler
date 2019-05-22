@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Web.Http;
 using Common.Logging;
@@ -21,10 +22,12 @@ namespace R.Scheduler.Controllers
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         readonly ISchedulerCore _schedulerCore;
+        private readonly IPermissionsHelper _permissionsHelper;
 
-        public DirectoryScanJobsController()
+        public DirectoryScanJobsController(IPermissionsHelper permissionsHelper, ISchedulerCore schedulerCore) : base(schedulerCore)
         {
-            _schedulerCore = ObjectFactory.GetInstance<ISchedulerCore>();
+            _schedulerCore = schedulerCore;
+            _permissionsHelper = permissionsHelper;
         }
 
         /// <summary>
@@ -34,15 +37,17 @@ namespace R.Scheduler.Controllers
         [AcceptVerbs("GET")]
         [Route("api/dirScanJobs")]
         [SchedulerAuthorize(AppSettingRoles = "Read.Roles", AppSettingUsers = "Read.Users")]
-        public IEnumerable<Contracts.JobTypes.DirectoryScan.Model.DirectoryScanJob> Get()
+        public IEnumerable<DirectoryScanJob> Get()
         {
             Logger.Info("Entered DirectoryScanJobsController.Get().");
+
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups();
 
             IDictionary<IJobDetail, Guid> jobDetailsMap;
 
             try
             {
-                jobDetailsMap = _schedulerCore.GetJobDetails(typeof(NativeJob));
+                jobDetailsMap = _schedulerCore.GetJobDetails(authorizedJobGroups, typeof(NativeJob));
             }
             catch (Exception ex)
             {
@@ -51,7 +56,7 @@ namespace R.Scheduler.Controllers
             }
 
             return jobDetailsMap.Select(jobDetail =>
-                                                    new Contracts.JobTypes.DirectoryScan.Model.DirectoryScanJob
+                                                    new DirectoryScanJob
                                                     {
                                                         Id = jobDetail.Value,
                                                         JobName = jobDetail.Key.Key.Name,
@@ -72,9 +77,11 @@ namespace R.Scheduler.Controllers
         [AcceptVerbs("GET")]
         [Route("api/dirScanJobs/{id}")]
         [SchedulerAuthorize(AppSettingRoles = "Read.Roles", AppSettingUsers = "Read.Users")]
-        public Contracts.JobTypes.DirectoryScan.Model.DirectoryScanJob Get(Guid id)
+        public DirectoryScanJob Get(Guid id)
         {
             Logger.Info("Entered DirectoryScanJobsController.Get().");
+
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
 
             IJobDetail jobDetail;
 
@@ -88,17 +95,23 @@ namespace R.Scheduler.Controllers
                 return null;
             }
 
-            return new Contracts.JobTypes.DirectoryScan.Model.DirectoryScanJob
+            if (jobDetail != null &&
+                (authorizedJobGroups.Contains(jobDetail.Key.Group) || authorizedJobGroups.Contains("*")))
             {
-                Id = id,
-                JobName = jobDetail.Key.Name,
-                JobGroup = jobDetail.Key.Group,
-                SchedulerName = _schedulerCore.SchedulerName,
-                DirectoryName = jobDetail.JobDataMap.GetString("DIRECTORY_NAME"),
-                CallbackUrl = jobDetail.JobDataMap.GetString("CALLBACK_URL"),
-                MinimumUpdateAge = jobDetail.JobDataMap.GetLong("MINIMUM_UPDATE_AGE"),
-                LastModifiedTime = jobDetail.JobDataMap.GetDateTime("LAST_MODIFIED_TIME")
-            };
+                return new DirectoryScanJob
+                {
+                    Id = id,
+                    JobName = jobDetail.Key.Name,
+                    JobGroup = jobDetail.Key.Group,
+                    SchedulerName = _schedulerCore.SchedulerName,
+                    DirectoryName = jobDetail.JobDataMap.GetString("DIRECTORY_NAME"),
+                    CallbackUrl = jobDetail.JobDataMap.GetString("CALLBACK_URL"),
+                    MinimumUpdateAge = jobDetail.JobDataMap.GetLong("MINIMUM_UPDATE_AGE"),
+                    LastModifiedTime = jobDetail.JobDataMap.GetDateTime("LAST_MODIFIED_TIME")
+                };
+            }
+            if (jobDetail == null) throw new HttpResponseException(HttpStatusCode.NotFound);
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         /// <summary>
@@ -109,11 +122,17 @@ namespace R.Scheduler.Controllers
         [AcceptVerbs("POST")]
         [Route("api/dirScanJobs")]
         [SchedulerAuthorize(AppSettingRoles = "Create.Roles", AppSettingUsers = "Create.Users")]
-        public QueryResponse Post([FromBody]Contracts.JobTypes.DirectoryScan.Model.DirectoryScanJob model)
+        public QueryResponse Post([FromBody]DirectoryScanJob model)
         {
             Logger.InfoFormat("Entered DirectoryScanJobsController.Post(). Job Name = {0}", model.JobName);
 
-            return CreateJob(model);
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
+
+           if ((authorizedJobGroups.Contains(model.JobGroup) || authorizedJobGroups.Contains("*")) && model.JobGroup != "*")
+            {
+                return CreateJob(model);
+            }
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         /// <summary>
@@ -124,11 +143,17 @@ namespace R.Scheduler.Controllers
         [AcceptVerbs("PUT")]
         [Route("api/dirScanJobs/{id}")]
         [SchedulerAuthorize(AppSettingRoles = "Update.Roles", AppSettingUsers = "Update.Users")]
-        public QueryResponse Put([FromBody]Contracts.JobTypes.DirectoryScan.Model.DirectoryScanJob model)
+        public QueryResponse Put([FromBody]DirectoryScanJob model)
         {
             Logger.InfoFormat("Entered DirectoryScanJobsController.Put(). Job Name = {0}", model.JobName);
 
-            return CreateJob(model);
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
+
+            if ((authorizedJobGroups.Contains(model.JobGroup) || authorizedJobGroups.Contains("*")) && model.JobGroup != "*")
+            {
+                return CreateJob(model);
+            }
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         private QueryResponse CreateJob(DirectoryScanJob model)

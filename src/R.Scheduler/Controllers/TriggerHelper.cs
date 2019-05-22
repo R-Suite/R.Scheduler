@@ -14,6 +14,7 @@ namespace R.Scheduler.Controllers
             foreach (KeyValuePair<ITrigger, Guid> trigger in quartzTriggers)
             {
                 ITrigger quartzTrigger = trigger.Key;
+                
 
                 TriggerState triggerState = Scheduler.Instance().GetTriggerState(quartzTrigger.Key);
 

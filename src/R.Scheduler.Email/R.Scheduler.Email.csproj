@@ -75,9 +75,9 @@
       <Project>{4010D63D-4BA3-4E41-9087-16CDD341FEBF}</Project>
       <Name>R.Scheduler.Interfaces</Name>
     </ProjectReference>
-    <ProjectReference Include="..\R.Scheduler.Persistance\R.Scheduler.Persistance.csproj">
+    <ProjectReference Include="..\R.Scheduler.Persistence\R.Scheduler.Persistence.csproj">
       <Project>{FBADF088-E56E-4862-9C1C-3FF81C4BD92B}</Project>
-      <Name>R.Scheduler.Persistance</Name>
+      <Name>R.Scheduler.Persistence</Name>
     </ProjectReference>
     <ProjectReference Include="..\R.Scheduler\R.Scheduler.csproj">
       <Project>{59E14D25-72BD-4E1F-A224-B8A6F5179B90}</Project>

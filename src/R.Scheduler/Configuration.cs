@@ -10,7 +10,7 @@ namespace R.Scheduler
     {
         public Configuration()
         {
-            PersistanceStoreType = PersistanceStoreType.InMemory;
+            PersistenceStoreType = PersistenceStoreType.InMemory;
             TablePrefix = "QRTZ_";
             InstanceName = "RScheduler";
             InstanceId = "instance_one";
@@ -24,7 +24,7 @@ namespace R.Scheduler
             AutoStart = true;
         }
 
-        public PersistanceStoreType PersistanceStoreType { get; set; }
+        public PersistenceStoreType PersistenceStoreType { get; set; }
 
         public string ConnectionString { get; set; }
 
@@ -79,5 +79,10 @@ namespace R.Scheduler
         /// Assembly name that contains custom WebApp settings
         /// </summary>
         public string CustomWebAppSettingsAssemblyName { get; set; }
+
+        /// <summary>
+        /// Assembly that contains custom permissions manager class implementing <see cref="IPermissionsManager"/>
+        /// </summary>
+        public string CustomPermissionsManagerAssemblyName { get; set; }
     }
 }

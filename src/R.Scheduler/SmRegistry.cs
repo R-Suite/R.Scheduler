@@ -1,8 +1,9 @@
-﻿using Quartz;
+﻿using System;
+using System.Linq.Expressions;
+using Quartz;
 using R.Scheduler.Core;
 using R.Scheduler.Interfaces;
-using R.Scheduler.Persistance;
-using StructureMap.Configuration.DSL;
+using StructureMap;
 
 namespace R.Scheduler
 {
@@ -14,11 +15,10 @@ namespace R.Scheduler
         public SmRegistry()
         {
             For<ISchedulerCore>().Use<SchedulerCore>();
-            For<IScheduler>().Use(Scheduler.Instance);
             For<IAnalytics>().Use<Analytics>();
+            For<IPermissionsHelper>().Use<PermissionsHelper>();
             // Default that my be overriden (using Sm TypeInterceptor) to use 
             // data store implementation selected in Scheduler Configuration
-            For<IPersistanceStore>().Use<InMemoryStore>();
         }
     }
 }

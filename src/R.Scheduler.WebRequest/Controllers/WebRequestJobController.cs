@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Web.Http;
 using Common.Logging;
@@ -17,10 +18,12 @@ namespace R.Scheduler.WebRequest.Controllers
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         readonly ISchedulerCore _schedulerCore;
+        private readonly IPermissionsHelper _permissionsHelper;
 
-        protected WebRequestJobController()
+        public WebRequestJobController(IPermissionsHelper permissionsHelper, ISchedulerCore schedulerCore) : base(schedulerCore)
         {
-            _schedulerCore = ObjectFactory.GetInstance<ISchedulerCore>();
+            _schedulerCore = schedulerCore;
+            _permissionsHelper = permissionsHelper;
         }
 
         /// <summary>
@@ -34,8 +37,10 @@ namespace R.Scheduler.WebRequest.Controllers
         {
             Logger.Debug("Entered WebRequestJobController.Get().");
 
-            var jobDetailsMap = _schedulerCore.GetJobDetails(typeof(WebRequestJob));
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups();
 
+            var jobDetailsMap = _schedulerCore.GetJobDetails(authorizedJobGroups, typeof(WebRequestJob));
+            
             return jobDetailsMap.Select(mapItem =>
                                                     new Contracts.JobTypes.WebRequest.Model.WebRequestJob
                                                     {
@@ -60,6 +65,8 @@ namespace R.Scheduler.WebRequest.Controllers
         {
             Logger.Info("Entered WebRequestJobController.Get().");
 
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
+
             IJobDetail jobDetail;
 
             try
@@ -72,19 +79,25 @@ namespace R.Scheduler.WebRequest.Controllers
                 return null;
             }
 
-            return new Contracts.JobTypes.WebRequest.Model.WebRequestJob
+            if (jobDetail != null &&
+                (authorizedJobGroups.Contains(jobDetail.Key.Group) || authorizedJobGroups.Contains("*")))
             {
-                Id = id,
-                JobName = jobDetail.Key.Name,
-                JobGroup = jobDetail.Key.Group,
-                SchedulerName = _schedulerCore.SchedulerName,
-                Uri = jobDetail.JobDataMap.GetString("uri"),
-                ActionType = jobDetail.JobDataMap.GetString("actionType"),
-                Method = jobDetail.JobDataMap.GetString("method"),
-                Body = jobDetail.JobDataMap.GetString("body"),
-                ContentType = jobDetail.JobDataMap.GetString("contentType"),
-                Description = jobDetail.Description
-            };
+                return new Contracts.JobTypes.WebRequest.Model.WebRequestJob
+                {
+                    Id = id,
+                    JobName = jobDetail.Key.Name,
+                    JobGroup = jobDetail.Key.Group,
+                    SchedulerName = _schedulerCore.SchedulerName,
+                    Uri = jobDetail.JobDataMap.GetString("uri"),
+                    ActionType = jobDetail.JobDataMap.GetString("actionType"),
+                    Method = jobDetail.JobDataMap.GetString("method"),
+                    Body = jobDetail.JobDataMap.GetString("body"),
+                    ContentType = jobDetail.JobDataMap.GetString("contentType"),
+                    Description = jobDetail.Description
+                };
+            }
+            if (jobDetail == null) throw new HttpResponseException(HttpStatusCode.NotFound);
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         /// <summary>
@@ -99,7 +112,13 @@ namespace R.Scheduler.WebRequest.Controllers
         {
             Logger.InfoFormat("Entered WebRequestJobController.Post(). Job Name = {0}", model.JobName);
 
-            return CreateJob(model);
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
+
+            if ((authorizedJobGroups.Contains(model.JobGroup) || authorizedJobGroups.Contains("*")) && model.JobGroup != "*")
+            {
+                return CreateJob(model);
+            }
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         /// <summary>
@@ -114,7 +133,13 @@ namespace R.Scheduler.WebRequest.Controllers
         {
             Logger.InfoFormat("Entered WebRequestJobController.Put(). Job Name = {0}", model.JobName);
 
-            return CreateJob(model);
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
+
+            if ((authorizedJobGroups.Contains(model.JobGroup) || authorizedJobGroups.Contains("*")) && model.JobGroup != "*")
+            {
+                return CreateJob(model);
+            }
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         private QueryResponse CreateJob(Contracts.JobTypes.WebRequest.Model.WebRequestJob model)

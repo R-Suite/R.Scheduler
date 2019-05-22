@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Web.Http;
 using Common.Logging;
@@ -19,10 +20,12 @@ namespace R.Scheduler.Ftp.Controllers
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         readonly ISchedulerCore _schedulerCore;
+        private readonly IPermissionsHelper _permissionsHelper;
 
-        protected FtpJobsController()
+        public FtpJobsController(IPermissionsHelper permissionsHelper, ISchedulerCore schedulerCore) : base(schedulerCore)
         {
-            _schedulerCore = ObjectFactory.GetInstance<ISchedulerCore>();
+            _permissionsHelper = permissionsHelper;
+            _schedulerCore = schedulerCore;
         }
 
         /// <summary>
@@ -36,7 +39,9 @@ namespace R.Scheduler.Ftp.Controllers
         {
             Logger.Debug("Entered FtpJobsController.Get().");
 
-            var jobDetailsMap = _schedulerCore.GetJobDetails(typeof(FtpDownloadJob));
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
+
+            var jobDetailsMap = _schedulerCore.GetJobDetails(authorizedJobGroups, typeof(FtpDownloadJob));
 
             return jobDetailsMap.Select(mapItem =>
                                                     new Contracts.JobTypes.Ftp.Model.FtpDownloadJob
@@ -61,6 +66,8 @@ namespace R.Scheduler.Ftp.Controllers
         {
             Logger.Debug("Entered FtpJobsController.Get().");
 
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
+
             IJobDetail jobDetail;
 
             try
@@ -73,50 +80,59 @@ namespace R.Scheduler.Ftp.Controllers
                 return null;
             }
 
-            string username = jobDetail.JobDataMap.GetString("userName");
-            string password = jobDetail.JobDataMap.GetString("password");
-            string sshPrivateKeyPassword = jobDetail.JobDataMap.GetString("sshPrivateKeyPassword");
-
-            try
+            if (jobDetail != null &&
+                (authorizedJobGroups.Contains(jobDetail.Key.Group) || authorizedJobGroups.Contains("*")))
             {
-                if (new EncryptionFeatureToggle().FeatureEnabled)
+                string username = jobDetail.JobDataMap.GetString("userName");
+                string password = jobDetail.JobDataMap.GetString("password");
+                string sshPrivateKeyPassword = jobDetail.JobDataMap.GetString("sshPrivateKeyPassword");
+
+                try
                 {
-                    username = AESGCM.SimpleDecrypt(username, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
-
-                    if (!string.IsNullOrEmpty(password))
+                    if (new EncryptionFeatureToggle().FeatureEnabled)
                     {
-                        password = AESGCM.SimpleDecrypt(password, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
-                    }
+                        username = AESGCM.SimpleDecrypt(username,
+                            Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
 
-                    if (!string.IsNullOrEmpty(sshPrivateKeyPassword))
-                    {
-                        sshPrivateKeyPassword = AESGCM.SimpleDecrypt(sshPrivateKeyPassword, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
+                        if (!string.IsNullOrEmpty(password))
+                        {
+                            password = AESGCM.SimpleDecrypt(password,
+                                Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
+                        }
+
+                        if (!string.IsNullOrEmpty(sshPrivateKeyPassword))
+                        {
+                            sshPrivateKeyPassword = AESGCM.SimpleDecrypt(sshPrivateKeyPassword,
+                                Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
+                        }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Logger.Warn("ConfigurationError getting FtpDownload job.", ex);
-            }
+                catch (Exception ex)
+                {
+                    Logger.Warn("ConfigurationError getting FtpDownload job.", ex);
+                }
 
-            return new Contracts.JobTypes.Ftp.Model.FtpDownloadJob
-            {
-                Id = id,
-                JobName = jobDetail.Key.Name,
-                JobGroup = jobDetail.Key.Group,
-                SchedulerName = _schedulerCore.SchedulerName,
-                FtpHost = jobDetail.JobDataMap.GetString("ftpHost"),
-                ServerPort = jobDetail.JobDataMap.GetString("serverPort"),
-                Username = username,
-                Password = password,
-                LocalDirectoryPath = jobDetail.JobDataMap.GetString("localDirectoryPath"),
-                RemoteDirectoryPath = jobDetail.JobDataMap.GetString("remoteDirectoryPath"),
-                FileExtensions = jobDetail.JobDataMap.GetString("fileExtensions"),
-                CutOffTimeSpan = jobDetail.JobDataMap.GetString("cutOffTimeSpan"),
-                Description = jobDetail.Description,
-                SshPrivateKeyPath = jobDetail.JobDataMap.GetString("sshPrivateKeyPath"),
-                SshPrivateKeyPassword = sshPrivateKeyPassword
-            };
+                return new Contracts.JobTypes.Ftp.Model.FtpDownloadJob
+                {
+                    Id = id,
+                    JobName = jobDetail.Key.Name,
+                    JobGroup = jobDetail.Key.Group,
+                    SchedulerName = _schedulerCore.SchedulerName,
+                    FtpHost = jobDetail.JobDataMap.GetString("ftpHost"),
+                    ServerPort = jobDetail.JobDataMap.GetString("serverPort"),
+                    Username = username,
+                    Password = password,
+                    LocalDirectoryPath = jobDetail.JobDataMap.GetString("localDirectoryPath"),
+                    RemoteDirectoryPath = jobDetail.JobDataMap.GetString("remoteDirectoryPath"),
+                    FileExtensions = jobDetail.JobDataMap.GetString("fileExtensions"),
+                    CutOffTimeSpan = jobDetail.JobDataMap.GetString("cutOffTimeSpan"),
+                    Description = jobDetail.Description,
+                    SshPrivateKeyPath = jobDetail.JobDataMap.GetString("sshPrivateKeyPath"),
+                    SshPrivateKeyPassword = sshPrivateKeyPassword
+                };
+            }
+            if (jobDetail == null) throw new HttpResponseException(HttpStatusCode.NotFound);
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         /// <summary>
@@ -131,7 +147,13 @@ namespace R.Scheduler.Ftp.Controllers
         {
             Logger.DebugFormat("Entered FtpJobsController.Post(). Job Name = {0}", model.JobName);
 
-            return CreateJob(model);
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
+
+            if ((authorizedJobGroups.Contains(model.JobGroup) || authorizedJobGroups.Contains("*")) && model.JobGroup != "*")
+            {
+                return CreateJob(model);
+            }
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         /// <summary>
@@ -146,7 +168,13 @@ namespace R.Scheduler.Ftp.Controllers
         {
             Logger.DebugFormat("Entered FtpJobsController.Put(). Job Name = {0}", model.JobName);
 
-            return CreateJob(model);
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
+
+            if ((authorizedJobGroups.Contains(model.JobGroup) || authorizedJobGroups.Contains("*")) && model.JobGroup != "*")
+            {
+                return CreateJob(model);
+            }
+            throw new HttpResponseException(HttpStatusCode.Unauthorized);
         }
 
         private QueryResponse CreateJob(Contracts.JobTypes.Ftp.Model.FtpDownloadJob model)

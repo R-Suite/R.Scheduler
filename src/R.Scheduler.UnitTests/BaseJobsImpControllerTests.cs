@@ -19,23 +19,27 @@ namespace R.Scheduler.UnitTests
         {
             return base.CreateJob(model, jobType, dataMap);
         }
+
+        public TestController(ISchedulerCore schedulerCore) : base(schedulerCore)
+        {
+        }
     }
 
     public class BaseJobsImpControllerTests
     {
         private readonly Mock<ISchedulerCore> _mockSchedulerCore = new Mock<ISchedulerCore>();
-
+        readonly IContainer _container = new Container();
         public BaseJobsImpControllerTests()
         {
-            ObjectFactory.Configure(c => c.For<ISchedulerCore>().Use(_mockSchedulerCore.Object));
+            _container.Configure(c => c.For<ISchedulerCore>().Use(_mockSchedulerCore.Object));
         }
 
         [Fact]
         public void CreateJobShouldReturnErrorQueryResponseWhenExceptionIsThrownInSchedulerCore()
         {
             // Arrange
-            var controller = new TestController();
             _mockSchedulerCore.Setup(i => i.CreateJob(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Type>(), It.IsAny<Dictionary<string, object>>(), It.IsAny<string>(), null)).Throws(new Exception());
+            var controller = new TestController(_mockSchedulerCore.Object);
 
             // Act 
             var result = controller.CreateJob(null, null, null);

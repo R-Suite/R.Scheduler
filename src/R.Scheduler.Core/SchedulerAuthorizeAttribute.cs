@@ -19,13 +19,20 @@ namespace R.Scheduler.Core
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public string AppSettingUsers { get; set; }
+
         public string AppSettingRoles { get; set; }
+
+
+        /// <summary>
+        /// List of Job Groups user is authorized to access
+        /// </summary>
+        public List<string> AuthorizedJobGroups { get; set; }
 
         protected override bool IsAuthorized(HttpActionContext actionContext)
         {
             Logger.DebugFormat("Entered SchedulerAuthorizeAttribute.IsAuthorized");
 
-            var scheduler = ObjectFactory.GetInstance<IScheduler>();
+            var scheduler = SchedulerContainer.Container.GetInstance<IScheduler>();
 
             if (scheduler.Context.ContainsKey("CustomAuthorizerType"))
             {
@@ -49,7 +56,7 @@ namespace R.Scheduler.Core
                 {
                     users.AddRange(ConfigurationManager.AppSettings[AppSettingUsers].Split(sep, StringSplitOptions.RemoveEmptyEntries));
                 }
-
+                
                 var authorize = (IAuthorize)Activator.CreateInstance((Type)scheduler.Context["CustomAuthorizerType"]);
                 authorize.Roles = roles;
                 authorize.Users = users;

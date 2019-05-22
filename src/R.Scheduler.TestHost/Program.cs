@@ -9,7 +9,7 @@ namespace R.Scheduler.TestHost
             R.Scheduler.Scheduler.Initialize(config =>
             {
                 config.EnableWebApiSelfHost = true;
-                config.PersistanceStoreType = PersistanceStoreType.Postgre;
+                config.PersistenceStoreType = PersistenceStoreType.Postgre;
                 config.ConnectionString = "Server=127.0.0.1;Port=5432;Database=Scheduler;User Id=xxx;Password=xxx;";
                 //config.CustomFtpLibraryAssemblyName = "R.Scheduler.FakeFtpLib";
                 config.CustomAuthorizationAssemblyName = "R.Scheduler.TestCustomAuthorizationImp";

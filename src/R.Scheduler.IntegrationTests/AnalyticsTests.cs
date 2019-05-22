@@ -5,7 +5,7 @@ using Quartz.Job;
 using R.Scheduler.Contracts.Model;
 using R.Scheduler.Core;
 using R.Scheduler.Interfaces;
-using R.Scheduler.Persistance;
+using R.Scheduler.Persistence;
 using Xunit;
 
 namespace R.Scheduler.IntegrationTests
@@ -23,13 +23,13 @@ namespace R.Scheduler.IntegrationTests
             {
                 config.EnableWebApiSelfHost = false;
                 config.EnableAuditHistory = false;
-                config.PersistanceStoreType = PersistanceStoreType.InMemory;
+                config.PersistenceStoreType = PersistenceStoreType.InMemory;
                 config.AutoStart = false;
             }));
 
-            IPersistanceStore persistanceStore = new InMemoryStore();
-            _analytics = new Analytics(Scheduler.Instance(), persistanceStore);
-            _schedulerCore = new SchedulerCore(Scheduler.Instance(), persistanceStore);
+            IPersistenceStore persistenceStore = new InMemoryStore();
+            _analytics = new Analytics(Scheduler.Instance(), persistenceStore);
+            _schedulerCore = new SchedulerCore(Scheduler.Instance(), persistenceStore);
         }
 
         [Fact]

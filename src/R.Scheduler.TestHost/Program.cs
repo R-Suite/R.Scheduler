@@ -1,4 +1,5 @@
-﻿using R.Scheduler.Interfaces;
+﻿using System;
+using R.Scheduler.Interfaces;
 
 namespace R.Scheduler.TestHost
 {
@@ -15,6 +16,8 @@ namespace R.Scheduler.TestHost
                 config.CustomAuthorizationAssemblyName = "R.Scheduler.TestCustomAuthorizationImp";
                 config.CustomWebAppSettingsAssemblyName = "R.Scheduler.TestCustomAuthorizationImp";
             });
+
+            Console.Write("Scheduler initialized");
         }
     }
 }

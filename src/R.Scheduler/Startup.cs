@@ -1,11 +1,16 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Controllers;
+using System.Web.Http.Dispatcher;
 using Newtonsoft.Json.Serialization;
 using Owin;
+using R.Scheduler.Core;
+using StructureMap;
 
 namespace R.Scheduler
 {
@@ -28,10 +33,38 @@ namespace R.Scheduler
             config.Formatters.XmlFormatter.SupportedMediaTypes.Remove(appXmlType);
 
             config.MapHttpAttributeRoutes();
-            config.EnsureInitialized(); 
+            config.EnsureInitialized();
+
+            config.Services.Replace(typeof(IHttpControllerActivator),
+                new StructureMapHttpControllerActivator(SchedulerContainer.Container));
 
             appBuilder.UseWebApi(config);
         } 
+    }
+
+    public class StructureMapHttpControllerActivator : IHttpControllerActivator
+
+    {
+        private readonly IContainer _container;
+
+        public StructureMapHttpControllerActivator(IContainer container)
+
+        {
+            this._container = container;
+        }
+
+        public IHttpController Create(
+
+            HttpRequestMessage request,
+
+            HttpControllerDescriptor controllerDescriptor,
+
+            Type controllerType)
+
+        {
+            return (IHttpController) this._container.GetInstance(controllerType);
+        }
+
     }
 
     public class CorsHeaderHandler : DelegatingHandler

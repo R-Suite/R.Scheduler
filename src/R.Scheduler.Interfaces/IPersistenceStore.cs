@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Quartz;
+using System;
 using System.Collections.Generic;
-using Quartz;
 
 namespace R.Scheduler.Interfaces
 {
-    public interface IPersistanceStore
+    public interface IPersistenceStore
     {
         void InsertAuditLog(AuditLog log);
         IEnumerable<AuditLog> GetErroredJobs(int count);

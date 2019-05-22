@@ -10,17 +10,17 @@
     <description>A simple, easy to use job execution engine built on top of Quartz Enterprise Scheduler .NET</description>
     <language>en-GB</language>
     <projectUrl>https://github.com/R-Suite/R.Scheduler</projectUrl>
-    <copyright>Copyright 2018 R.Scheduler. All rights reserved</copyright>
+    <copyright>Copyright 2019 R.Scheduler. All rights reserved</copyright>
     <tags>Scheduler,R Scheduler,Quartz, Quartz net,R.Scheduler,Quartz Scheduler,RScheduler,Scheduling</tags>
     <dependencies>
-      <dependency id="R.Scheduler.Contracts" version="1.2.3" />
+      <dependency id="R.Scheduler.Contracts" version="1.2.4" />
       <dependency id="Quartz" version="2.6.1" />
       <dependency id="Microsoft.AspNet.WebApi.OwinSelfHost" version="5.2.3" />
       <dependency id="Microsoft.AspNet.WebApi.Cors" version="5.2.3" />
       <dependency id="Microsoft.Owin.Hosting" version="3.0.1" />
-      <dependency id="structuremap" version="2.6.4.1" />
+      <dependency id="structuremap" version="4.7.1" />
       <dependency id="AutoMapper" version="4.1.1" />
-      <dependency id="Newtonsoft.Json" version="8.0.3" />
+      <dependency id="Newtonsoft.Json" version="12.0.2" />
       <dependency id="FeatureToggle" version="3.4.0" />
       <dependency id="BouncyCastle.NetCore" version="1.8.1.3" />
   </dependencies>
@@ -30,7 +30,7 @@
     <file src="bin\Release\R.Scheduler.Interfaces.dll" target="lib\net40\R.Scheduler.Interfaces.dll" />
     <file src="bin\Release\R.Scheduler.Contracts.dll" target="lib\net40\R.Scheduler.Contracts.dll" />
     <file src="bin\Release\R.Scheduler.Core.dll" target="lib\net40\R.Scheduler.Core.dll" />
-    <file src="bin\Release\R.Scheduler.Persistance.dll" target="lib\net40\R.Scheduler.Persistance.dll" />
+    <file src="bin\Release\R.Scheduler.Persistence.dll" target="lib\net40\R.Scheduler.Persistence.dll" />
     <file src="bin\Release\R.Scheduler.AssemblyPlugin.dll" target="lib\net40\R.Scheduler.AssemblyPlugin.dll" />
     <file src="bin\Release\R.Scheduler.Ftp.dll" target="lib\net40\R.Scheduler.Ftp.dll" />
     <file src="bin\Release\R.Scheduler.WebRequest.dll" target="lib\net40\R.Scheduler.WebRequest.dll" />

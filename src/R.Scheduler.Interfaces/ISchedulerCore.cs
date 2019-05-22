@@ -9,13 +9,13 @@ namespace R.Scheduler.Interfaces
     {
         string SchedulerName { get; }
 
-        IDictionary<IJobDetail, Guid> GetJobDetails(Type jobType = null);
+        IDictionary<IJobDetail, Guid> GetJobDetails(IEnumerable<string> authorizedJobGroups,Type jobType = null);
 
         IJobDetail GetJobDetail(Guid id);
 
         void ExecuteJob(Guid jobId);
 
-        Guid CreateJob(string jobName, string groupName, Type jobType, Dictionary<string, object> dataMap, string description, Guid? jobId = null);
+        Guid CreateJob(string jobName, string jobGroup, Type jobType, Dictionary<string, object> dataMap, string description, Guid? jobId = null);
 
         void RemoveJobTriggers(Guid jobId);
 
@@ -31,7 +31,7 @@ namespace R.Scheduler.Interfaces
 
         IDictionary<ITrigger, Guid> GetTriggersOfJob(Guid id);
 
-        IEnumerable<TriggerFireTime> GetFireTimesBetween(DateTime start, DateTime end);
+        IEnumerable<TriggerFireTime> GetFireTimesBetween(DateTime start, DateTime end, IEnumerable<string> authorizedJobGroups);
 
         Guid AddHolidayCalendar(string name, string description, IList<DateTime> daysExcludedUtc = null);
 
@@ -48,5 +48,6 @@ namespace R.Scheduler.Interfaces
         ICalendar GetCalendar(Guid id, out string name);
 
         IDictionary<ICalendar, KeyValuePair<string, Guid>> GetCalendars();
+        IJobDetail GetJobDetailOfTrigger(Guid triggerId);
     }
 }

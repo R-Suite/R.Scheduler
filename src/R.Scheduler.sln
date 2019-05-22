@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.202
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler", "R.Scheduler\R.Scheduler.csproj", "{59E14D25-72BD-4E1F-A224-B8A6F5179B90}"
 EndProject
@@ -25,7 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CustomJobTypes", "CustomJob
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.TestHost", "R.Scheduler.TestHost\R.Scheduler.TestHost.csproj", "{F8F159E1-50E1-4755-BBDE-945794E11431}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.Persistance", "R.Scheduler.Persistance\R.Scheduler.Persistance.csproj", "{FBADF088-E56E-4862-9C1C-3FF81C4BD92B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.Persistence", "R.Scheduler.Persistence\R.Scheduler.Persistence.csproj", "{FBADF088-E56E-4862-9C1C-3FF81C4BD92B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "R.Scheduler.Core", "R.Scheduler.Core\R.Scheduler.Core.csproj", "{0B05F704-2CFF-4571-B63C-D9ABC7FD5666}"
 EndProject
@@ -149,5 +149,8 @@ Global
 		{9AB8E06A-1951-4C47-A438-AD3BA5E65A3F} = {ACF74C8F-7012-44A7-A924-4F87D805F93F}
 		{00FAFE80-AF56-4277-9177-BD9DD3EB7BA5} = {6E854787-A37D-422A-A0F3-C8707723EB4C}
 		{64467844-10C7-4B12-AD87-D6F38DE05D9B} = {6E854787-A37D-422A-A0F3-C8707723EB4C}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0A43611C-E50F-43FB-A418-308D7C147C24}
 	EndGlobalSection
 EndGlobal

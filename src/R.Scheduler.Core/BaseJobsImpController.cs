@@ -15,9 +15,9 @@ namespace R.Scheduler.Core
     {
         readonly ISchedulerCore _schedulerCore;
 
-        protected BaseJobsImpController()
+        protected BaseJobsImpController(ISchedulerCore schedulerCore)
         {
-            _schedulerCore = ObjectFactory.GetInstance<ISchedulerCore>();
+            _schedulerCore = schedulerCore;
         }
 
         protected QueryResponse CreateJob(BaseJob model, Type jobType, Dictionary<string, object> dataMap, string description = null)

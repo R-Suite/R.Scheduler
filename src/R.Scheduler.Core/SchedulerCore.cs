@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Transactions;
+using System.Web.Http;
 using Quartz;
 using Quartz.Impl.Calendar;
 using Quartz.Impl.Matchers;
@@ -17,34 +20,44 @@ namespace R.Scheduler.Core
     public class SchedulerCore : ISchedulerCore
     {
         private readonly IScheduler _scheduler;
-        private readonly IPersistanceStore _persistanceStore;
+        private readonly IPersistenceStore _persistenceStore;
 
-        public string SchedulerName { get { return _scheduler.SchedulerName; } }
+        public string SchedulerName => _scheduler.SchedulerName;
 
-        public SchedulerCore(IScheduler scheduler, IPersistanceStore persistanceStore)
+        public SchedulerCore(IScheduler scheduler, IPersistenceStore persistenceStore)
         {
             _scheduler = scheduler;
-            _persistanceStore = persistanceStore;
+            _persistenceStore = persistenceStore;
         }
 
         /// <summary>
         /// Get job details of type <see cref="jobType"/>.
         /// Get all the job details if <see cref="jobType"/> is not specified
         /// </summary>
+        /// <param name="authorizedJobGroups"> List of job groups user is authorized for</param>
         /// <param name="jobType"></param>
         /// <returns></returns>
-        public IDictionary<IJobDetail, Guid> GetJobDetails(Type jobType = null)
+        public IDictionary<IJobDetail, Guid> GetJobDetails(IEnumerable<string> authorizedJobGroups,Type jobType = null)// , Dictionary<string, string> identities = null
         {
             IDictionary<IJobDetail, Guid> jobDetails = new Dictionary<IJobDetail, Guid>();
+
+            // Map user or roles to list of job groups
+            // Only get job if user or role is related to job group
             IList<string> jobGroups = _scheduler.GetJobGroupNames();
+            
+            // If user has job group access to '*' wildcard, get all jobs
+            authorizedJobGroups = authorizedJobGroups.ToList();
+            jobGroups = (IList<string>) (authorizedJobGroups.Contains("*") ? jobGroups : authorizedJobGroups);
 
             foreach (string group in jobGroups)
             {
+                if (!jobGroups.Contains(@group)) continue;
+
                 var groupMatcher = GroupMatcher<JobKey>.GroupEquals(group);
                 var jobKeys = _scheduler.GetJobKeys(groupMatcher);
                 foreach (var jobKey in jobKeys)
                 {
-                    var jobId = _persistanceStore.GetJobId(jobKey);
+                    var jobId = _persistenceStore.GetJobId(jobKey);
                     var detail = _scheduler.GetJobDetail(jobKey);
 
                     if (null == jobType)
@@ -60,7 +73,7 @@ namespace R.Scheduler.Core
                     }
                 }
             }
-
+            
             return jobDetails;
         }
 
@@ -72,7 +85,7 @@ namespace R.Scheduler.Core
         /// <returns></returns>
         public IJobDetail GetJobDetail(Guid id)
         {
-            var jobKey = _persistanceStore.GetJobKey(id);
+            var jobKey = _persistenceStore.GetJobKey(id);
 
             return _scheduler.GetJobDetail(jobKey);
         }
@@ -83,7 +96,7 @@ namespace R.Scheduler.Core
         /// <param name="jobId"></param>
         public void ExecuteJob(Guid jobId)
         {
-            var jobKey = _persistanceStore.GetJobKey(jobId);
+            var jobKey = _persistenceStore.GetJobKey(jobId);
 
             _scheduler.TriggerJob(jobKey);
         }
@@ -94,7 +107,7 @@ namespace R.Scheduler.Core
         /// <param name="jobId"></param>
         public void RemoveJobTriggers(Guid jobId)
         {
-            var jobKey = _persistanceStore.GetJobKey(jobId);
+            var jobKey = _persistenceStore.GetJobKey(jobId);
 
             IList<ITrigger> triggers = _scheduler.GetTriggersOfJob(jobKey);
 
@@ -103,7 +116,7 @@ namespace R.Scheduler.Core
                 _scheduler.UnscheduleJob(trigger.Key);
 
                 // remove trigger key id map entry
-                _persistanceStore.RemoveTriggerKeyIdMap(trigger.Key.Name, trigger.Key.Group);
+                _persistenceStore.RemoveTriggerKeyIdMap(trigger.Key.Name, trigger.Key.Group);
             }
         }
 
@@ -121,8 +134,8 @@ namespace R.Scheduler.Core
             // Use DefaultGroup if jobGroup is null or empty
             jobGroup = (!string.IsNullOrEmpty(jobGroup)) ? jobGroup : JobKey.DefaultGroup;
 
-            var jobbuilder = JobBuilder.Create(jobType);
-            IJobDetail jobDetail = jobbuilder.WithDescription(description)
+            var jobBuilder = JobBuilder.Create(jobType);
+            IJobDetail jobDetail = jobBuilder.WithDescription(description)
                 .WithIdentity(jobName, jobGroup).StoreDurably(true).RequestRecovery(false)
                 .Build();
 
@@ -134,7 +147,7 @@ namespace R.Scheduler.Core
             Guid id;
             using (var tran = new TransactionScope())
             {
-                id = _persistanceStore.UpsertJobKeyIdMap(jobName, jobGroup, jobId);
+                id = _persistenceStore.UpsertJobKeyIdMap(jobName, jobGroup, jobId);
                 _scheduler.AddJob(jobDetail, true);
                 tran.Complete();
             }
@@ -148,14 +161,14 @@ namespace R.Scheduler.Core
         /// <param name="jobId"></param>
         public void RemoveJob(Guid jobId)
         {
-            var jobKey = _persistanceStore.GetJobKey(jobId);
+            var jobKey = _persistenceStore.GetJobKey(jobId);
 
             if (_scheduler.CheckExists(jobKey))
             {
                 _scheduler.DeleteJob(jobKey);
 
                 // remove job key id map entry
-                _persistanceStore.RemoveJobKeyIdMap(jobKey.Name, jobKey.Group);
+                _persistenceStore.RemoveJobKeyIdMap(jobKey.Name, jobKey.Group);
             }
             else
             {
@@ -169,14 +182,14 @@ namespace R.Scheduler.Core
         /// <param name="triggerId"></param>
         public void RemoveTrigger(Guid triggerId)
         {
-            var triggerKey = _persistanceStore.GetTriggerKey(triggerId);
+            var triggerKey = _persistenceStore.GetTriggerKey(triggerId);
 
             if (_scheduler.CheckExists(triggerKey))
             {
                 _scheduler.UnscheduleJob(triggerKey);
 
                 // remove trigger key id map entry
-                _persistanceStore.RemoveTriggerKeyIdMap(triggerKey.Name, triggerKey.Group);
+                _persistenceStore.RemoveTriggerKeyIdMap(triggerKey.Name, triggerKey.Group);
             }
             else
             {
@@ -190,7 +203,7 @@ namespace R.Scheduler.Core
         /// <param name="triggerId"></param>
         public void PauseTrigger(Guid triggerId)
         {
-            var triggerKey = _persistanceStore.GetTriggerKey(triggerId);
+            var triggerKey = _persistenceStore.GetTriggerKey(triggerId);
 
             if (_scheduler.CheckExists(triggerKey))
             {
@@ -208,7 +221,7 @@ namespace R.Scheduler.Core
         /// <param name="triggerId"></param>
         public void ResumeTrigger(Guid triggerId)
         {
-            var triggerKey = _persistanceStore.GetTriggerKey(triggerId);
+            var triggerKey = _persistenceStore.GetTriggerKey(triggerId);
 
             if (_scheduler.CheckExists(triggerKey))
             {
@@ -240,7 +253,7 @@ namespace R.Scheduler.Core
             // If jobDetail does not exist, throw
             if (!_scheduler.CheckExists(jobKey))
             {
-                throw new Exception(string.Format("Job does not exist. Name = {0}, Group = {1}", myTrigger.CalendarName, myTrigger.JobGroup));
+                throw new ArgumentException(string.Format("Job does not exist. Name = {0}, Group = {1}", myTrigger.CalendarName, myTrigger.JobGroup));
             }
 
             IJobDetail jobDetail = _scheduler.GetJobDetail(jobKey);
@@ -286,7 +299,7 @@ namespace R.Scheduler.Core
 
                 using (var tran = new TransactionScope())
                 {
-                    triggerId = _persistanceStore.UpsertTriggerKeyIdMap(myTrigger.Name, myTrigger.Group);
+                    triggerId = _persistenceStore.UpsertTriggerKeyIdMap(myTrigger.Name, myTrigger.Group);
                     _scheduler.ScheduleJob(trigger);
                     tran.Complete();
                 }
@@ -338,7 +351,7 @@ namespace R.Scheduler.Core
 
                 using (var tran = new TransactionScope())
                 {
-                    triggerId = _persistanceStore.UpsertTriggerKeyIdMap(myTrigger.Name, myTrigger.Group);
+                    triggerId = _persistenceStore.UpsertTriggerKeyIdMap(myTrigger.Name, myTrigger.Group);
                     _scheduler.ScheduleJob(trigger);
                     tran.Complete();
                 }
@@ -356,13 +369,12 @@ namespace R.Scheduler.Core
         {
             IDictionary<ITrigger, Guid> triggers = new Dictionary<ITrigger, Guid>();
 
-            var jobKey = _persistanceStore.GetJobKey(id);
-
+            var jobKey = _persistenceStore.GetJobKey(id);
             var jobTriggers = _scheduler.GetTriggersOfJob(jobKey);
 
             foreach (var jobTrigger in jobTriggers)
             {
-                var triggerId = _persistanceStore.GetTriggerId(jobTrigger.Key);
+                var triggerId = _persistenceStore.GetTriggerId(jobTrigger.Key);
 
                 triggers.Add(jobTrigger, triggerId);
             }
@@ -375,8 +387,9 @@ namespace R.Scheduler.Core
         /// </summary>
         /// <param name="start"></param>
         /// <param name="end"></param>
+        /// <param name="authorizedJobGroups"></param>
         /// <returns></returns>
-        public IEnumerable<TriggerFireTime> GetFireTimesBetween(DateTime start, DateTime end)
+        public IEnumerable<TriggerFireTime> GetFireTimesBetween(DateTime start, DateTime end, IEnumerable<string> authorizedJobGroups)
         {
             IList<TriggerFireTime> retval = new List<TriggerFireTime>();
 
@@ -384,12 +397,18 @@ namespace R.Scheduler.Core
             foreach (var triggerKey in allTriggerKeys)
             {
                 ITrigger trigger = _scheduler.GetTrigger(triggerKey);
+
+                if (authorizedJobGroups != null && !authorizedJobGroups.Contains(trigger.JobKey.Group) &&
+                    !authorizedJobGroups.Contains("*")) continue;
+
                 ICalendar cal = null;
                 if (!string.IsNullOrEmpty(trigger.CalendarName))
                 {
                     cal = _scheduler.GetCalendar(trigger.CalendarName);
                 }
-                var fireTimes = TriggerUtils.ComputeFireTimesBetween(trigger as IOperableTrigger, cal, start, end);
+
+                var fireTimes =
+                    TriggerUtils.ComputeFireTimesBetween(trigger as IOperableTrigger, cal, start, end);
 
                 foreach (var fireTime in fireTimes)
                 {
@@ -428,7 +447,7 @@ namespace R.Scheduler.Core
             Guid id;
             using (var tran = new TransactionScope())
             {
-                id = _persistanceStore.UpsertCalendarIdMap(name);
+                id = _persistenceStore.UpsertCalendarIdMap(name);
                 _scheduler.AddCalendar(name, holidays, true, true);
                 tran.Complete();
             }
@@ -443,7 +462,7 @@ namespace R.Scheduler.Core
         /// <param name="daysExcludedUtc"></param>
         public void AddHolidayCalendarExclusionDates(Guid id, IList<DateTime> daysExcludedUtc)
         {
-            var name = _persistanceStore.GetCalendarName(id);
+            var name = _persistenceStore.GetCalendarName(id);
 
             var holidays = (HolidayCalendar)_scheduler.GetCalendar(name);
 
@@ -471,7 +490,7 @@ namespace R.Scheduler.Core
             Guid id;
             using (var tran = new TransactionScope())
             {
-                id = _persistanceStore.UpsertCalendarIdMap(name);
+                id = _persistenceStore.UpsertCalendarIdMap(name);
                 _scheduler.AddCalendar(name, cronCal, true, true);
                 tran.Complete();
             }
@@ -487,7 +506,7 @@ namespace R.Scheduler.Core
         /// <param name="cronExpression"></param>
         public void AmendCronCalendar(Guid id, string description, string cronExpression)
         {
-            var name = _persistanceStore.GetCalendarName(id);
+            var name = _persistenceStore.GetCalendarName(id);
 
             var cronCal = new CronCalendar(cronExpression) { Description = description };
 
@@ -503,7 +522,7 @@ namespace R.Scheduler.Core
         /// <param name="datesExcluded"></param>
         public void AmendHolidayCalendar(Guid id, string description, IList<DateTime> datesExcluded)
         {
-            var name = _persistanceStore.GetCalendarName(id);
+            var name = _persistenceStore.GetCalendarName(id);
 
             var holidays = (HolidayCalendar)_scheduler.GetCalendar(name);
             holidays.Description = description;
@@ -531,12 +550,12 @@ namespace R.Scheduler.Core
         /// <param name="id"></param>
         public bool DeleteCalendar(Guid id)
         {
-            var name = _persistanceStore.GetCalendarName(id);
+            var name = _persistenceStore.GetCalendarName(id);
 
             bool retval = _scheduler.DeleteCalendar(name);
 
             // remove job key id map entry
-            _persistanceStore.RemoveCalendarIdMap(name);
+            _persistenceStore.RemoveCalendarIdMap(name);
 
             return retval;
         }
@@ -548,7 +567,7 @@ namespace R.Scheduler.Core
         /// <param name="name"></param>
         public ICalendar GetCalendar(Guid id, out string name)
         {
-            name = _persistanceStore.GetCalendarName(id);
+            name = _persistenceStore.GetCalendarName(id);
 
             return _scheduler.GetCalendar(name);
         }
@@ -566,12 +585,19 @@ namespace R.Scheduler.Core
             foreach (var calName in calNames)
             {
                 var quartzCal = _scheduler.GetCalendar(calName);
-                var calId = _persistanceStore.GetCalendarId(calName);
+                var calId = _persistenceStore.GetCalendarId(calName);
 
                 retval.Add(quartzCal, new KeyValuePair<string, Guid>(calName, calId));
             }
 
             return retval;
+        }
+
+        public IJobDetail GetJobDetailOfTrigger(Guid triggerId)
+        {
+            var triggerKey = _persistenceStore.GetTriggerKey(triggerId);
+            var jobKey = _scheduler.GetTrigger(triggerKey).JobKey;
+            return _scheduler.GetJobDetail(jobKey);
         }
     }
 }

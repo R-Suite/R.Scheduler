@@ -10,23 +10,23 @@ using StructureMap;
 namespace R.Scheduler.Core
 {
     /// <summary>
-    /// Persist history of all job executions via implementation of <see cref="IPersistanceStore"/> 
+    /// Persist history of all job executions via implementation of <see cref="IPersistenceStore"/> 
     /// configured during the Scheduler initialisation.
     /// Log history of all job executions via <see cref="Common.Logging"/>.
     /// </summary>
     public class AuditJobListener : IJobListener
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly IPersistanceStore _persistanceStore;
+        private readonly IPersistenceStore _persistenceStore;
 
         public string Name
         {
             get { return "AuditJobListener"; }
         }
 
-        public AuditJobListener()
+        public AuditJobListener(IPersistenceStore persistancestore)
         {
-            _persistanceStore = ObjectFactory.GetInstance<IPersistanceStore>();
+            _persistenceStore = persistancestore;
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace R.Scheduler.Core
             Logger.InfoFormat("JobToBeExecuted: {0}, {1}", context.JobDetail.Key.Name, context.JobDetail.Key.Group);
 
             var auditLog = GetAuditLog("JobToBeExecuted", context);
-            _persistanceStore.InsertAuditLog(auditLog);
+            _persistenceStore.InsertAuditLog(auditLog);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace R.Scheduler.Core
             Logger.InfoFormat("JobExecutionVetoed: {0}, {1}", context.JobDetail.Key.Name, context.JobDetail.Key.Group);
 
             var auditLog = GetAuditLog("JobExecutionVetoed", context);
-            _persistanceStore.InsertAuditLog(auditLog);
+            _persistenceStore.InsertAuditLog(auditLog);
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace R.Scheduler.Core
                 auditLog.ExecutionException = jobException.ToString();
             }
             
-            _persistanceStore.InsertAuditLog(auditLog);
+            _persistenceStore.InsertAuditLog(auditLog);
         }
 
         private static AuditLog GetAuditLog(string action, IJobExecutionContext context)

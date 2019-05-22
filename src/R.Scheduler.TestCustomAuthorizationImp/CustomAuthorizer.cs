@@ -8,6 +8,7 @@ namespace R.Scheduler.TestCustomAuthorizationImp
     {
         public List<string> Roles { get; set; }
         public List<string> Users { get; set; }
+
         public bool IsAuthorized(HttpActionContext actionContext)
         {
             // Probably want to grab token/claims from the current principal

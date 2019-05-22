@@ -18,9 +18,9 @@ namespace R.Scheduler.Controllers
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         readonly ISchedulerCore _schedulerCore;
 
-        public HolidayCalendarsController()
+        public HolidayCalendarsController(ISchedulerCore schedulerCore)
         {
-            _schedulerCore = ObjectFactory.GetInstance<ISchedulerCore>();
+            _schedulerCore = schedulerCore;
         }
 
         /// <summary>

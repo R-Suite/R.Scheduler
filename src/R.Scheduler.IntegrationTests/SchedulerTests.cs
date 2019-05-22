@@ -18,7 +18,7 @@ namespace R.Scheduler.IntegrationTests
             // Assert
             Assert.True(Scheduler.Configuration.EnableAuditHistory);
             Assert.True(Scheduler.Configuration.EnableWebApiSelfHost);
-            Assert.Equal(PersistanceStoreType.InMemory, Scheduler.Configuration.PersistanceStoreType);
+            Assert.Equal(PersistenceStoreType.InMemory, Scheduler.Configuration.PersistenceStoreType);
             Assert.Equal("QRTZ_", Scheduler.Configuration.TablePrefix);
             Assert.Equal("RScheduler", Scheduler.Configuration.InstanceName);
             Assert.Equal("instance_one", Scheduler.Configuration.InstanceId);
@@ -38,7 +38,7 @@ namespace R.Scheduler.IntegrationTests
             {
                 config.EnableWebApiSelfHost = false;
                 config.EnableAuditHistory = false;
-                config.PersistanceStoreType = PersistanceStoreType.Postgre;
+                config.PersistenceStoreType = PersistenceStoreType.Postgre;
                 config.TablePrefix = "TEST_";
                 config.InstanceName = "TestInstance";
                 config.InstanceId = "TestInstanceId";
@@ -51,7 +51,7 @@ namespace R.Scheduler.IntegrationTests
             Assert.False(Scheduler.Configuration.EnableAuditHistory);
             Assert.False(Scheduler.Configuration.EnableWebApiSelfHost);
             Assert.False(Scheduler.Configuration.AutoStart);
-            Assert.Equal(PersistanceStoreType.Postgre, Scheduler.Configuration.PersistanceStoreType);
+            Assert.Equal(PersistenceStoreType.Postgre, Scheduler.Configuration.PersistenceStoreType);
             Assert.Equal("TEST_", Scheduler.Configuration.TablePrefix);
             Assert.Equal("TestInstance", Scheduler.Configuration.InstanceName);
             Assert.Equal("TestInstanceId", Scheduler.Configuration.InstanceId);

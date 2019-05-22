@@ -18,12 +18,12 @@ namespace R.Scheduler.Core
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly IScheduler _scheduler;
-        private readonly IPersistanceStore _persistanceStore;
+        private readonly IPersistenceStore _persistenceStore;
 
-        public Analytics(IScheduler scheduler, IPersistanceStore persistanceStore)
+        public Analytics(IScheduler scheduler, IPersistenceStore persistenceStore)
         {
             _scheduler = scheduler;
-            _persistanceStore = persistanceStore;
+            _persistenceStore = persistenceStore;
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace R.Scheduler.Core
                     JobGroup = executingJob.JobDetail.Key.Group,
                     TriggerName = executingJob.Trigger.Key.Name,
                     TriggerGroup = executingJob.Trigger.Key.Group,
-                    JobId = _persistanceStore.GetJobId(executingJob.JobDetail.Key)
+                    JobId = _persistenceStore.GetJobId(executingJob.JobDetail.Key)
                 });
             }
 
@@ -77,7 +77,7 @@ namespace R.Scheduler.Core
         /// <returns></returns>
         public IEnumerable<AuditLog> GetErroredJobs(int count)
         {
-            return _persistanceStore.GetErroredJobs(count);
+            return _persistenceStore.GetErroredJobs(count);
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace R.Scheduler.Core
         /// <returns></returns>
         public IEnumerable<AuditLog> GetExecutedJobs(int count)
         {
-            return _persistanceStore.GetExecutedJobs(count);
+            return _persistenceStore.GetExecutedJobs(count);
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace R.Scheduler.Core
                                 JobGroup = trigger.JobKey.Group,
                                 TriggerName = trigger.Key.Name,
                                 TriggerGroup = trigger.Key.Group,
-                                JobId = _persistanceStore.GetJobId(trigger.JobKey)
+                                JobId = _persistenceStore.GetJobId(trigger.JobKey)
                             });
                         }
                     }
@@ -180,7 +180,7 @@ namespace R.Scheduler.Core
                                 JobGroup = trigger.JobKey.Group,
                                 TriggerName = trigger.Key.Name,
                                 TriggerGroup = trigger.Key.Group,
-                                JobId = _persistanceStore.GetJobId(trigger.JobKey)
+                                JobId = _persistenceStore.GetJobId(trigger.JobKey)
                             });
                         }
                     }
@@ -204,7 +204,7 @@ namespace R.Scheduler.Core
         /// <returns></returns>
         public IEnumerable<AuditLog> GetJobExecutionsBetween(Guid id, DateTime from, DateTime to)
         {
-            return _persistanceStore.GetJobExecutionsBetween(id, from, to);
+            return _persistenceStore.GetJobExecutionsBetween(id, from, to);
         }
     }
 }

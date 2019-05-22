@@ -1,6 +1,6 @@
 ﻿namespace R.Scheduler.Interfaces
 {
-    public enum PersistanceStoreType
+    public enum PersistenceStoreType
     {
         InMemory,
         Postgre,

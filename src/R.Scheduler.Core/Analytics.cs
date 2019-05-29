@@ -47,15 +47,19 @@ namespace R.Scheduler.Core
         /// <summary>
         /// Get fire instances of currently executing jobs.
         /// </summary>
+        /// <param name="authorizedJobGroups"></param>
         /// <returns></returns>
-        public IEnumerable<FireInstance> GetExecutingJobs()
+        public IEnumerable<FireInstance> GetExecutingJobs(IEnumerable<string> authorizedJobGroups)
         {
             IList<FireInstance> retval = new List<FireInstance>();
 
             var executingJobs = _scheduler.GetCurrentlyExecutingJobs();
+            var jobGroups = authorizedJobGroups.ToList();
 
             foreach (var executingJob in executingJobs)
             {
+                if (!jobGroups.Contains(executingJob.JobDetail.Key.Group)) continue;
+
                 retval.Add(new FireInstance
                 {
                     FireTimeUtc = executingJob.Trigger.GetPreviousFireTimeUtc(),
@@ -74,20 +78,32 @@ namespace R.Scheduler.Core
         /// Get a specified number of most recently failed jobs
         /// </summary>
         /// <param name="count"></param>
+        /// <param name="authorizedJobGroups"></param>
         /// <returns></returns>
-        public IEnumerable<AuditLog> GetErroredJobs(int count)
+        public IEnumerable<AuditLog> GetErroredJobs(int count, IEnumerable<string> authorizedJobGroups)
         {
-            return _persistenceStore.GetErroredJobs(count);
+            var erroredJobs = _persistenceStore.GetErroredJobs(count);
+
+            var jobGroups = authorizedJobGroups.ToList();
+            if (jobGroups.Contains("*")) return erroredJobs;
+
+            return erroredJobs.Where(jobExecution => jobGroups.Contains(jobExecution.JobGroup)).ToList();
         }
 
         /// <summary>
         /// Get a specified number of most recently executed jobs
         /// </summary>
         /// <param name="count"></param>
+        /// <param name="authorizedJobGroups"></param>
         /// <returns></returns>
-        public IEnumerable<AuditLog> GetExecutedJobs(int count)
+        public IEnumerable<AuditLog> GetExecutedJobs(int count, IEnumerable<string> authorizedJobGroups)
         {
-            return _persistenceStore.GetExecutedJobs(count);
+            var executedJobs = _persistenceStore.GetExecutedJobs(count);
+
+            var jobGroups = authorizedJobGroups.ToList();
+            if (jobGroups.Contains("*")) return executedJobs;
+
+            return executedJobs.Where(jobExecution => jobGroups.Contains(jobExecution.JobGroup)).ToList();
         }
 
         /// <summary>
@@ -95,7 +111,7 @@ namespace R.Scheduler.Core
         /// </summary>
         /// <param name="count"></param>
         /// <returns></returns>
-        public IEnumerable<FireInstance> GetUpcomingJobs(int count)
+        public IEnumerable<FireInstance> GetUpcomingJobs(int count, IEnumerable<string> authorizedJobGroups)
         {
             IList<FireInstance> temp = new List<FireInstance>();
 
@@ -106,6 +122,9 @@ namespace R.Scheduler.Core
                 foreach (var triggerKey in allTriggerKeys)
                 {
                     ITrigger trigger = _scheduler.GetTrigger(triggerKey);
+
+                    if (authorizedJobGroups != null && !authorizedJobGroups.Contains(trigger.JobKey.Group) &&
+                        !authorizedJobGroups.Contains("*")) continue;
 
                     ICalendar cal = null;
                     if (!string.IsNullOrEmpty(trigger.CalendarName))
@@ -149,8 +168,9 @@ namespace R.Scheduler.Core
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
+        /// <param name="authorizedJobGroups"></param>
         /// <returns></returns>
-        public IEnumerable<FireInstance> GetUpcomingJobsBetween(DateTime from, DateTime to)
+        public IEnumerable<FireInstance> GetUpcomingJobsBetween(DateTime from, DateTime to, IEnumerable<string> authorizedJobGroups)
         {
             IList<FireInstance> temp = new List<FireInstance>();
 
@@ -161,6 +181,9 @@ namespace R.Scheduler.Core
                 foreach (var triggerKey in allTriggerKeys)
                 {
                     ITrigger trigger = _scheduler.GetTrigger(triggerKey);
+
+                    if (authorizedJobGroups != null && !authorizedJobGroups.Contains(trigger.JobKey.Group) &&
+                        !authorizedJobGroups.Contains("*")) continue;
 
                     ICalendar cal = null;
                     if (!string.IsNullOrEmpty(trigger.CalendarName))
@@ -202,9 +225,14 @@ namespace R.Scheduler.Core
         /// Get executions for a specified job
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<AuditLog> GetJobExecutionsBetween(Guid id, DateTime from, DateTime to)
+        public IEnumerable<AuditLog> GetJobExecutionsBetween(Guid id, DateTime from, DateTime to, IEnumerable<string> authorizedJobGroups)
         {
-            return _persistenceStore.GetJobExecutionsBetween(id, from, to);
+            var jobExecutions = _persistenceStore.GetJobExecutionsBetween(id, from, to);
+
+            var jobGroups = authorizedJobGroups.ToList();
+            if (jobGroups.Contains("*")) return jobExecutions;
+
+            return jobExecutions.Where(jobExecution => jobGroups.Contains(jobExecution.JobGroup)).ToList();
         }
     }
 }

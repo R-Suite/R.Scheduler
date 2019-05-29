@@ -17,9 +17,11 @@ namespace R.Scheduler.Controllers
     {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly IAnalytics _analytics;
+        private readonly IPermissionsHelper _permissionsHelper;
 
-        public AnalyticsController(IAnalytics analytics)
+        public AnalyticsController(IAnalytics analytics, IPermissionsHelper permissionsHelper)
         {
+            _permissionsHelper = permissionsHelper;
             _analytics = analytics;
             Mapper.CreateMap<AuditLog, FireInstance>();
         }
@@ -62,8 +64,9 @@ namespace R.Scheduler.Controllers
         public IList<FireInstance> GetExecutingJobs()
         {
             Logger.Debug("Entered AnalyticsController.GetExecutingJobs().");
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups();
 
-            return _analytics.GetExecutingJobs().ToList();
+            return _analytics.GetExecutingJobs(authorizedJobGroups).ToList();
         }
 
         /// <summary>
@@ -76,8 +79,9 @@ namespace R.Scheduler.Controllers
         public IList<FireInstance> GetErroredJobs(int count)
         {
             Logger.Debug("Entered AnalyticsController.GetErroredJobs().");
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups();
 
-            var erroredJobs = _analytics.GetErroredJobs(count);
+            var erroredJobs = _analytics.GetErroredJobs(count, authorizedJobGroups);
 
             IList<FireInstance> erroredFireInstances = new List<FireInstance>();
 
@@ -101,8 +105,10 @@ namespace R.Scheduler.Controllers
         {
             Logger.Debug("Entered AnalyticsController.GetExecutedJobs().");
 
-            var executedJobs = _analytics.GetExecutedJobs(count);
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
 
+            var executedJobs = _analytics.GetExecutedJobs(count, authorizedJobGroups);
+            
             IList<FireInstance> erroredFireInstances = new List<FireInstance>();
 
             foreach (AuditLog erroredJob in executedJobs)
@@ -125,7 +131,9 @@ namespace R.Scheduler.Controllers
         {
             Logger.Debug("Entered AnalyticsController.GetUpcomingJobs().");
 
-            var upcomingJobs = _analytics.GetUpcomingJobs(count).ToList();
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
+
+            var upcomingJobs = _analytics.GetUpcomingJobs(count, authorizedJobGroups).ToList();
 
             return upcomingJobs;
         }
@@ -140,8 +148,9 @@ namespace R.Scheduler.Controllers
         public IList<FireInstance> GetUpcomingJobsBetween(DateTime from, DateTime to)
         {
             Logger.Debug("Entered AnalyticsController.GetUpcomingJobsBetween().");
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
 
-            var upcomingJobs = _analytics.GetUpcomingJobsBetween(from, to).ToList();
+            var upcomingJobs = _analytics.GetUpcomingJobsBetween(from, to, authorizedJobGroups).ToList();
 
             return upcomingJobs;
         }
@@ -157,7 +166,9 @@ namespace R.Scheduler.Controllers
         {
             Logger.Debug("Entered AnalyticsController.GetJobExecutionsBetween().");
 
-            var executedJobs = _analytics.GetJobExecutionsBetween(id, from, to);
+            var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
+
+            var executedJobs = _analytics.GetJobExecutionsBetween(id, from, to, authorizedJobGroups);
 
             IList<FireInstance> executedFireInstances = new List<FireInstance>();
 

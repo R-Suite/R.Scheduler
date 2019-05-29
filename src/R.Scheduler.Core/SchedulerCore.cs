@@ -400,7 +400,7 @@ namespace R.Scheduler.Core
 
                 if (authorizedJobGroups != null && !authorizedJobGroups.Contains(trigger.JobKey.Group) &&
                     !authorizedJobGroups.Contains("*")) continue;
-
+                
                 ICalendar cal = null;
                 if (!string.IsNullOrEmpty(trigger.CalendarName))
                 {

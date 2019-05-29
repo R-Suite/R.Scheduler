@@ -53,9 +53,10 @@ namespace R.Scheduler.IntegrationTests
                 RepeatInterval = new TimeSpan(0, 2, 0),
                 StartDateTime = DateTime.Now.AddMinutes(1)
             });
+            var authorizedJobGroups = new List<string> { "*" };
 
             // Act
-            var result = _analytics.GetUpcomingJobs(10).ToList();
+            var result = _analytics.GetUpcomingJobs(10, authorizedJobGroups).ToList();
 
             // Assert
             Assert.Equal(8, result.Count);
@@ -85,9 +86,10 @@ namespace R.Scheduler.IntegrationTests
                 RepeatInterval = new TimeSpan(0, 20, 0),
                 StartDateTime = DateTime.Now.AddMinutes(1)
             });
+            var authorizedJobGroups = new List<string>{"*"};
 
             // Act
-            var result = _analytics.GetUpcomingJobsBetween(DateTime.UtcNow, DateTime.UtcNow.AddHours(1)).ToList();
+            var result = _analytics.GetUpcomingJobsBetween(DateTime.UtcNow, DateTime.UtcNow.AddHours(1), authorizedJobGroups).ToList();
 
             // Assert
             Assert.Equal(9, result.Count);

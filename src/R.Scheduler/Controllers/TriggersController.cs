@@ -124,7 +124,7 @@ namespace R.Scheduler.Controllers
             var response = new QueryResponse { Valid = true };
 
             var authorizedJobGroups = _permissionsHelper.GetAuthorizedJobGroups().ToList();
-            if (authorizedJobGroups.Contains(model.Group) || authorizedJobGroups.Contains("*"))
+            if (authorizedJobGroups.Contains(model.JobGroup) || authorizedJobGroups.Contains("*"))
             {
                 try
                 {

@@ -22,7 +22,7 @@ namespace R.Scheduler.Sql.Controllers
         readonly ISchedulerCore _schedulerCore;
         private readonly IPermissionsHelper _permissionsHelper;
 
-        protected SqlJobsController(IPermissionsHelper permissionsHelper, ISchedulerCore schedulerCore) : base(schedulerCore)
+        public SqlJobsController(IPermissionsHelper permissionsHelper, ISchedulerCore schedulerCore) : base(schedulerCore)
         {
             _permissionsHelper = permissionsHelper;
             _schedulerCore = schedulerCore;

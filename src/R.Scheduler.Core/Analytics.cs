@@ -54,11 +54,11 @@ namespace R.Scheduler.Core
             IList<FireInstance> retval = new List<FireInstance>();
 
             var executingJobs = _scheduler.GetCurrentlyExecutingJobs();
-            var jobGroups = authorizedJobGroups.ToList();
-
+            
             foreach (var executingJob in executingJobs)
             {
-                if (!jobGroups.Contains(executingJob.JobDetail.Key.Group)) continue;
+                if (authorizedJobGroups != null && !authorizedJobGroups.Contains(executingJob.JobDetail.Key.Group) &&
+                    !authorizedJobGroups.Contains("*")) continue;
 
                 retval.Add(new FireInstance
                 {

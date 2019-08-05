@@ -48,7 +48,9 @@ namespace R.Scheduler.Ftp
         /// <param name="password"></param>
         /// <param name="sshPrivateKeyPath">sshPrivateKeyPath not used in this implementation</param>
         /// <param name="sshPrivateKeyPassword">sshPrivateKeyPath not used in this implementation</param>
-        public void Connect(string host, int serverPort, string userName, string password, string sshPrivateKeyPath, string sshPrivateKeyPassword)
+        /// <param name="protocol">protocol not used in this implementation</param>
+        public void Connect(string host, int serverPort, string userName, string password = null,
+            string sshPrivateKeyPath = null, string sshPrivateKeyPassword = null, string protocol = null)
         {
             _requestUri = host;
             _userName = userName;

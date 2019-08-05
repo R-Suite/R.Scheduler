@@ -47,6 +47,9 @@ namespace R.Scheduler.Ftp
         /// <summary> SSH private key password. Optional.</summary>
         public const string SshPrivateKeyPassword = "sshPrivateKeyPassword";
 
+        /// <summary> Explicit declaration of transfer protocol. Optional.</summary>
+        public const string Protocol = "protocol";
+
         /// <summary>
         /// Ctor used by Scheduler engine
         /// </summary>
@@ -62,6 +65,7 @@ namespace R.Scheduler.Ftp
 
             string ftpHost = GetRequiredParameter(data, FtpHost, jobName);
             string serverPort = GetOptionalParameter(data, ServerPort);
+            string protocol = GetOptionalParameter(data, Protocol);
             string userName = GetOptionalParameter(data, UserName);
             string password = GetOptionalParameter(data, Password);
             string localDirectoryPath = GetRequiredParameter(data, LocalDirectoryPath, jobName);
@@ -111,7 +115,7 @@ namespace R.Scheduler.Ftp
             {
                 using (var ftpLibrary = SchedulerContainer.Container.GetInstance<IFtpLibrary>())
                 {
-                    ftpLibrary.Connect(ftpHost, port, userName, password, sshPrivateKeyPath, sshPrivateKeyPassword);
+                    ftpLibrary.Connect(ftpHost, port, userName, password: password, sshPrivateKeyPath: sshPrivateKeyPath, sshPrivateKeyPassword: sshPrivateKeyPassword, protocol: protocol);
                     ftpLibrary.GetFiles(remoteDirectoryPath, localDirectoryPath, fileExtensions, cutOffTimeSpan);
                 }
             }

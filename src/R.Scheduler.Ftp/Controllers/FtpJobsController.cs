@@ -120,6 +120,7 @@ namespace R.Scheduler.Ftp.Controllers
                     SchedulerName = _schedulerCore.SchedulerName,
                     FtpHost = jobDetail.JobDataMap.GetString("ftpHost"),
                     ServerPort = jobDetail.JobDataMap.GetString("serverPort"),
+                    Protocol = jobDetail.JobDataMap.GetString("protocol"),
                     Username = username,
                     Password = password,
                     LocalDirectoryPath = jobDetail.JobDataMap.GetString("localDirectoryPath"),
@@ -209,6 +210,7 @@ namespace R.Scheduler.Ftp.Controllers
             {
                 {"ftpHost", model.FtpHost},
                 {"serverPort", model.ServerPort},
+                {"protocol", model.Protocol},
                 {"userName", username},
                 {"password", password},
                 {"localDirectoryPath", model.LocalDirectoryPath},

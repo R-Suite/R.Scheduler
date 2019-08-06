@@ -4,6 +4,7 @@
     {
         public string FtpHost { get; set; }
         public string ServerPort { get; set; }
+        public string Protocol { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
         public string LocalDirectoryPath { get; set; }

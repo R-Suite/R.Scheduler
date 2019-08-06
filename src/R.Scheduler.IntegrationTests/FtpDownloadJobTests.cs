@@ -32,6 +32,7 @@ namespace R.Scheduler.IntegrationTests
             var host = "ftp://testhost.com";
             var localDirectoryPath = "C:/";
             var fileExtensions = ".txt";
+            var protocol = "sftp";
             var userName = AESGCM.SimpleEncrypt(plainTextUserName, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
             var password = AESGCM.SimpleEncrypt(plainTextPassword, Convert.FromBase64String(ConfigurationManager.AppSettings["SchedulerEncryptionKey"]));
 
@@ -42,6 +43,7 @@ namespace R.Scheduler.IntegrationTests
             jobDetail.JobDataMap.Add("fileExtensions", fileExtensions);
             jobDetail.JobDataMap.Add("userName", userName);
             jobDetail.JobDataMap.Add("password", password);
+            jobDetail.JobDataMap.Add("protocol", protocol);
             _mockJobExecutionContext.SetupGet(p => p.MergedJobDataMap).Returns(jobDetail.JobDataMap);
             _mockJobExecutionContext.SetupGet(p => p.JobDetail).Returns(jobDetail);
 
@@ -49,7 +51,7 @@ namespace R.Scheduler.IntegrationTests
             ftpJob.Execute(_mockJobExecutionContext.Object);
 
             // Assert
-            _mockFtpLibrary.Verify(i=>i.Connect(host, 21, plainTextUserName, plainTextPassword, null, null), Times.Once);
+            _mockFtpLibrary.Verify(i => i.Connect(host, 21, plainTextUserName, plainTextPassword, null, null, "sftp"), Times.Once);
             _mockFtpLibrary.Verify(i => i.GetFiles(It.IsAny<string>(), localDirectoryPath, fileExtensions, It.IsAny<TimeSpan>()), Times.Once);
         }
     }

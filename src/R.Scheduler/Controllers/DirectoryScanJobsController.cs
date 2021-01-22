@@ -47,7 +47,7 @@ namespace R.Scheduler.Controllers
 
             try
             {
-                jobDetailsMap = _schedulerCore.GetJobDetails(authorizedJobGroups, typeof(NativeJob));
+                jobDetailsMap = _schedulerCore.GetJobDetails(authorizedJobGroups, typeof(DirectoryScanJob));
             }
             catch (Exception ex)
             {

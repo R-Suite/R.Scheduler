@@ -114,7 +114,7 @@ namespace R.Scheduler.Persistence
                 count = 1000;
             }
 
-            string sql = string.Format(@"SELECT TOP {0} a.*, m.[ID] as 'JOB_ID' FROM [RSCHED_AUDIT_HISTORY] a, [RSCHED_JOB_ID_KEY_MAP] m WHERE a.[EXECUTION_EXCEPTION] <> '' AND a.[ACTION] = 'JobWasExecuted' AND a.[JOB_NAME] = m.[JOB_NAME] AND a.[JOB_GROUP] = m.[JOB_GROUP] order by a.[TIME_STAMP] DESC", count);
+            string sql = string.Format(@"SELECT TOP {0} a.*, m.[ID] as 'JOB_ID' FROM [RSCHED_AUDIT_HISTORY] a, [RSCHED_JOB_ID_KEY_MAP] m WHERE a.[EXECUTION_EXCEPTION] <> '' AND a.[JOB_NAME] = m.[JOB_NAME] AND a.[JOB_GROUP] = m.[JOB_GROUP] order by a.[TIME_STAMP] DESC", count);
 
             IEnumerable<AuditLog> retval = GetAuditLogs(sql);
 
